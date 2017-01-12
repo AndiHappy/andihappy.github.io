@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="andihappy" />
+    <meta name="viewport" content="width=device-width">
+    <title>Concurrency-7-Race Conditions and Critical Sections | andihappy</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="andihappy" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>Concurrency-7-Race Conditions and Critical Sections</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<h4 id="race-conditions-and-critical-sections">Race Conditions and Critical Sections</h4>
+<p><br />
+#####    竞争条件和临界区 
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/race-conditions-and-critical-sections.html">翻译文章的源地址</a>
+<br />
+一个应用中运行多个线程本身并不会出错，错误的产生在于多个线程访问相同的资源，例如相同的内存区域（变量，数组或者对象）
+系统（数据库，web服务等等）或者是文件。事实上，问题只在多个线程同时向上面所说的资源中写的时候产生的。只要资源不发生变化，
+多个线程读取同一份的资源是没有问题的。</p>
+
+<p>下面就是一个多个线程同时运行的时候可能会失败的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  public class Counter {
+     protected long count = 0;
+     public void add(long value){
+         this.count = this.count + value;
+     }
+  }
+</code></pre>
+</div>
+
+<p>设想有两个线程，A和B，都在在执行相同的Count对象的实例的add方法，我们是没有办法知道操作系统是怎么在这两个线程之间切换的，
+add方法的执行并不是一个简单的JVM的指令，相反的是，它的执行方式如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>   get this.count from memory into register
+   add value to register
+   write register to memory
+</code></pre>
+</div>
+
+<p>观察下面A和B混合的执行的过程，会发生什么？</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>   this.count = 0;
+   A:  reads this.count into a register (0)
+   B:  reads this.count into a register (0)
+   B:  adds value 2 to register
+   B:  writes register value (2) back to memory. this.count now equals 2
+   A:  adds value 3 to register
+   A:  writes register value (3) back to memory. this.count now equals 3
+</code></pre>
+</div>
+
+<p>两个线程做的操作是给计数器添加值 2 和 3。因此两个线程完成执行完毕以后值应该是5的。然而，由于两个线程的执行交叉的
+程从内存中读取的值为 0。然后他们把2或者3，添加到计数器，并将结果写回内存。那么计数器的值就取决于哪一个线程最后写入，
+不只是正确的5. 在上述情况下，可能是线程 A，可能是线程 B最后写入。没有正确的线程同步机制就不会知道究竟如何交错线程执行。</p>
+
+<h5 id="section">竞争条件和临界区</h5>
+
+<p>两个线程对同一块的资源进行竞争时，访问资源的顺序关系到最终的结果，这就可以称为竞争条件。临街区域就是导致竞争条件的那块
+代码区。在先前的例子中，add方法就是临界区，导致了竞争条件。竞争条件可以通过在临界区采取恰当的线程同步机制避免。</p>
+
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/07/translate8-Thread-Safety-and-Shared-Resources/">上一篇&nbsp  Concurrence-8-Thread Safety and Shared Resources <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/07/translate6-Creating-and-Starting-Java-Threads/">下一篇 &nbsp Concurrence-6-Creating and Starting Java Threads <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">andihappy</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#翻译 java 并发编程 多线程" title="翻译 java 并发编程 多线程">翻译 java 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#翻译 并发编程 多线程" title="翻译 并发编程 多线程">翻译 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-07-24">2015-07-24</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://andihappy.github.io//2015/07/translate6-Creating-and-Starting-Java-Threads/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://andihappy.github.io//2015/07/translate8-Thread-Safety-and-Shared-Resources/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 20:26:37 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

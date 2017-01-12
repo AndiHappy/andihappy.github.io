@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="andihappy" />
+    <meta name="viewport" content="width=device-width">
+    <title>Concurrence-11-Java Synchronized Blocks | andihappy</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="andihappy" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>Concurrence-11-Java Synchronized Blocks</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<h4 id="java-synchronized-blocks">Java Synchronized Blocks</h4>
+<p><br />
+##### java同步代码块
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/synchronized.html">翻译文章的源地址</a>
+<br /></p>
+
+<p>把一个方法或者一段代码标记为同步，就叫做java同步的代码块，java 同步代码块可以用来避免竞争条件
+的发生。</p>
+
+<p>####java同步关键字
+在java中是使用关键字 synchronized 来标记同步代码块。在java中一个同步块是在某一个对象上的同步。
+所有同步在同一个对象上的代码块，在某一个时刻只能有一个线程能够在其中执行代码，所有的其他的企图
+进入代码块的线程都会被阻塞，知道同步代码块里面的线程离开同步快。</p>
+
+<p>关键字 synchronized 可以用来标记四种类型的代码块：  <br />
+1.实例方法  <br />
+2.静态方法 <br />
+3.实例方法中的代码块 <br />
+4.静态方法中的代码块</p>
+
+<p>这些块是不同的对象的同步。你需要哪种类型的同步块取决于具体情况。</p>
+
+<p>####实例方法的同步
+实例方法的同步代码如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> public synchronized void add(int value){
+      this.count += value;
+  }
+</code></pre>
+</div>
+
+<p>备注：关键字在方法声明中，这样告诉java这个方法是同步的。   <br />
+java中一个同步的实例方法，是在拥有这个方法实例上的同步。因此每一个实例都有同步在不同对象上的同步
+方法，这里的不同对象指的拥有各自方法的实例。同步方法中只能有一个线程执行，如果多个线程存在，一个
+线程在某一个时刻只能一个实例中的一个同步方法中执行代码，一个线程对应一个实例。</p>
+
+<h4 id="section">静态方法的同步</h4>
+
+<p>同步静态方法的方法就就像是同步实例方法中那样使用 synchronized关键字。下面就是例子：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  public static synchronized void add(int value){
+      count += value;
+  }
+</code></pre>
+</div>
+
+<p>这里synchronized关键字，就是告诉java这个是一个同步的方法。</p>
+
+<p>静态同步方法是同步在静态方法所属于的类对象上面，因为在JVM中每一个类只有一个Class对象，那么在相同
+的类中，只有一个线程运行在同步的静态方法中。</p>
+
+<p>如果静态方法位于不同的类中，那么每一个类中就可以有一个线程在同步静态方法中运行。每一个线程对应
+一个类，不管它调用的是哪一个静态同步方法。</p>
+
+<h4 id="section-1">实例方法中的静态代码块</h4>
+<p>我们可能没有必要同步整个方法，有时候我们只需要同步方法的一部分，方法中的同步代码块就是做这个的。
+下面就是一个示例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  public void add(int value){
+    synchronized(this){
+       this.count += value;   
+    }
+  }
+</code></pre>
+</div>
+
+<p>上面的示例就是使用同步代码来使一段代码同步，这段的代码在执行的时候就像在同步方法中一样。<br />
+备注：java同步代码块在括号里面使用了一个对象，在这个示例中，我们使用的是this，代表调用这个
+add方法的实例，这个synchronized关键字括号里面使用的对象被称之为监视对象，也就是说这个同步
+代码块同步在这个监视对象上，实例方法的同步就是使用该实例方法归属的对象作为监视对象的。</p>
+
+<p>在同一个监视对象上，同步代码快内只能有一个线程执行。</p>
+
+<p>接下来的例子里面，两个方法同时同步在它们被调用的实例上，因此他们同步在相同的对象上。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class MyClass {
+    public synchronized void log1(String msg1, String msg2){
+       log.writeln(msg1);
+       log.writeln(msg2);
+    }
+    public void log2(String msg1, String msg2){
+       synchronized(this){
+          log.writeln(msg1);
+          log.writeln(msg2);
+       }
+    }
+  }
+</code></pre>
+</div>
+
+<p>因此在这个例子中，只能有一个线程在两个代码块中的其中一个里面跑。</p>
+
+<p>如果第二个代码块同步在其他的监视对象而不是this上，那么在某一个时刻每一个方法里面都可以有一个线程
+在跑。</p>
+
+<p>####静态方法里面的同步代码块
+下面是两个静态方法的例子，这些方法都是同步在静态方法归属的类的类对象上的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> public class MyClass {
+    public static synchronized void log1(String msg1, String msg2){
+       log.writeln(msg1);
+       log.writeln(msg2);
+    }
+    public static void log2(String msg1, String msg2){
+       synchronized(MyClass.class){
+          log.writeln(msg1);
+          log.writeln(msg2);  
+       }
+    }
+  }
+</code></pre>
+</div>
+
+<p>在任意时刻只能有一个线程跑在两个同步方法中的一个内。</p>
+
+<p>如果第二个同步代码块没有同步在MyClass.class 类对象上，那么在某一个时刻，每一个方法内就有可能
+有一个线程在跑。</p>
+
+<h4 id="java">java同步的示例</h4>
+<p>下面这个例子中，表示如果有两个线程都调用counter的同一个实例上面的add方法，在某一个时刻在这个相同的实例上
+只能有一个线程调用add方法，因为add方法是同步在是归属的实例上。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> public class Counter{
+     long count = 0;
+     public synchronized void add(long value){
+       this.count += value;
+     }
+  }
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class CounterThread extends Thread{
+     protected Counter counter = null;
+     public CounterThread(Counter counter){
+        this.counter = counter;
+     }
+     public void run() {
+	for(int i=0; i&lt;10; i++){
+           counter.add(i);
+        }
+     }
+  }
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  public class Example {
+    public static void main(String[] args){
+      Counter counter = new Counter();
+      Thread  threadA = new CounterThread(counter);
+      Thread  threadB = new CounterThread(counter);
+      threadA.start();
+      threadB.start(); 
+    }
+  }
+</code></pre>
+</div>
+
+<p>两个线程被创建以后，相同的一个counter被传入了线程的构造的方法。方法Counter.add()方法是同步时实例上面的，
+因为add方法是实例的方法，并且被标记为了同步方法，因此，同一时间只能有一个线程访问add方法，另外的一个线程
+会一直等待知道第一个线程离开add方法才能够执行add方法。</p>
+
+<p>如果两个线程引用的是counter的不同的实例，那么它们同时调用add方法就没有什么问题，因为这个调用会大道不同的
+实例上，然后方法会在不同的实例（各个方法归属的实例）上面进行同步，因此不会被阻塞。代码如下:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class Example {
+    public static void main(String[] args){
+      Counter counterA = new Counter();
+      Counter counterB = new Counter();
+      Thread  threadA = new CounterThread(counterA);
+      Thread  threadB = new CounterThread(counterB);
+      threadA.start();
+      threadB.start(); 
+    }
+  }
+</code></pre>
+</div>
+
+<p>备注上面的代码中，两个线程A和B，不在针对同一个Counter实例，counterA和counterB上面的add方法同步在
+各自归属的实例上，所以线程A调用counterA上面的add方法不会阻塞线程调用counterB上面的add方法。</p>
+
+<h4 id="section-2">并发编程工具</h4>
+<p>尽管synchronized关键字是java第一个关于访问多线程共享变量的方法，但是synchronized机制不是很先进。这也就是
+java5提供了一个 concurrency 具集合的原因，这个工具集合能够来帮助开发者比synchronized更细粒度的控制并发</p>
+
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/08/translate12-Java's-Volatile-Keyword/">上一篇&nbsp  Concurrence-12-Java's Volatile Keyword <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/07/translate10-Java-Memory-Model/">下一篇 &nbsp Concurrence-10-Java Memory Model <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">andihappy</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#翻译 java 并发编程 多线程" title="翻译 java 并发编程 多线程">翻译 java 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#翻译 并发编程 多线程" title="翻译 并发编程 多线程">翻译 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-08-05">2015-08-05</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://andihappy.github.io//2015/07/translate10-Java-Memory-Model/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://andihappy.github.io//2015/08/translate12-Java's-Volatile-Keyword/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 20:26:37 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

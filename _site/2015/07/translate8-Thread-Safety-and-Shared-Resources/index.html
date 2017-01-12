@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="andihappy" />
+    <meta name="viewport" content="width=device-width">
+    <title>Concurrence-8-Thread Safety and Shared Resources | andihappy</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="andihappy" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>Concurrence-8-Thread Safety and Shared Resources</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<h4 id="thread-safety-and-shared-resources">Thread Safety and Shared Resources</h4>
+<p><br />
+##### 线程安全和资源共享
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/thread-safety.html">翻译文章的源地址</a>
+<br /></p>
+
+<p>能够安全的被多线程同时调用的代码就可以称之为线程安全，如果一段代码是线程安全的，那么其中必然没有竞争条件。竞争
+条件发生在多个线程更新同一个共享资源的时候，因此知道多线程执行的时候共享了那些资源就是非常重要的啦。</p>
+
+<p>局部变量
+   局部变量被存储在每一个线程自己的栈里面，这就意味着局部变量是绝不可能在不同的线程之间共享的。这也就意味着所有的
+局部基本的变量都是线程安全的，下面是一个线程安全的局部基本变量的例子：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public void someMethod(){
+  long threadSafeInt = 0;
+  threadSafeInt++;
+}
+</code></pre>
+</div>
+
+<p>局部变量的引用
+  针对局部引用又有不同，引用本身是不能够被共享的，但是被引用的对象并没有被存储在各个线程的栈里面。所有的对象都被存储在共享的堆里面。
+如果在本地创建的对象并且没有逃脱（escape）出创建的方法，它就是线程安全的。事实上，你也可以将真个对象传递给其他方法或者对象，只要这些方法或对象
+，没有把这个对象可传递给其他线程，这个就是线程安全的。局部对象的一个线程安全的例子：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public void someMethod(){
+  LocalObject localObject = new LocalObject();
+  localObject.callMethod();
+  method2(localObject);
+}
+public void method2(LocalObject localObject){
+  localObject.setValue("value");
+}
+</code></pre>
+</div>
+
+<p>这个例子中的LocalObject实例，没有被创建的方法返回，也没有被传递到能够在someMethod方法之外能够访问的其他的对象
+内。每个线程执行someMethod方法将创建其自己的LocalObject实例并将它分配给localObject引用。因此这里使用LocalObject是线程安全的。
+事实上，整个方法都是线程安全的。即使LocalObject实例作为参数传递给同一个类的其他方法，或其他类，使用它是线程安全的。当然，
+唯一的例外是，LocalObject作为一个参数被其他的方法调用，并且LocalObject存储的实例能够在其他的线程访问到。</p>
+
+<p>对象成员
+对象成员存储堆中，位于对象附近。因此如果两个线程调用同一个实例的同一个方法，这个方法更新对象的成员，那么这个方法就是线程不安全的，
+下面为对象成员的线程不安全事例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class NotThreadSafe{
+    StringBuilder builder = new StringBuilder();
+    public add(String text){
+        this.builder.append(text);
+    }
+}
+</code></pre>
+</div>
+
+<p>如果两个线程同时访问同一个NotThreadSafe 实例的add() 方法，那么将会导致竞争条件的出现，例如：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>NotThreadSafe sharedInstance = new NotThreadSafe();
+new Thread(new MyRunnable(sharedInstance)).start();
+new Thread(new MyRunnable(sharedInstance)).start();
+public class MyRunnable implements Runnable{
+  NotThreadSafe instance = null;
+  public MyRunnable(NotThreadSafe instance){
+    this.instance = instance;
+  }
+  public void run(){
+    this.instance.add("some text");
+  }
+}
+</code></pre>
+</div>
+
+<p>注意到一点，两个MyRunnable实例共享的是同一个NotThreadSafe实例，因此当它们调用NotThreadSafe实例的add方法的时候，将会
+导致竞争条件。</p>
+
+<p>然而，如果两个线程同时调用add方法是基于不同的NotThreadSafe实例，那么就不会导致竞争条件，
+下面是对上面示例的小小修改：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>new Thread(new MyRunnable(new NotThreadSafe())).start();
+new Thread(new MyRunnable(new NotThreadSafe())).start();
+</code></pre>
+</div>
+
+<p>现在两个线程每一个都拥有一个NotThreadSafe实例，所以他们同时调用add方法就不会相互影响，这段代码也就不会出现竞争条件。
+所以，即使一个对象不是线程安全的，它也能够以一种没有竞争条件的方式使用。</p>
+
+<p>线程控制逃脱规则
+当需要确定你的代码访问的某一个资源是不是线程安全的时候，你需要使用线程控制逃脱规则</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>If a resource is created, used and disposed within the control of the same thread, 
+and never escapes the control of this thread, the use of that resource is thread safe.
+</code></pre>
+</div>
+
+<p>共享资源包括对象，数组，文件，数据库连接，scoket连接等等，在java中，显式的释放对象并不常见，所以释放对象就可以
+理解为丢失或者把对象的引用置null。</p>
+
+<p>即使调用的对象是线程安全的，如果那个对象。指向一个共享的资源，比如：文件，数据库，你的应用从整体上
+说可能不是线程安全的。例如，如果线程1和线程2每个都创建他们自己的数据库连接，连接1和连接2，连接本身的
+使用时线程安全的。但是使用数据库连接可能导致线程的不安全，例如，如果两个线程执行的代码如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>check if record X exists
+if not, insert record X
+</code></pre>
+</div>
+<p>如果两个线程同时执行上面的伪代码，被检查的记录X恰好是同一个记录，那么就有可能两个线程全部的都插入了记录X
+说明如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Thread 1 checks if record X exists. Result = no
+Thread 2 checks if record X exists. Result = no
+Thread 1 inserts record X
+Thread 2 inserts record X
+</code></pre>
+</div>
+
+<p>这可能也发生在文件操作或其他共享资源的线程。因此，对于线程控制逃脱规则来说，区分由一个线程控制对象是资源，还是仅仅就是一个引用
+是比较重要的。</p>
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/07/translater9-Thread-Safety-and-Immutability/">上一篇&nbsp  Concurrence-9-Thread-Safety-and-Immutability <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/07/translate7-Race-Conditions-and-Critical-Sections/">下一篇 &nbsp Concurrency-7-Race Conditions and Critical Sections <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">andihappy</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#翻译 java 并发编程 多线程" title="翻译 java 并发编程 多线程">翻译 java 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#翻译 并发编程 多线程" title="翻译 并发编程 多线程">翻译 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-07-24">2015-07-24</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://andihappy.github.io//2015/07/translate7-Race-Conditions-and-Critical-Sections/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://andihappy.github.io//2015/07/translater9-Thread-Safety-and-Immutability/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 20:26:37 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

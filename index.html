@@ -1,23 +1,67 @@
 ---
-layout: default
+title: 飞翔的面包
+layout: page
 ---
 
-<div class="home">
+<ul class="posts">
+{% for post in paginator.posts %}
+  {% capture y %}{{post.date | date:"%Y"}}{% endcapture %}
+  {% capture m %}{{post.date | date:"%m"}}{% endcapture %}
+  {% capture postcategory %}{{post.category}}{% endcapture %}
 
-  <h1 class="page-heading">Posts</h1>
+  {% if year != y or  month != m %}
+  {% assign year = y %}
+	{% assign month = m %}
+    <li class="listing-seperator">{{ y }} 年 {{m}} 月 </li>
+  {% endif %}
 
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+{% if postcategory != "hiddle" %}
+  <div class="content-block ng-scope">
+    <div class="content-heading">
+      <h2 class="title"><small>{{ post.title }}</small></h2>
+      <div class="date"><time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time></div>
+    </div>
+    <div class="content-body">	<p>{% if post.excerpt.size > 32 %}{{ post.excerpt }}{% else %}{{ post.content | strip_html | strip_newlines | truncate: 160 }}{% endif %}</p></div>
+    <div class="content-footer">
+      <span class="label label-info">{{post.tags}}</span>
+      <a href="{{ post.url }}" class="read" >阅读全文</a>
+      <div class="clear"></div>
+    </div>
+  </div>
+  {% endif %}
+{% endfor %}
+</ul>
 
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
+<div id="post-pagination" class="paginator">
+
+  {% if paginator.previous_page %}
+    {% if paginator.previous_page == 1 %}
+    <a href="/"><前页</a>
+    {% else %}
+    <a href="/page{{paginator.previous_page}}"><前页</a>
+    {% endif %}
+  {% else %}
+    <span class="previous disabled"><前页</span>
+  {% endif %}
+
+      {% if paginator.page == 1 %}
+      <span class="current-page">1</span>
+      {% else %}
+      <a href="/">1</a>
+      {% endif %}
+
+    {% for count in (2..paginator.total_pages) %}
+      {% if count == paginator.page %}
+      <span class="current-page">{{count}}</span>
+      {% else %}
+      <a href="/page{{count}}">{{count}}</a>
+      {% endif %}
     {% endfor %}
-  </ul>
 
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-
+  {% if paginator.next_page %}
+    <a class="next" href="/page{{paginator.next_page}}">后页></a>
+  {% else %}
+    <span class="next disabled" >后页></span>
+  {% endif %}
+  (共{{ paginator.total_posts }}篇)
 </div>

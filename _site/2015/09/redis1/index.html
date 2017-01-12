@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="andihappy" />
+    <meta name="viewport" content="width=device-width">
+    <title>redis的探索(1) | andihappy</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="andihappy" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>redis的探索(1)</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<p>redis 作为缓存的框架，在网上搜集资料，然后整理出自己的关于redis的认识：</p>
+
+<p>介绍：</p>
+
+<p>Redis is a very fast non-relational database that stores 
+<strong>a mapping of keys to five different types of values</strong>.
+Redis supports in-memory persistent storage on disk, replication to scale read performance, 
+and client-side sharding 1 to scale write performance.</p>
+
+<p>redis的数据结构：</p>
+
+<p>Redis allows us to store keys that map to any one of five different
+data structure types; STRINGs, LISTs, SETs, HASHes, and ZSETs. Each 
+of the five different structures have some shared commands (DEL, TYPE, RENAME, and others), as well as
+some commands that can only be used by one or two of the structures</p>
+
+<p>redis数据中都是键值对，每一个键值都是有一个对象构成的，这个对象的键值为String，value值为五种类型：String，list，
+hash，set sorted set object(有序集合)。</p>
+
+<h4 id="redis-">redis 的数据结构</h4>
+
+<h5 id="section">封装的字符串</h5>
+
+<ol>
+  <li>redis的源码中自定义了一种使用最多的表示字符串的数据结构，简单动态字符串，简称为SDS，
+而简单的使用C语言自带的String 类型。原因是：C 语言使用的这种简单的字符串表示方式， 并不
+能满足 Redis 对字符串在<strong>安全性、 效率以及功能</strong>方面的要求</li>
+</ol>
+
+<p>SDS的数据结构：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>struct sdshdr {
+    unsigned int len; //字符串的长度
+    unsigned int free;//额外分配的空间
+    char buf[];//字符串的字符的保存
+};
+</code></pre>
+</div>
+
+<p>效率：获得字符串的长度  redis命令：STRLEN  <br />
+例子：拷本字符串，方法:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//拼接字符串
+sds sdscat(sds s, const char *t) {
+    return sdscatlen(s, t, strlen(t));
+}
+
+sds sdscatlen(sds s, const void *t, size_t len) {
+    struct sdshdr *sh;//一个指针
+    size_t curlen = sdslen(s);// sds数据结构s的长度
+    s = sdsMakeRoomFor(s,len); 
+    if (s == NULL) return NULL;
+    sh = (void*) (s-(sizeof(struct sdshdr)));
+    memcpy(s+curlen, t, len);
+    sh-&gt;len = curlen+len;
+    sh-&gt;free = sh-&gt;free-len;
+    s[curlen+len] = '\0';
+    return s;
+}
+</code></pre>
+</div>
+<p>为了避免 C 字符串的这种缺陷， SDS 通过未使用空间解除了字符串长度和底层数组长度之间的关联： 
+在 SDS 中， buf 数组的长度不一定就是字符数量加一， 数组里面可以包含未使用的字节， 而这些
+字节的数量就由 SDS 的 free 属性记录。通过未使用空间， SDS 实现了空间预分配和惰性空间释放
+两种优化策略。</p>
+
+<p>空间预分配，空间小于1M的时候，保证free 和 len 一样大。大于1M的时候，就会只分配1M的空余空间。</p>
+
+<ol>
+  <li>二进制安全</li>
+  <li>兼容部分的C字符串函数</li>
+</ol>
+
+<p>具体的比较的内容：</p>
+
+<p><img src="https://github.com/flyBread/flyBread.github.io/blob/master/_posts/redis/SDS%E5%92%8CCString%E7%9A%84%E6%AF%94%E8%BE%83.PNG?raw=true" alt="" /></p>
+
+<h5 id="section-1">链表</h5>
+<p>2.1 redis中数据结构list对应的链表</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>typedef struct listNode {
+    struct listNode *prev;
+    struct listNode *next;
+    void *value;
+} listNode;
+
+typedef struct listIter {
+    listNode *next;
+    int direction;
+} listIter;
+
+typedef struct list {
+//表头节点
+    listNode *head;
+//表尾巴    
+listNode *tail;
+//节点复制函数
+    void *(*dup)(void *ptr);
+//节点值释放函数
+    void (*free)(void *ptr);
+//节点值比较的函数
+    int (*match)(void *ptr, void *key);
+//包含的节点
+    unsigned long len;
+} list;
+</code></pre>
+</div>
+
+<p>图示为：</p>
+
+<p><img src="https://github.com/flyBread/flyBread.github.io/blob/master/_posts/redis/redis%E7%9A%84%E9%93%BE%E8%A1%A8%E7%9A%84%E7%BB%93%E6%9E%84.PNG?raw=true" alt="" /></p>
+
+<h5 id="map">字典（Map）数据结构</h5>
+
+<p>封装的数据结构：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//每一个dictEntry保存着一个键值对，这个和hashMap里面的entry内部类比较的类似
+typedef struct dictEntry {
+    void *key;//主键
+    union {//值
+        void *val;//可以是一个指针
+        uint64_t u64;//unit64_t 的整数
+        int64_t s64; // int64_t的整数
+        double d; //double类型
+    } v;
+    struct dictEntry *next;
+} dictEntry;
+
+//map的数据结构
+typedef struct dictht {
+    dictEntry **table;
+    unsigned long size;// 哈希表的大小
+    unsigned long sizemask;//hashtable掩码的，总是size-1
+    unsigned long used;//该哈希表已有节点的数量
+} dictht;
+
+</code></pre>
+</div>
+<p>对应的图形是：</p>
+
+<p><img src="https://github.com/flyBread/flyBread.github.io/blob/master/_posts/redis/Map%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.PNG?raw=true" alt="" /></p>
+
+<p>redis 对哈希表的使用：</p>
+
+<p>typedef struct dict {
+    dictType <em>type; //针对哈希表的封装的一个操作的类型
+    void *privdata; //私有数据
+    dictht ht[2]; // 哈希表
+    long rehashidx; /</em> rehashing not in progress if rehashidx == -1 <em>/
+    int iterators; /</em> number of iterators currently running */
+} dict;</p>
+
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/10/zhongjiezhe/">上一篇&nbsp  靡不有初鲜克有终 <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/09/translate23-Semaphores/">下一篇 &nbsp Concurrence-23-Semaphores <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">andihappy</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#redis" title="redis">redis</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#缓存" title="缓存">缓存</a>&nbsp;
+  
+  <a href="/tags/#redis" title="redis">redis</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-09-18">2015-09-18</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://andihappy.github.io//2015/09/translate23-Semaphores/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://andihappy.github.io//2015/10/zhongjiezhe/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 20:26:37 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

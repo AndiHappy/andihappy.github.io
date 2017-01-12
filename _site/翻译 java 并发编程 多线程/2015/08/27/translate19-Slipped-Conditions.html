@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Concurrence-19-Slipped Conditions</title>
+  <meta name="description" content="Slipped Conditions##### 滑条件">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/%E7%BF%BB%E8%AF%91%20java%20%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%20%E5%A4%9A%E7%BA%BF%E7%A8%8B/2015/08/27/translate19-Slipped-Conditions.html">
+  <link rel="alternate" type="application/rss+xml" title="Your awesome title" href="http://yourdomain.com/feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Your awesome title</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/">飞翔的面包</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Concurrence-19-Slipped Conditions</h1>
+    <p class="post-meta"><time datetime="2015-08-27T00:00:00+08:00" itemprop="datePublished">Aug 27, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h4 id="slipped-conditions">Slipped Conditions</h4>
+<p><br />
+##### 滑条件
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/slipped-conditions.html">翻译文章的源地址</a>
+<br /></p>
+
+<h5 id="section">滑条件是什么</h5>
+
+<p>滑条件：从某一个时刻起这个线程一直在检查一个状态知道它能够根据这个状态执行动作
+，这个状态已经被另外的一个线程改变，所以对第一个线程来说，再去根据这个状态去执行
+行为就是错误的。下面就是一个案例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class Lock {
+
+    private boolean isLocked = true;
+
+    public void lock(){
+      synchronized(this){
+        while(isLocked){
+          try{
+            this.wait();
+          } catch(InterruptedException e){
+            //do nothing, keep waiting
+          }
+        }
+      }
+
+      synchronized(this){
+        isLocked = true;
+      }
+    }
+
+    public synchronized void unlock(){
+      isLocked = false;
+      this.notify();
+    }
+
+}
+</code></pre>
+</div>
+<p>注意：lock方法包含了两个同步的代码块，第一个代码块会阻塞线程直到isLocked变为
+false。第二个代码块 设置isLocked为true，为其他的线程等待锁住的Lock实例。</p>
+
+<p>设想一种情况，isLocked是false，两个线程同时的调用lock方法，第一个线程线程在
+第一个代码块阻塞之前进入了第一个代码块，这个线程将会检查isLocked，结果是false，
+然后第二个线程执行，因此也能够进入第一个代码块，这个线程检查isLocked也是false，
+现在两个线程全部读到了isLocked状态全部是false，然后这两个线程都会进入第二个代码
+块，把isLocked设置为true，继续运行。</p>
+
+<p>这种情况就是滑条件的一个案例，这两个线程测试条件，然后退出synchronized块，
+从而允许其他线程测试条件，在这两个线程之前更改状态条件。换句话说，这个状态
+条件从状态被检查到线程为了接下来的线程再次的设置的这段时间，滑了。</p>
+
+<p>为了避免滑条件，检查和设置状态的动作必须被执行的线程原子的操作。这也就意味着
+没有其他的线程能够在检查和设置状态的间隙中对装填进行检查和设置。</p>
+
+<p>可以针对上面例子做简单的修改，只需要把 isLocked = true 这行转移到 synchronized
+代码块的里面去即可，既是在循环的下面，如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class Lock {
+
+    private boolean isLocked = true;
+
+    public void lock(){
+      synchronized(this){
+        while(isLocked){
+          try{
+            this.wait();
+          } catch(InterruptedException e){
+            //do nothing, keep waiting
+          }
+        }
+        isLocked = true;
+      }
+    }
+
+    public synchronized void unlock(){
+      isLocked = false;
+      this.notify();
+    }
+
+}
+
+</code></pre>
+</div>
+<p>现在检查和设置isLocked的变量全部在一个synchronized代码块里面的原子的操作了。</p>
+
+<h4 id="section-1">一个更加现实的例子</h4>
+
+<p>我们可以永远也不会实现像上面的那个例子的锁，从而认为滑条件只不过是一种理论。
+但是上面简单的例子仅仅是为了说明滑条件的概念。</p>
+
+<p>一个更加现实的例子，就是在公平锁的实现的过程中，这个我们已经在 饥饿和公平 这篇
+中讨论过了，如果我们看到原来的在 嵌套管程锁死的那篇文章中的实现，并且试图解决
+嵌套管程锁死的问题，就会很容易犯下滑条件的错误，例如下面的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//Fair Lock implementation with nested monitor lockout problem
+
+public class FairLock {
+  private boolean           isLocked       = false;
+  private Thread            lockingThread  = null;
+  private List&lt;QueueObject&gt; waitingThreads =
+            new ArrayList&lt;QueueObject&gt;();
+
+  public void lock() throws InterruptedException{
+    QueueObject queueObject = new QueueObject();
+
+    synchronized(this){
+      waitingThreads.add(queueObject);
+
+      while(isLocked || waitingThreads.get(0) != queueObject){
+
+        synchronized(queueObject){
+          try{
+            queueObject.wait();
+          }catch(InterruptedException e){
+            waitingThreads.remove(queueObject);
+            throw e;
+          }
+        }
+      }
+      waitingThreads.remove(queueObject);
+      isLocked = true;
+      lockingThread = Thread.currentThread();
+    }
+  }
+
+  public synchronized void unlock(){
+    if(this.lockingThread != Thread.currentThread()){
+      throw new IllegalMonitorStateException(
+        "Calling thread has not locked this lock");
+    }
+    isLocked      = false;
+    lockingThread = null;
+    if(waitingThreads.size() &gt; 0){
+      QueueObject queueObject = waitingThread.get(0);
+      synchronized(queueObject){
+        queueObject.notify();
+      }
+    }
+  }
+}
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class QueueObject {}
+</code></pre>
+</div>
+
+<p>我们可以看到 带有QueueObject.wait()的synchronized(queueObject) 嵌套在
+synchronized(this)代码块中，这也就导致可嵌套线程锁死的情况，为了避免这个
+问题，我们把synchronized(queueObject) 挪出 synchronized(this)的代码块，
+结果是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//Fair Lock implementation with slipped conditions problem
+
+public class FairLock {
+  private boolean           isLocked       = false;
+  private Thread            lockingThread  = null;
+  private List&lt;QueueObject&gt; waitingThreads =
+            new ArrayList&lt;QueueObject&gt;();
+
+  public void lock() throws InterruptedException{
+    QueueObject queueObject = new QueueObject();
+
+    synchronized(this){
+      waitingThreads.add(queueObject);
+    }
+
+    boolean mustWait = true;
+    while(mustWait){
+
+      synchronized(this){
+        mustWait = isLocked || waitingThreads.get(0) != queueObject;
+      }
+
+      synchronized(queueObject){
+        if(mustWait){
+          try{
+            queueObject.wait();
+          }catch(InterruptedException e){
+            waitingThreads.remove(queueObject);
+            throw e;
+          }
+        }
+      }
+    }
+
+    synchronized(this){
+      waitingThreads.remove(queueObject);
+      isLocked = true;
+      lockingThread = Thread.currentThread();
+    }
+  }
+}
+</code></pre>
+</div>
+
+<p>因为只有lock方法发生了变化，所以只展示了lock方法的代码。</p>
+
+<p>现在lock方法包含了3个synchronized代码块。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>第一个synchronized(this) 检查状态通过设置mustWait=isLocked</td>
+      <td> </td>
+      <td>waitingThreads.get(0) != queueObject.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>第二个synchronized(queueObject)代码块，检查线程是否需要等待，在这个时候，
+另外的一个线程可能已经释放了lock锁。让我们忽略时间上面的因素，假设这个锁已经
+释放，这个线程会立刻的退出synchronized(queueObject)代码块。</p>
+
+<p>第三个代码块只有mustwait = false的时候才会执行，这个代码块会把isLocked
+设置为true等等，离开lock方法。</p>
+
+<p>设想在同一时间上，锁没有锁的情况下，两个线程同时的调用lock方法，第一个线程1
+将会检查isLocked状态，看到它是false，然后第二个线程会做同样的事情，然后这
+两个线程都会等待，将会把isLocked设置为true，这就是滑条件的主要的一种情况。</p>
+
+<h4 id="section-2">解决滑条件</h4>
+
+<p>为了解决上面滑条件的问题，最后的一个synchronized(this)必须转移到第一个
+同步代码块，代码就需要做一点小的调整，如下所示：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//Fair Lock implementation without nested monitor lockout problem,
+//but with missed signals problem.
+
+public class FairLock {
+  private boolean           isLocked       = false;
+  private Thread            lockingThread  = null;
+  private List&lt;QueueObject&gt; waitingThreads =
+            new ArrayList&lt;QueueObject&gt;();
+
+  public void lock() throws InterruptedException{
+    QueueObject queueObject = new QueueObject();
+
+    synchronized(this){
+      waitingThreads.add(queueObject);
+    }
+
+    boolean mustWait = true;
+    while(mustWait){
+
+      
+          synchronized(this){
+          mustWait = isLocked || waitingThreads.get(0) != queueObject;
+          if(!mustWait){
+          waitingThreads.remove(queueObject);
+          isLocked = true;
+          lockingThread = Thread.currentThread();
+          return;
+          }
+          }     
+
+      synchronized(queueObject){
+        if(mustWait){
+          try{
+            queueObject.wait();
+          }catch(InterruptedException e){
+            waitingThreads.remove(queueObject);
+            throw e;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+</div>
+
+<p>现在局部变量mustwait 设置和检查都在同一个同步代码快里面了，即使mustwait
+仍然在synchronized(this)外，while(mustwait)被检查，mustwait的值也没有
+在synchronized(this)被改变。一个线程计算出来mustwait为false，会自动把
+局部变量(isLocked)设置为true，这样其他的线程就检测到状态就会变为true。</p>
+
+<p>return;语句，在synchronized(this)同步块里面，是没有必要的。它只是一个小小
+的优化，如果线程不必要等(mustwait == false),就没有必要进入synchronized(queueObject)
+代码块，执行if(mustWait)判断。</p>
+
+<p>公平锁的实现如果仔细的说，会有信号丢失的问题。设想公平锁实例已经被一个线程
+调用lock方法锁住了，所以在synchronized(this)里面，mustWait是true。设想
+中线程是先调用lock的方法，然后锁住的线程在调用unlock的方法。我们以前的unlock
+的方法的实现，你会发现我们调用了 queueObject.wait()，但是如果没有线程在lock
+里面还没有调用queueObject.wait(),那么调用queueObject.notify()就会丢失，
+信号就丢失了，当线程在调用queueObject.wait()后正确的调用lock方法，它就会
+被阻塞直到其他的线程调用unlock方法，这个可能永远不会发生。</p>
+
+<p>丢失信号的问题，在饥饿和公平这篇中FairLock公平锁的实现中，把QueueObject类
+转化为带有两个方法 doWait()和doNotify()方法的信号。这些方法会在QueueObject
+类内部保存和重置信号量，这样的话即使doNotify()的调用在doWait()之前，信号也是
+不会丢失的。</p>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Your awesome title</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Your awesome title</li>
+          <li><a href="mailto:your-email@domain.com">your-email@domain.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/jekyll"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">jekyll</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/jekyllrb"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">jekyllrb</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

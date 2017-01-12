@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title></title>
-    <description></description>
-    <link>http://andihappy.github.io//</link>
-    <atom:link href="http://andihappy.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 12 Jan 2017 21:12:06 +0800</pubDate>
-    <lastBuildDate>Thu, 12 Jan 2017 21:12:06 +0800</lastBuildDate>
+    <title>Your awesome title</title>
+    <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</description>
+    <link>http://yourdomain.com/</link>
+    <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 12 Jan 2017 21:16:01 +0800</pubDate>
+    <lastBuildDate>Thu, 12 Jan 2017 21:16:01 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -231,12 +232,10 @@ store，试了下6s，拍照确实鲜艳有趣。你也看出来姑娘很喜欢�
 
 &lt;p&gt;最后，女神朱莉的纹身：
 敢想不敢为者，终困身牢笼。&lt;/p&gt;
-
-&lt;p&gt;媳妇的手机确实该换了！！！&lt;/p&gt;
 </description>
         <pubDate>Thu, 12 Jan 2017 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2017/01/01/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2017/01/01/</guid>
+        <link>http://yourdomain.com/%E9%B8%A1%E8%A1%80/2017/01/12/01.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E9%B8%A1%E8%A1%80/2017/01/12/01.html</guid>
         
         <category>鸡血</category>
         
@@ -417,8 +416,8 @@ with lock:
 个人认为，好多时候，我们其实并不真正的需要watch，轮询可能会使代码更为清晰，更少出错&lt;/p&gt;
 </description>
         <pubDate>Fri, 02 Dec 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/12/1/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/12/1/</guid>
+        <link>http://yourdomain.com/zookeeper/2016/12/02/1.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/zookeeper/2016/12/02/1.html</guid>
         
         <category>Zookeeper</category>
         
@@ -600,8 +599,8 @@ with lock:
 &lt;p&gt;官方推出的协作方案也完整地支持了分片和多副本，相对于各种 proxy，这种方案假设了客户端实现是可以与服务端“协作”的，事实上主流语言的 SDK 都已经支持了。&lt;/p&gt;
 </description>
         <pubDate>Wed, 30 Nov 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/11/1/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/11/1/</guid>
+        <link>http://yourdomain.com/redis%E9%9B%86%E7%BE%A4/2016/11/30/1.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/redis%E9%9B%86%E7%BE%A4/2016/11/30/1.html</guid>
         
         <category>Redis集群</category>
         
@@ -636,8 +635,8 @@ with lock:
 &lt;p&gt;1，做出一个比较像样子的zk的配置工具，把&lt;/p&gt;
 </description>
         <pubDate>Tue, 25 Oct 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/10/3/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/10/3/</guid>
+        <link>http://yourdomain.com/%E6%9D%82%E8%AE%B0/2016/10/25/3.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E6%9D%82%E8%AE%B0/2016/10/25/3.html</guid>
         
         <category>杂记</category>
         
@@ -734,8 +733,8 @@ Note that the general pseudo-code above does not assume that the valid solutions
 &lt;p&gt;伪代码中是输出全部的解决的方案，如果修改为找到一个解决方案就返回，或者找个几个解决方案就返回，亦或是校验了特定数量的备选方案或者过了特定的时间 就返回，也不是什么难事。&lt;/p&gt;
 </description>
         <pubDate>Mon, 24 Oct 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/10/2/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/10/2/</guid>
+        <link>http://yourdomain.com/%E7%AE%97%E6%B3%95/2016/10/24/2.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E7%AE%97%E6%B3%95/2016/10/24/2.html</guid>
         
         <category>算法</category>
         
@@ -766,8 +765,8 @@ Note that the general pseudo-code above does not assume that the valid solutions
 &lt;p&gt;首先就是tomcat的体系架构，在这个在很多的博客中都有提到，但是看他们的总没有自己看源码，看书中理解的透彻。&lt;/p&gt;
 </description>
         <pubDate>Sun, 23 Oct 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/10/01/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/10/01/</guid>
+        <link>http://yourdomain.com/tomcat/2016/10/23/01.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/tomcat/2016/10/23/01.html</guid>
         
         <category>J2EE规范</category>
         
@@ -805,8 +804,8 @@ Note that the general pseudo-code above does not assume that the valid solutions
 &lt;p&gt;这本书于2016年10月23日看完，对tomcat的体系有了进一步的了解，找时间写一个总结。&lt;/p&gt;
 </description>
         <pubDate>Sat, 08 Oct 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/10/7/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/10/7/</guid>
+        <link>http://yourdomain.com/%E6%A2%B3%E7%90%86%E5%9F%BA%E7%A1%80/2016/10/08/7.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E6%A2%B3%E7%90%86%E5%9F%BA%E7%A1%80/2016/10/08/7.html</guid>
         
         <category>梳理基础</category>
         
@@ -849,8 +848,8 @@ Note that the general pseudo-code above does not assume that the valid solutions
 &lt;/blockquote&gt;
 </description>
         <pubDate>Thu, 22 Sep 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/09/30/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/09/30/</guid>
+        <link>http://yourdomain.com/%E6%A2%B3%E7%90%86%E5%9F%BA%E7%A1%80/2016/09/22/30.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E6%A2%B3%E7%90%86%E5%9F%BA%E7%A1%80/2016/09/22/30.html</guid>
         
         <category>梳理基础</category>
         
@@ -1011,8 +1010,8 @@ Note that the general pseudo-code above does not assume that the valid solutions
 &lt;/div&gt;
 </description>
         <pubDate>Thu, 22 Sep 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/09/26/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/09/26/</guid>
+        <link>http://yourdomain.com/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/2016/09/22/26.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/2016/09/22/26.html</guid>
         
         <category>梳理基础</category>
         
@@ -1168,8 +1167,8 @@ public class MyStack&amp;lt;E&amp;gt; {
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 21 Sep 2016 00:00:00 +0800</pubDate>
-        <link>http://andihappy.github.io//2016/09/25/</link>
-        <guid isPermaLink="true">http://andihappy.github.io//2016/09/25/</guid>
+        <link>http://yourdomain.com/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/2016/09/21/25.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/2016/09/21/25.html</guid>
         
         <category>梳理基础</category>
         

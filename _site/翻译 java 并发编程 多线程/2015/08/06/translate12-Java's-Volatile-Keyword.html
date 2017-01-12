@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Concurrence-12-Java&#39;s Volatile Keyword</title>
+  <meta name="description" content="Java’s Volatile Keyword##### java的volatile关键字">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/%E7%BF%BB%E8%AF%91%20java%20%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%20%E5%A4%9A%E7%BA%BF%E7%A8%8B/2015/08/06/translate12-Java's-Volatile-Keyword.html">
+  <link rel="alternate" type="application/rss+xml" title="Your awesome title" href="http://yourdomain.com/feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Your awesome title</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/">飞翔的面包</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Concurrence-12-Java's Volatile Keyword</h1>
+    <p class="post-meta"><time datetime="2015-08-06T00:00:00+08:00" itemprop="datePublished">Aug 6, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h4 id="javas-volatile-keyword">Java’s Volatile Keyword</h4>
+<p><br />
+##### java的volatile关键字
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/volatile.html">翻译文章的源地址</a>
+<br />
+Java的volatile关键字被用来标记Java变量为”被存储在主存中”。更确切地说这意味着，
+每一个volatile变量的读都是从计算机内存中读取，而不是从CPU缓存，每个写入volatile变量将被写入内存，
+而不只是CPU缓存。</p>
+
+<p>事实上，自从java5以来，volatile保证的不只是volatile变量不只是从内存中读和写向内存，下面的内容也会
+详细的加以解释。</p>
+
+<p>####Java挥发保证变量的可见性
+java的volatile关键字保证变量的变动对线程的可见性，这个听起来比较抽象，我们慢慢的解释。</p>
+
+<p>在多线程应用程序中的线程运行在非volatile变量，出于性能方面的原因，每个线程都可以从主内存中的变量复制到
+一个CPU缓存，而对它们进行操作。如果您的计算机包含多个CPU，每个线程都可以在不同的CPU上运行。这意味着，
+每个线程可以将变量复制到不同的cpu的CPU缓存。此图说明了这种情况：</p>
+
+<p><img src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-1.png" alt="" /></p>
+
+<p>没有volatile变量，就不能够保证JVM从内存中读入cpu缓存中，或者把数据从CPU缓存写回内存，案例解释： <br />
+假设多个线程访问一个共享的变量，这个变量有如下声明的counter变量：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class SharedObject {
+    public int counter = 0;
+}
+</code></pre>
+</div>
+
+<p>线程1可以读取共享变量counter的值0 并把它写入了CPU缓存，并且把值增加到1，但是没有把变动的值写回内存，线程2
+在去读取同样的共享变量counter值的时候，从内存中还是0，然后把它读入CPU缓存，然后增加一，也没有把数据缓存写
+回内存。线程1和线程2现在几乎是同步。真正共享计数器变量的值应该是2，但是两个线程在CPU缓存中的变量值都是1，
+而且内存里面的值是0,一团糟啊，即使线程把他们CPU缓存中的关于共享变量的值写回内存，那也是错误的。</p>
+
+<p>通过声明counter是volatile变量，java虚拟机就能够保证，变量的每次读取都是从内存中读取的，所有的写操作都会
+写到内存中，下面就是声明counter为volatile变量的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class SharedObject {
+    public volatile int counter = 0;
+}
+</code></pre>
+</div>
+
+<p>某种条件下，简单的声明一个变量为volatile可能并不够保证多线程访问的是最新的写入的值，下面会有一些情况的介绍。</p>
+
+<p>在某些情况下，两个线程针对同一个变量的读和写，简单的声明volatile变量并不足以应该这种情况，例如线程1可能把
+counter的值0读入了cpu1的寄存器里面，同时或者在这之后，线程2也把值0读入了cpu2的寄存器里面。两个线程都是
+同时从内存中直接的读取counter的值，现在两个变量全部增加一，并且把值写回到内存中，他们会把他们寄存器版本写
+回counter，两个都把1写回内存中。但是两次增加后，counter的值应该是2。</p>
+
+<p>关于多线程的一个线程，不能够看到变量的最新的值因为这个值还没有被另外更新的线程写入内存里面，叫做可见性的问题
+一个线程的更新对另一个线程不可见的。</p>
+
+<h4 id="java-volatile-">java volatile 确保的事情</h4>
+
+<p>自从java5以来，volatile关键字不仅仅确保直接从内存中读写变量，而且volatile关键字还确保其他的事情：</p>
+
+<p>如果线程A对一个volatile 变量进行写操作，线程B同时对这个变量进行读操作，在写之前的，多有的变量对A是可见的，
+那么对B也是可见的。</p>
+
+<p>另外JVM在考虑到性能的原因，在不影响逻辑行为的情况下，会对指令进行从新排列。但是关于volatile变量的读和写
+指令不会被JVM重排，指令的前后可能会被重排，但是volatile变量的读或者写不会和那些指令混合，无论跟在读或者写
+volatile指令后面是什么指令都会保证运行的时候还是什么指令。</p>
+
+<p>如下例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Thread A:
+    sharedObject.nonVolatile = 123;
+    sharedObject.counter     = sharedObject.counter + 1;
+Thread B:
+    int counter     = sharedObject.counter;
+    int nonVolatile = sharedObject.nonVolatile;
+</code></pre>
+</div>
+
+<p>因为线程A写非volatile变量sharedObject.nonVolatile 在写 volatile变量 sharedObject.counter 之前， <br />
+所以 sharedObject.nonVolatile 和 sharedObject.counter 都会被写回内存。</p>
+
+<p>因为线程B读 非volatile变量sharedObject.nonVolatile 在读 volatile变量 sharedObject.counter 之前， <br />
+所以 sharedObject.nonVolatile 和 sharedObject.counter 都是从内存中读取的。</p>
+
+<p>发生在volatile变量前后的，对非volatile变量读和写指令，是不会被重排打乱顺序的。</p>
+
+<h4 id="volatile">volatile使用场景</h4>
+
+<p>就像上面提到的，如果两个线程对一个变量都有读写操作，单单的使用volatile修饰变量是不够的，我们需要使用
+synchronized 来保证变量的读取和写入是原子操作。</p>
+
+<p>但是如果只有一个变量对volatile共享变量是读写操作，另外的变量只是读取变量，那么读取线程就能够看到写入
+volatile变量的最新的值。如果没有volatile修饰这个变量，是不能够保证看到最新的值的。</p>
+
+<h4 id="volatile-1">volatile的性能</h4>
+
+<p>读写volatile变量使得数据只能从内存中读写。从内存中读写要比从CPU缓存中花费要高，访问volatile变量前面的
+指令是不能够重排的，而重排也是提高性能的一个方法，因此当必须使用volatile变量的时候，我们一般才会使用volatile
+变量，不可滥用。</p>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Your awesome title</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Your awesome title</li>
+          <li><a href="mailto:your-email@domain.com">your-email@domain.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/jekyll"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">jekyll</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/jekyllrb"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">jekyllrb</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

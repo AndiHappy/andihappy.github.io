@@ -5,32 +5,12 @@ layout: default
 <section class="post">
 {{ content }}
 </section>
-
-
-
 <section class="meta">
-  <br/>
-  <br/>
-<span class="sub_pagination">
-  {% if page.next %}
-    <a class="sub_pagination-item newer" href="{{page.next.url}}">上一篇&nbsp  {{ page.next.title }} <i class="fa fa-chain"></i></a>
-  {% else %}
-    <a class="sub_pagination-item" id="lastest">已经是最新一篇&nbsp<i class="fa fa-unlink"></i></a>
-  {% endif %}
-  {% if page.previous %}
-    <a class="sub_pagination-item newer" href="{{page.previous.url}}">下一篇 &nbsp {{ page.previous.title }} <i class="fa fa-share"></i></a>
-  {% else %}
-    <a class="sub_pagination-item" id="lastone"><i class="fa fa-slideshare"></i>&nbsp 已经是最后一篇</a>
-  {% endif %}
-  </span>
-  <br/>
-  <br/>
-</section>
-<!--<span class="author">
-  <a href="http://blog.sevenche.com">{{ site.author }}</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+<hr/>
+<span class="author">
+  <a href="http://blog.sevenche.com">{{ site.author }}</a> - Software Engineer with up to 7 years experience related to Java, Android and C++. He is now working for Avaya Emerging Product and Technology Department Shanghai, China.
 </span>
-<br /> 
-</br>
+<br />
 <span class="license">
   Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
 </span>
@@ -54,11 +34,8 @@ layout: default
   <br/>
   <time datetime="{{ page.date | date:"%Y-%m-%d" }}">{{ page.date | date:"%Y-%m-%d" }}</time>
 </span>
-!-->
-
-
-
-{% include comments.md %}
+</section>
+{% include comments_en.md %}
 <script type="text/javascript">
 $(function(){
   $(document).keydown(function(e) {

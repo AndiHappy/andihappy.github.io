@@ -1,0 +1,10 @@
+# markdown: rdiscount
+# rdiscount：extensions: ["tables"]
+permalink: /:year/:month/:title/
+url: http://andihappy.github.io/
+author: andihappy
+# highlighter: pygments
+rouge: pygments
+paginate: 35
+encoding: UTF-8
+gems: [jekyll-paginate]

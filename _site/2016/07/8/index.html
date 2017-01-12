@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width">
+    <title>servlet总结（二）servlet规范和servlet的容器是什么？ | flybread</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="flybread" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>servlet总结（二）servlet规范和servlet的容器是什么？</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<p>2016-07-29  <br />
+&gt; 发奋，堕落，再发奋，再堕落。。。。。。 <br />
+现在处于: 再发奋的过程中……   <br />
+servlet规范和servlet容器（Tomcat）</p>
+
+<h4 id="servlet">servlet的规范内容</h4>
+
+<p>1.https://java.net/downloads/servlet-spec/Final/servlet-3_1-final.pdf</p>
+
+<p>2.http://docs.oracle.com/javaee/6/tutorial/doc/bnafd.html</p>
+
+<p>3.https://waylau.gitbooks.io/servlet-3-1-specification/content/docs/Preface/Preface.html</p>
+
+<p>具体的内容非常的多，我们只关注我们感兴趣的。</p>
+
+<p>######servlet既然是一个规范，那么它必然有定义规范的主要的接口</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/3207574c1cf5ed3d37a55e9715f8bada.png" alt="servlet主要的接口" /></p>
+
+<blockquote>
+  <p>规范话语：Servlet 接口是 Java Servlet API 的核心抽象。所有 Servlet 类必须直接或间接的实现该接口，或者更通常做法是通过继承一个实现了该接口的类从而复用许多共性功能。目前有 GenericServlet 和 HttpServlet这两个类实现了 Servlet 接口。大多数情况下，开发者只需要继承HttpServlet 去实现自己的 Servlet 即可</p>
+</blockquote>
+
+<blockquote>
+  <p>通过注解描述的（第8章 注解和可插拔性）或者在 Web 应用程序的部署描述符（第14章 部署描述符）中描述的 servlet 声明，控制着 servlet 容器如何提供 servlet 实例。</p>
+</blockquote>
+
+<blockquote>
+  <p>对于未托管在分布式环境中（默认）的 servlet 而言，servlet 容器对于每一个 Servlet 声明必须且只能产生一个实例。不过，如果 Servlet实现了 SingleThreadModel 接口，servlet 容器可以选择实例化多个实例以便处理高负荷请求或者串行化请求到一个特定实例。</p>
+</blockquote>
+
+<h6 id="servlet-1">servlet的生命周期</h6>
+<p>我们已经很多次的说过servlet的生命周期了，servlet的容器启动的时候，servlet的容器必须定位所需的servlet的servlet的类（确切的说是servlet的实现类），Servlet容器使用普通的JAVA类加载Servlet的实现类：<em>The servlet container loads the servlet class using normal Java class loading facilities. The loading may be from a local file system, a remote file system, or other network services.</em> 加载完成Servlet的实现类以后，servlet容器就能够实例化servlet了。</p>
+
+<p><strong>初始化</strong>：实例化servlet以后，就要初始化,初始化就会调用ServletConfig,就是servlet的初始化配置参数。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> public void init(ServletConfig config) throws ServletException {
+	this.config = config;
+	log("init");
+	this.init();
+    }
+</code></pre>
+</div>
+<p><strong>响应</strong>：初始化完成以后，就能够响应请求了。<em>After a servlet is properly initialized, the servlet container may use it to handle client requests.</em> 这个时候会碰到我们上面所说的 servlet的线程安全的问题。
+<em>A servlet container may send concurrent requests through the service method of the servlet. To handle the requests, the Servlet Developer must make adequate provisions for concurrent processing with multiple threads in the service method.</em>
+这个问题，我们已经说过了，所以跳过。</p>
+
+<p><strong>请求中的异常</strong>：我们熟悉的404，<em>Any requests refused by the container by that cause must be returned with a SC_NOT_FOUND (404) response.</em><br />
+还有 5XX的情况，4XX的其他的情况。</p>
+
+<p><strong>数据返回</strong>：数据异步的返回，普通的数据（String，json，Bean）返回就不说了，有一个特殊类型的
+<em>Asynchronous processing</em></p>
+
+<blockquote>
+  <p>有时候，Filter及/或 Servlet 在生成响应之前必须等待一些资源或事件以便完成请求处理。比如，Servlet 在进行生成一个响应之前可能等待一个可用的 JDBC 连接，或者一个远程 web 服务的响应，或者一个 JMS 消息，或者一个应用程序事件。在 Servlet 中等待是一个低效的操作，因为这是阻塞操作，从而白白占用一个线程或其他一些受限资源。许多线程为了等待一个缓慢的资源比如数据库经常发生阻塞，可能引起线程饥饿，且降低整个 Web 容器的服务质量。</p>
+</blockquote>
+
+<blockquote>
+  <p>引入了异步处理请求的能力，使线程可以返回到容器，从而执行更多的任务。当开始异步处理请求时，另一个线程或回调可以或者产生响应，或者调用完成（complete）或请求分派（dispatch），这样，它可以在容器上下文使用 AsyncContext.dispatch 方法运行。一个典型的异步处理事件顺序是：</p>
+</blockquote>
+
+<blockquote>
+  <p>请求被接收到，通过一系列如用于验证的等标准的 filter 之后被传递到 Servlet。servlet 处理请求参数及（或）内容体从而确定请求的类型。该 servlet 发出请求去获取一些资源或数据，例如，发送一个远程web 服务请求或加入一个等待 JDBC 连接的队列。servlet 不产生响应并返回。过了一段时间后，所请求的资源变为可用，此时处理线程继续处理事件，要么在同一个线程，要么通过 AsyncContext 分派到容器中的一个资源上。</p>
+</blockquote>
+
+<blockquote>
+  <p>第八章描述的 @WebServlet 和 @WebFilter 注解有一个属性——asyncSupported，boolean 类型默认值为 false。当 asyncSupported 设置为 true，应用通过执行 startAsync（见下文）可以启动一个单独的线程中进行异步处理，并把请求和响应的引用传递给这个线程，然后退出原始线程所在的容器。这意味着响应将遍历（相反的顺序）与进入时相同的过滤器（或过滤器链）。直到 AsyncContext 调用 complete（见下文）时响应才会被提交。如果异步任务在容器启动的分派之前执行，且调用了 startAsync 并返回给容器，此时应用需负责处理请求和响应对象的并发访问。</p>
+</blockquote>
+
+<blockquote>
+  <p>从一个 Servlet 分派时，把 asyncSupported=true 设置为 false 是允许的。这种情况下，当 servlet 的 service 方法不支持异步退出时，响应将被提交，且容器负责调用 AsyncContext 的 complete，以便所有感兴趣的 AsyncListener 得到触发。过滤器作为清理要完成的异步任务持有的资源的一种机制，也应该使用 AsyncListener.onComplete 触发的结果。</p>
+</blockquote>
+
+<blockquote>
+  <p>从一个同步 Servlet 分派到另一个异步 Servlet 是非法的。不过与该点不同的是当应用调用 startAsync 时将抛出 IllegalStateException。这将允许 servlet 只能作为同步的或异步的 Servlet。</p>
+</blockquote>
+
+<p>#####请求状态实现的方案</p>
+
+<p>早期的web应用或者说早期的网站都是一种处理静态资源的网站，功能主要是查看文档，看看图片，而现在的web应用和早期的差别已经很大，互联网的网站更准确的定义应该是互联网软件，即网站就是软件，需要保存请求的状态。这样就有了两种的技术：cookie 和 session</p>
+
+<p>cookie是客户端的解决的方案，保存在客户端，每次提交的时候，在请求中会带上然后发送到服务器。
+session是服务端的解决方案，有服务端生成，保存客户端的请求的状态。</p>
+
+<blockquote>
+  <p>说明：首先，我们通常都会把Session翻译成会话，因此我们可以把客户端浏览器与服务器之间一系列交互的动作称为一个 Session。
+从这个语义出发，我们会提到Session持续的时间，会提到在Session过程中进行了什么操作等等；
+其次，Session指的是服务器端为客户端所开辟的存储空间，在其中保存的信息就是用于保持状态。从这个语义出发，我们则会提到往Session中存放什么内容，如何根据键值从 Session中获取匹配的内容等。
+要使用Session，第一步当然是创建Session了。那么Session在何时创建呢？当然还是在服务器端程序运行的过程中创建的，不同语言实现的应用程序有不同创建Session的方法，而在Java中是通过调用HttpServletRequest的getSession方法（使用true作为参数）创建的。在创建了Session的同时，服务器会为该Session生成唯一的Session id，而这个Session id在随后的请求中会被用来重新获得已经创建的Session；
+在Session被创建之后，就可以调用Session相关的方法往Session中增加内容了，而这些内容只会保存在服务器中，发到客户端的只有Session id；当客户端再次发送请求的时候，会将这个Session id带上，服务器接受到请求之后就会依据Session id找到相应的Session，从而再次使用之。正式这样一个过程，用户的状态也就得以保持了。</p>
+</blockquote>
+
+<p>cookie和session的方案虽然分别属于客户端和服务端，但是服务端的session的实现对客户端的cookie有依赖关系的，上面我讲到服务端执行session机制时候会生成session的id值，这个id值会发送给客户端，客户端每次请求都会把这个id值放到http请求的头部发送给服务端，而这个id值在客户端会保存下来，保存的容器就是cookie</p>
+
+<p>####tomcat的一般的用法</p>
+
+<p>说到了Servlet必须说到容器，说到了容器，必须说到HTTP的请求的的动作或者请求关联的问题，具体的三次握手，四次挥手的数据传输，我们有时间在搞，但是我们将请求的cookie和session，以及session的管理这些问题，必须是servlet的框架和容器必须要处理的问题。</p>
+
+<h4 id="tomcatjvm">tomcat的JVM的设置</h4>
+<p>tomcate 中一个servet的进程，显示的内容：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>root      6767  6763  0 Jul28 ?        00:01:42    
+/opt/jdk1.7.0_17/jre/bin/java    
+-Djava.util.logging.config.file=/opt/imp15/rest/message/tomcat_message/conf/logging.properties -Xms2048m -Xmx2048m -XX:PermSize=128m -XX:MaxPermSize=256m    
+-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager    
+-Dconfig.type=/gzq/gzq/inte   
+-Djava.endorsed.dirs=/opt/imp15/rest/message/tomcat_message/endorsed -classpath /opt/imp15/rest/message/tomcat_message/bin/bootstrap.jar:/opt/imp15/rest/message/tomcat_message/bin/tomcat-juli.jar    
+-Dcatalina.base=/opt/imp15/rest/message/tomcat_message    
+-Dcatalina.home=/opt/imp15/rest/message/tomcat_message    
+-Djava.io.tmpdir=/opt/imp15/rest/message/tomcat_message/temp org.apache.catalina.startup.Bootstrap start
+</code></pre>
+</div>
+<p>说明一下：tomcat的JVM的配置和优化，其实就是一个JAVA应用程序的配置一样。看到启动脚本里面的配置的选项。</p>
+
+<p>####tomcate 的Connector运行模式</p>
+
+<p>tomcat的3种Connector 运行模式。</p>
+
+<p>1，tomcat默认采用的BIO模型，在几百并发下性能会有很严重的下降。默认的模式,性能非常低下,没有经过任何优化处理和支持.</p>
+
+<p>2，tomcat自带还有NIO的模型，另外也可以调用APR的库来实现操作系统级别控制。 NIO模型是内置的，调用很方便，只需要将上面配置文件中protocol修改成org.apache.coyote.http11.Http11NioProtocol，重启即可生效。</p>
+
+<p>3，APR模式，安装起来比较的困难。但是从操作系统级别解决异步IO的问题，可以比较大幅度的提高性能。需要修改protocol为org.apache.coyote.http11.Http11AprProtocol</p>
+
+<blockquote>
+  <p>补充说明：对于这几种模式，我用ab命令模拟1000并发测试10000词，测试结果比较意外，为了确认结果，我每种方式反复测试了10多次，并且在两个服务器上都测试了一遍。结果发现Bio和Nio性能差别非常微弱，难怪默认居然还是Bio。但是采用apr，连接建立的速度会有50%～100%的提升。直接调用操作系统层果然神速啊，这里强烈推荐apr方式！</p>
+</blockquote>
+
+<p>####tomcat的一般的设置
+~~~
+    &lt;Connector port=”8080″ <br />
+               protocol=”org.apache.coyote.http11.Http11NioProtocol”<br />
+               connectionTimeout=”20000″<br />
+               redirectPort=”8443″ <br />
+               maxThreads=”500″ <br />
+               minSpareThreads=”20″<br />
+               acceptCount=”100″
+               disableUploadTimeout=”true”
+               enableLookups=”false” <br />
+               URIEncoding=”UTF-8″ /&gt;
+~~~</p>
+
+<p>设置说明：
+maxSpareThreads : 如果空闲状态的线程数多于设置的数目，则将这些线程中止，减少这个池中的线程总数。</p>
+
+<p>minSpareThreads : 最小备用线程数，tomcat启动时的初始化的线程数。</p>
+
+<p>enableLookups : 这个功效和Apache中的HostnameLookups一样，设为关闭。nableLookups=”false” ： 为了消除DNS查询对性能的影响我们可以关闭DNS查询，方式是修改server.xml文件中的enableLookups参数值。</p>
+
+<p>connectionTimeout : connectionTimeout为网络连接超时时间毫秒数。</p>
+
+<p>maxThreads : maxThreads Tomcat使用线程来处理接收的每个请求。这个值表示Tomcat可创建的最大的线程数，即最大并发数。</p>
+
+<p>acceptCount : acceptCount是当线程数达到maxThreads后，后续请求会被放入一个等待队列，这个acceptCount是这个队列的大小，如果这个队列也满了，就直接refuse connection</p>
+
+<p>maxProcessors与minProcessors : 在 Java中线程是程序运行时的路径，是在一个程序中与其它控制线程无关的、能够独立运行的代码段。它们共享相同的地址空间。多线程帮助程序员写出CPU最 大利用率的高效程序，使空闲时间保持最低，从而接受更多的请求。</p>
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2016/07/9/">上一篇&nbsp  servlet总结（三）servlet规范很有意思 <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2016/07/7/">下一篇 &nbsp servlet总结（一）到底servlet是什么？ <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">flybread</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#servlet总结" title="servlet总结">servlet总结</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#servlet总结" title="servlet总结">servlet总结</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2016-07-29">2016-07-29</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://flybread.github.io//2016/07/7/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://flybread.github.io//2016/07/9/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 19:55:43 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

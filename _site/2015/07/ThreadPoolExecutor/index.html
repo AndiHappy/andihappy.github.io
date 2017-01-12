@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width">
+    <title>多线程和线程池[2] | flybread</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="flybread" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>多线程和线程池[2]</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<h3 id="section">多线程[2]-线程池</h3>
+<p>首先我们从最主要的类：ThreadPoolExecutor开始,主要的方法就是JDK文档，最为准确和清洗。</p>
+
+<blockquote>
+  <p>An ExecutorService that executes each submitted task using one of possibly several pooled 
+threads, normally configured using Executors factory methods.</p>
+</blockquote>
+
+<p>线程池执行提交的任务，这个是基本的功能，几种不同的线程池都是通过 <strong>Executors</strong> 通过工程的模式创建的。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    ExecutorService pool = Executors.newCachedThreadPool();
+    ExecutorService pool1 = Executors.newFixedThreadPool(10);
+    ExecutorService pool2 = Executors.newScheduledThreadPool(10);
+    ExecutorService pool3 = Executors.newSingleThreadExecutor();
+</code></pre>
+</div>
+
+<p>从源代码中可以知道，新建的这几种线程池，归根到底就是调用的这个构造函数，只是参数的不同：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue&lt;Runnable&gt; workQueue) {
+        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+             Executors.defaultThreadFactory(), defaultHandler);
+    }
+</code></pre>
+</div>
+
+<blockquote>
+  <p>Thread pools address two different problems: they usually provide improved performance  when executing large numbers 
+of asynchronous tasks, due to reduced per-task invocation overhead, and they provide a means of bounding and managing
+ the resources, including  threads, consumed when executing a collection of tasks. 
+Each ThreadPoolExecutor also maintains some basic statistics, such as the number of completed tasks.</p>
+</blockquote>
+
+<p>这段话，我们就关注两条1，线程池是如何减少调用每一个线程的开销的（reduced per-task invocation 
+overhead）2，对线程池里面线程的管理（a means of bounding and managing the resources）</p>
+
+<blockquote>
+  <p>Core and maximum pool sizes
+A ThreadPoolExecutor will automatically adjust the pool size (see getPoolSize()) according to 
+the bounds set by corePoolSize (see getCorePoolSize()) and maximumPoolSize (see getMaximumPoolSize()). 
+When a new task is submitted in method execute(java.lang.Runnable), and fewer than 
+corePoolSize threads are running, a new thread is created to handle the request, even if
+ other worker threads are idle. If there are more than corePoolSize but less than maximumPoolSize 
+threads running, a new thread will be created only if the queue is full. By setting corePoolSize 
+and maximumPoolSize the same, you create a fixed-size thread pool. By setting maximumPoolSize to an
+ essentially unbounded value such as Integer.MAX_VALUE, you allow the pool to accommodate an arbitrary
+ number of concurrent tasks. Most typically, core and maximum pool sizes are set only upon construction,
+ but they may also be changed dynamically using setCorePoolSize(int) and setMaximumPoolSize(int).</p>
+</blockquote>
+
+<p>这个就要就是交代线程池的运行的原理了,在我看来我是没有很踏实的理解，需要结合源码看清楚：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// 线程池中提交一个任务的主要的逻辑
+  public Future&lt;?&gt; submit(Runnable task) {
+        if (task == null) throw new NullPointerException();
+        //新建了一个RunableFuture  扩展 Runnable, Future&lt;V&gt; 
+        RunnableFuture&lt;Void&gt; ftask = newTaskFor(task, null);
+        execute(ftask);
+        return ftask;
+    }
+</code></pre>
+</div>
+
+<p>从新建的TaskFor的这个方法可以看到，线程池中为每一个线程外面又重新包转了一层，这一层就是RunnableFuture接口
+对应的实现类：FutureTask，从下面的方法，也能够看到：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  public FutureTask(Callable&lt;V&gt; callable) {
+        if (callable == null)
+            throw new NullPointerException();
+        this.callable = callable;
+        this.state = NEW;       // ensure visibility of callable
+    }
+
+   public FutureTask(Runnable runnable, V result) {
+        //有Runnable 和 result 适配出一个Callable的接口
+        this.callable = Executors.callable(runnable, result); 
+        this.state = NEW;       // ensure visibility of callable
+    }
+
+</code></pre>
+</div>
+
+<p>然后封装了一个线程，然后开始执行：executor(ftask) 这个方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    public void execute(Runnable command) {
+        if (command == null)
+            throw new NullPointerException();
+        int c = ctl.get();
+        if (workerCountOf(c) &lt; corePoolSize) {
+            if (addWorker(command, true))
+                return;
+            c = ctl.get();
+        }
+        if (isRunning(c) &amp;&amp; workQueue.offer(command)) {
+            int recheck = ctl.get();
+            if (! isRunning(recheck) &amp;&amp; remove(command))
+                reject(command);
+            else if (workerCountOf(recheck) == 0)
+                addWorker(null, false);
+        }
+        else if (!addWorker(command, false))
+            reject(command);
+    }
+</code></pre>
+</div>
+
+<p>ctl.get(),其中ctl这个量是一个标志量，控制线程池的的一个主要的量，使用bit表示：
+private final AtomicInteger ctl = new AtomicInteger(ctlOf(RUNNING, 0));
+其中RUNNING是：  private static final int RUNNING = -1 « COUNT_BITS; COUNT_BITS 为29
+也就是：   			
+  // 1110 0000 0000 0000 0000 0000 0000 0000  <br />
+使用高位来表示运行着，这种状态，然后使用 workerCountof() 位运算表示正在线程池中跑着的线程：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> private static int workerCountOf(int c) {
+    return c &amp; CAPACITY;
+  }
+</code></pre>
+</div>
+<p>我们就可以推断出CAPACITY 就是0001 1111 1111 1111 1111 1111 1111 1111 采用的是且的运算方式，所以
+我们得到的是ctl的后29位数值，可以用来表示线程池中跑着的线程数。</p>
+
+<p>代码的第一种情况是：if (workerCountOf(c) &lt; corePoolSize) {</p>
+
+<p>这就话就是说，如果线程池中的线程数少于 corePoolSize的话，直接的增加任务addWorker（command，true）</p>
+
+<p>首先我们还要看一下 addWorker的说明，然后看看里面的逻辑，线程池增加了一个任务，具体都做了什么？</p>
+
+<p><img src="../../../media/pic/addWorker.PNG" alt="" />
+第一个参数表示执行的任务，第二个参数比较边界的选择，是CorePoolsize 还是max 那个值。如果线程池的状态可以，也就是说
+能够创建线程，并且线程池没有关闭，运行的线程数小于corePoolSize，那么启动第一个参数代表的线程。</p>
+
+<p>具体的代码是：  代码比较的长，我们只关注比较核心的代码</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  private boolean addWorker(Runnable firstTask, boolean core) {
+        retry:
+        for (;;) {
+            int c = ctl.get();
+            int rs = runStateOf(c);
+..........
+	//①这个地方把c的值加一，也就是说代表运行的线程加一
+                if (compareAndIncrementWorkerCount(c))
+                    break retry;
+                c = ctl.get();  // Re-read ctl
+                if (runStateOf(c) != rs)
+                    continue retry;
+                // else CAS failed due to workerCount change; retry inner loop
+            }
+        }
+
+        boolean workerStarted = false;
+        boolean workerAdded = false;
+        Worker w = null;
+        try {
+	//使用锁
+            final ReentrantLock mainLock = this.mainLock;
+            //创建一个新的任务，这个Worker，比较的有意思，后面我们再说
+		w = new Worker(firstTask);
+            final Thread t = w.thread;
+            if (t != null) {
+                mainLock.lock();
+                try {
+                    // Recheck while holding lock.
+                    // Back out on ThreadFactory failure or if
+                    // shut down before lock acquired.
+                    int c = ctl.get();
+                    int rs = runStateOf(c);
+
+                    if (rs &lt; SHUTDOWN ||
+                        (rs == SHUTDOWN &amp;&amp; firstTask == null)) {
+                        if (t.isAlive()) // precheck that t is startable
+			// 线程运行中，意思就是说被启动，但是没有结束，处于Alive的状态
+                            throw new IllegalThreadStateException();
+                        workers.add(w);
+                        int s = workers.size();
+                        if (s &gt; largestPoolSize)
+                            largestPoolSize = s;//更新现在线程池中线程的个数
+                        workerAdded = true;
+                    }
+                } finally {
+                    mainLock.unlock();
+                }
+                if (workerAdded) {
+                    t.start();//添加成功后，直接的运行线程②
+                    workerStarted = true;
+                }
+            }
+        } finally {
+            if (! workerStarted)
+                addWorkerFailed(w);//线程启动失败③
+        }
+        return workerStarted;
+    }
+</code></pre>
+</div>
+
+<p>看到这里面，我们基本能够理解 JAVADOC中的一句话了：** When a new task is submitted in method execute(java.lang.Runnable), and fewer than 
+corePoolSize threads are running, a new thread is created to handle the request, even if
+ other worker threads are idle. **   <br />
+&gt; 那么这个时候，会有一个疑问：如果当前的情况下，小于corePoolSize，线程直接新建Worker，直接执行，但是线程执行完毕以后，又是如何通知线程池：我执行完毕了，线程池的正在运行的线程要减一？
+因为，在这里我只看见 ： t.start() 这句话。 这个问题，现遗留着，后面我们在回答。</p>
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/07/concurrent-0/">上一篇&nbsp  并发编程梳理 <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/07/thread-pool-and-multhread/">下一篇 &nbsp 多线程和线程池 <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">flybread</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#多线程" title="多线程">多线程</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#多线程 基础务实 问题记录" title="多线程 基础务实 问题记录">多线程 基础务实 问题记录</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-07-21">2015-07-21</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://flybread.github.io//2015/07/thread-pool-and-multhread/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://flybread.github.io//2015/07/concurrent-0/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 19:55:43 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

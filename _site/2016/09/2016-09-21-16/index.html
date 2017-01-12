@@ -1,0 +1,41 @@
+<blockquote>
+  <p>算法描述+代码实现</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public static int[] bubbleSort(int[] arrays) {
+
+    for (int j = 0; j &lt; arrays.length; j++) {
+      // arrays.lenth -1  j+1 ݣ˵˳ѾźˣûбҪٴεѭ
+      for (int i = arrays.length - 1; i &gt; j; i--) {
+        if (arrays[i] &lt; arrays[i - 1]) {
+          int temp = arrays[i - 1];
+          arrays[i - 1] = arrays[i];
+          arrays[i] = temp;
+        }
+      }
+    }
+    return arrays;
+  }
+
+  public static int[] bubbleSortImpove(int[] arrays) {
+
+    boolean flag = false;
+    for (int j = 0; j &lt; arrays.length; j++) {
+      if (flag)
+        return arrays;
+      flag = true;
+      // arrays.lenth -1  j+1 ݣ˵˳ѾźˣûбҪٴεѭ
+      for (int i = arrays.length - 1; i &gt; j; i--) {
+        if (arrays[i] &lt; arrays[i - 1]) {
+          int temp = arrays[i - 1];
+          arrays[i - 1] = arrays[i];
+          arrays[i] = temp;
+          flag = false;
+        }
+      }
+    }
+
+    return arrays;
+  }
+</code></pre>
+</div>

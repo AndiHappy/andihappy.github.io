@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width">
+    <title>servlet总结（三）servlet规范很有意思 | flybread</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="flybread" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>servlet总结（三）servlet规范很有意思</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<blockquote>
+  <p>一死生为虚诞，齐彭殇为妄作</p>
+</blockquote>
+
+<p>昨天看到servlet的异步的返回数据，就想到了一个问题：
+&gt; <strong>spring mvc 是怎么实现异步的返回数据的</strong>
+&gt; 并且servlet的规范中说：<em>Dispatching from a synchronous servlet to an asynchronous servlet would be illegal.</em> 是怎么的做到一个DispatchServlet 技能兼容同步的数据返回和异步的数据返回的？</p>
+
+<p><strong>请求</strong>：最常见的GET，POST的方法。如果cookie被禁用了，我们还可以把数据放到请求的Header中，利用HttpServletRequest 接口方法，servlet 可以访问 HTTP 请求的头信息。</p>
+
+<p><strong>servlet的上下文</strong>：ServletContext 接口定义了 servlet 运行在的 Web 应用的视图。容器供应商负责提供 servlet 容器的 ServletContext 接口的实现。servlet 可以使用 ServletContext 对象记录事件，获取 URL 引用的资源，存取当前上下文的其他 servlet 可以访问的属性。</p>
+
+<p>每一个部署到容器的WEB应用，都会有一个ServletContext 实例与之关联起来。在容器分布在多台的虚拟机的情况下，每一个JVM的每一个Web应用都会有一个ServletContext实例。</p>
+
+<blockquote>
+  <p><strong>servletContext 和 spring的beanFactory是通过什么关联起来的</strong></p>
+</blockquote>
+
+<p>~~~</p>
+<listener>
+   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+<p>~~~</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public ContextLoaderListener(WebApplicationContext context) {
+		super(context);
+	}
+
+	/**
+	 * Initialize the root web application context.
+	 */
+	public void contextInitialized(ServletContextEvent event) {
+		this.contextLoader = createContextLoader();
+		if (this.contextLoader == null) {
+			this.contextLoader = this;
+		}
+		this.contextLoader.initWebApplicationContext(event.getServletContext());
+	}
+</code></pre>
+</div>
+<!--more-->
+<p>这一部分也可以说明一下，记录一遍下一次的寻找。Mark。</p>
+
+<p><strong>过滤器</strong>： 当容器接收到传入的请求时，它将获取列表中的第一个过滤器并调用doFilter 方法，传入 ServletRequest 和 ServletResponse，和一个它将使用的 FilterChain 对象的引用。 过滤器的 doFilter 方法通常会被实现为如下或如下形式的子集：</p>
+
+<p>1.该方法检查请求的头。</p>
+
+<p>2.该方法可以用自定义的 ServletRequest 或 HttpServletRequest 实现包装请求对象为了修改请求的头或数据。</p>
+
+<p>3.该方法可以用自定义的 ServletResponse 或 HttpServletResponse实现包装传入 doFilter 方法的响应对象用于修改响应的头或数据。</p>
+
+<p>4.该过滤器可以调用过滤器链中的下一个实体。下一个实体可能是另一个过滤器，或者如果当前调用的过滤器是该过滤器链配置在部署描述符中的最后一个过滤器，下一个实体是目标Web资源。调用FilterChain对象的doFilter方法将影响下一个实体的调用，且传入的它被调用时请求和响应，或传入它可能已经创建的包装版本。 由容器提供的过滤器链的doFilter方法的实现，必须找出过滤器链中的下一个实体并调用它的doFilter方法，传入适当的请求和响应对象。另外，过滤器链可以通过不调用下一个实体来阻止请求，离开过滤器负责填充响应对象。 service 方法必须和应用到 servlet 的所有过滤器运行在同一个线程中。</p>
+
+<p>5.过滤器链中的下一个过滤器调用之后，过滤器可能检查响应的头。</p>
+
+<p>6.另外，过滤器可能抛出一个异常以表示处理过程中出错了。如果过滤器在 doFilter 处理过程中抛出 UnavailableException，容器必须停止处理剩下的过滤器链。 如果异常没有标识为永久的，它或许选择稍候重试整个链。</p>
+
+<p>7.当链中的最后的过滤器被调用，下一个实体访问的是链最后的目标servlet 或资源。</p>
+
+<p>8.在容器能把服务中的过滤器实例移除之前，容器必须先调用过滤器的destroy 方法以便过滤器释放资源并执行其他的清理工作。</p>
+
+<p>Filter的基本的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>boolean preHandle(ServletRequest request, ServletResponse response) throws Exception
+void postHandle(ServletRequest request, ServletResponse response) throws Exception
+void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception;&amp;nbsp;
+</code></pre>
+</div>
+
+<p><strong>回话</strong>：这个和cookie在上面说过，是为了保存每次请求的状态的，具体的创建的代码在：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  /**
+     * The default behavior of this method is to return getSession(boolean create)
+     * on the wrapped request object.
+     */
+    public HttpSession getSession(boolean create) {
+        return this._getHttpServletRequest().getSession(create);
+    }
+</code></pre>
+</div>
+
+<blockquote>
+  <p><strong>tomcat或者说servlet的容器是如何保存Session的？</strong> mark</p>
+</blockquote>
+
+<p><strong>事件监听器</strong>：Servlet 事件监听器支持在 ServletContext、HttpSession 和ServletRequest 状态改变时进行事件通知。Servlet 上下文监听器是用来管理应用的资源或 JVM 级别持有的状态。HTTP 会话监听器是用来管理从相同客户端或用户进入 web 应用的一系列请求关联的状态或资源。Servlet 请求监听器是用来管理整个 Servlet 请求生命周期的状态。异步监听器是用来管理异步事件，例如超时和完成异步处理。</p>
+
+<p>下面标记的这个ServletContextListener，也可以说明spring是如何把beanFactory和http的Servlet结合起来的。
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/8089ca716438d88f44e4a7044c9d54c8.png" alt="servlet的监听器" /></p>
+
+<p>这种监听的机制，就能够保证spring监听到servlet的加载的过程，然后使用spring的容器的配置和初始化成为可能。</p>
+
+<p><strong>安全</strong>：
+<strong>URL映射到servlet</strong>：在收到客户端请求时，web 容器确定转发到哪一个 Web 应用。选择的 Web 应用必须具有最长的上下文路径匹配请求 URL 的开始。当映射到Servlet 时，URL 匹配的一部分是上下文。</p>
+
+<p>附上spring中URL的请求的路径：</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/e0c545dae48717d3fb5639209835c930.png" alt="spring的请求" /></p>
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2016/08/10/">上一篇&nbsp  从自己所做的工程开始梳理自己技术栈 <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2016/07/8/">下一篇 &nbsp servlet总结（二）servlet规范和servlet的容器是什么？ <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">flybread</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#servlet总结" title="servlet总结">servlet总结</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#servlet总结" title="servlet总结">servlet总结</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2016-07-30">2016-07-30</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://flybread.github.io//2016/07/8/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://flybread.github.io//2016/08/10/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 19:55:43 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width">
+    <title>Concurrence-13-Java ThreadLocal | flybread</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="flybread" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>Concurrence-13-Java ThreadLocal</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<h4 id="java-threadlocal">Java ThreadLocal</h4>
+<p><br />
+##### java的线程局部变量
+<br /></p>
+
+<p>文章的地址：<a href="http://tutorials.jenkov.com/java-concurrency/threadlocal.html">翻译文章的源地址</a>
+<br /></p>
+
+<p>java的类ThreadLocal可以使你创建的变量只会被同一个线程读或者写。因此即使是两个线程执行同一份代码，代码
+中有一个指向ThreadLocal变量的引用，那么这两个线程是不能够看见对方的ThreadLocal变量的。</p>
+
+<h4 id="threadlocal">创建一个ThreadLocal</h4>
+<p>创建ThreadLocal 变量的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>private ThreadLocal myThreadLocal = new ThreadLocal();
+</code></pre>
+</div>
+
+<p>上例所示，我们创建了一个ThreadLocal对象，每一个线程只需创建一个ThreadLocal变量，即使两个不同的线程执行
+相同的代码访问一个ThreadLocal，每一个线程只会看到它自己的ThreadLocal实例，即使两个线程为同一个ThreadLocal
+对象设置不同的值，他们是互不可见的。</p>
+
+<p>####访问ThreadLocal</p>
+
+<p>一个创建好的ThreadLocal对象，你可以这么进行进行设置存储值：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>myThreadLocal.set("A thread local value");
+</code></pre>
+</div>
+
+<p>这样读取设置的值：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>String threadLocalValue = (String) myThreadLocal.get();
+</code></pre>
+</div>
+
+<p>get()方法会返回一个Object类型的对象，而set方法则需要一个Object对象作为参数。</p>
+
+<p>####ThreadLocal泛型
+如果不想在get方法做类型转化，我们可以使用泛型，如下例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>private ThreadLocal myThreadLocal = new ThreadLocal&lt;String&gt;();
+</code></pre>
+</div>
+
+<p>现在myThreadLocal实例可以保存String类型的数据，另外在从ThreadLocal实例中获得值的时候也不需要做类型
+转化了：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>myThreadLocal.set("Hello ThreadLocal");
+String threadLocalValue = myThreadLocal.get();
+</code></pre>
+</div>
+
+<p>####初始线程局部变量值
+因为设置在ThreadLocal对象的值只能够对设置这个值的线程是可见的，使用set方法设置一个初始值对所有的线程
+都是可见的，是行不通的。</p>
+
+<p>但是你可以对一个ThreadL对象设置一个初始值通过创建ThreadLocal对象的子类，重载initialValue方法，如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>private ThreadLocal myThreadLocal = new ThreadLocal&lt;String&gt;() {
+    @Override protected String initialValue() {
+        return "This is the initial value";
+    }
+};  
+</code></pre>
+</div>
+
+<p>这样的话，所有的线程都能够看到这个初始化，在没有调用set方法之前，通过get获取到这个值。</p>
+
+<p>可运行的java ThreadLocal 示例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class ThreadLocalExample {
+    public static class MyRunnable implements Runnable {
+        private ThreadLocal&lt;Integer&gt; threadLocal =
+               new ThreadLocal&lt;Integer&gt;();
+        @Override
+        public void run() {
+            threadLocal.set( (int) (Math.random() * 100D) );
+    
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+    
+            System.out.println(threadLocal.get());
+        }
+    }
+
+
+    public static void main(String[] args) {
+        MyRunnable sharedRunnableInstance = new MyRunnable();
+
+        Thread thread1 = new Thread(sharedRunnableInstance);
+        Thread thread2 = new Thread(sharedRunnableInstance);
+
+        thread1.start();
+        thread2.start();
+    }
+
+}
+</code></pre>
+</div>
+
+<p>这个例子创建了一个MyRunnable实例，传递给两个不同的线程，两个线程执行run方法的时候，会向ThreadLocal变量
+中设置不同的值，如果访问set方法是同步的，也不是一个ThreadLocal对象，那么第二个线程会覆盖第一个线程设
+置的值。 <br />
+然而，它是一个ThreadLocal对象，两个线程不能够见到对方的值，因此，它们会获得各自设置的值。</p>
+
+<p>####InheritableThreadLocal</p>
+
+<p>InheritableThreadLocal 是 ThreadLocal的子类，不同是是ThreadLocal是每一个线程都有自己的副本，InheritableThreadLocal
+保证的是不仅创建它的线程能访问到，它的子线程也能够访问到。</p>
+
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2015/08/translate14-Thread-Signaling/">上一篇&nbsp  Concurrence-14-Thread Signaling <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2015/08/careerCup-charter-1/">下一篇 &nbsp 算法-第一章 <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">flybread</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#翻译 java 并发编程 多线程" title="翻译 java 并发编程 多线程">翻译 java 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#翻译 并发编程 多线程" title="翻译 并发编程 多线程">翻译 并发编程 多线程</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2015-08-10">2015-08-10</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://flybread.github.io//2015/08/careerCup-charter-1/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://flybread.github.io//2015/08/translate14-Thread-Signaling/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 19:55:43 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width">
+    <title>第六个周末-坚持住 | flybread</title>
+	<!-- Jim disable
+	script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&skin=Desert"></script-->
+    <link href="/feed/" rel="alternate" title="flybread" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <link href='/media/webfonts/ss-social.css' rel='stylesheet'>
+    <link href='/media/webfonts/ss-standard.css' rel='stylesheet'>
+
+    <script language="JavaScript"><!--
+        if (navigator.userAgent.match(/iPhone|iPod|Android|IEMobile/i)) {
+            document.write("<link href=\"/media/css/screen-mobil.css\" rel=\"stylesheet\">");
+        } else {
+            document.write("<link href=\"/media/css/screen.css\" rel=\"stylesheet\">");
+        }
+        // -->
+    </script>
+
+    <!--script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <div class="buttons">
+          <a href="/" class="ss-icon" title="Go to homepage">home</a>
+          <a href="/categories" class="ss-icon" title="Category" >list</a>
+          <a href="/tags" class="ss-icon" title="Tag Cloud" >tags</a>
+          <a href="/guestbook" class="ss-icon" title="Guest Book" >talk</a>
+          <a href="/about" class="ss-icon" title="About" >user</a>
+          <a href="/feed" class="ss-icon" title="Subscribe by RSS" >rss</a>
+		 <a href="/demo" class="ss-icon" title="Demo" >heart</a>
+        </div>
+        <h1>第六个周末-坚持住</h1>
+        </header>
+        <hr>
+        <article class="content">
+        <section class="post">
+<p>2016-06-12 到 2016-06-19  <br />
+&gt; 你活着是为了什么？</p>
+
+<h4 id="section">字节码</h4>
+
+<p>localhost:sthrift zhailz$ javac -g:vars ATestValue.java</p>
+
+<p>localhost:sthrift zhailz$ javap -verbose ATestValue</p>
+
+<p>能够看到文件ATestValue的字节码，这个源文件是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class ATestValue {
+	public static void main(String[] args) {
+		HashMap&lt;String, String&gt; value = new HashMap&lt;&gt;(7);
+		value.put("a", "b");
+		value.put("a5", "b");
+		System.out.println(value);
+	}
+}
+</code></pre>
+</div>
+
+<p>生成的字节码是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Classfile /Users/zhailz/Documents/workspace/idle-workspace/Sthrift/src/test/java/sthrift/ATestValue.class
+  Last modified 2016-7-4; size 754 bytes
+  MD5 checksum d8d71a61f658e04fc5951972e3d07ee3
+public class sthrift.ATestValue
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #11.#26        // java/lang/Object."&lt;init&gt;":()V
+   #2 = Class              #27            // java/util/HashMap
+   #3 = Methodref          #2.#28         // java/util/HashMap."&lt;init&gt;":(I)V
+   #4 = String             #29            // a
+   #5 = String             #30            // b
+   #6 = Methodref          #2.#31         // java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+   #7 = String             #32            // a5
+   #8 = Fieldref           #33.#34        // java/lang/System.out:Ljava/io/PrintStream;
+   #9 = Methodref          #35.#36        // java/io/PrintStream.println:(Ljava/lang/Object;)V
+  #10 = Class              #37            // sthrift/ATestValue
+  #11 = Class              #38            // java/lang/Object
+  #12 = Utf8               &lt;init&gt;
+  #13 = Utf8               ()V
+  #14 = Utf8               Code
+  #15 = Utf8               LocalVariableTable
+  #16 = Utf8               this
+  #17 = Utf8               Lsthrift/ATestValue;
+  #18 = Utf8               main
+  #19 = Utf8               ([Ljava/lang/String;)V
+  #20 = Utf8               args
+  #21 = Utf8               [Ljava/lang/String;
+  #22 = Utf8               value
+  #23 = Utf8               Ljava/util/HashMap;
+  #24 = Utf8               LocalVariableTypeTable
+  #25 = Utf8               Ljava/util/HashMap&lt;Ljava/lang/String;Ljava/lang/String;&gt;;
+  #26 = NameAndType        #12:#13        // "&lt;init&gt;":()V
+  #27 = Utf8               java/util/HashMap
+  #28 = NameAndType        #12:#39        // "&lt;init&gt;":(I)V
+  #29 = Utf8               a
+  #30 = Utf8               b
+  #31 = NameAndType        #40:#41        // put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #32 = Utf8               a5
+  #33 = Class              #42            // java/lang/System
+  #34 = NameAndType        #43:#44        // out:Ljava/io/PrintStream;
+  #35 = Class              #45            // java/io/PrintStream
+  #36 = NameAndType        #46:#47        // println:(Ljava/lang/Object;)V
+  #37 = Utf8               sthrift/ATestValue
+  #38 = Utf8               java/lang/Object
+  #39 = Utf8               (I)V
+  #40 = Utf8               put
+  #41 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #42 = Utf8               java/lang/System
+  #43 = Utf8               out
+  #44 = Utf8               Ljava/io/PrintStream;
+  #45 = Utf8               java/io/PrintStream
+  #46 = Utf8               println
+  #47 = Utf8               (Ljava/lang/Object;)V
+{
+  public sthrift.ATestValue();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V
+         4: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lsthrift/ATestValue;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: new           #2                  // class java/util/HashMap
+         3: dup
+         4: bipush        7
+         6: invokespecial #3                  // Method java/util/HashMap."&lt;init&gt;":(I)V
+         9: astore_1
+        10: aload_1
+        11: ldc           #4                  // String a
+        13: ldc           #5                  // String b
+        15: invokevirtual #6                  // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        18: pop
+        19: aload_1
+        20: ldc           #7                  // String a5
+        22: ldc           #5                  // String b
+        24: invokevirtual #6                  // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        27: pop
+        28: getstatic     #8                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        31: aload_1
+        32: invokevirtual #9                  // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        35: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      36     0  args   [Ljava/lang/String;
+           10      26     1 value   Ljava/util/HashMap;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+           10      26     1 value   Ljava/util/HashMap&lt;Ljava/lang/String;Ljava/lang/String;&gt;;
+}
+</code></pre>
+</div>
+
+<p>在这个字节码里面，你可以看到常量池(Constant pool)，保存对应的常量。栈帧（LocalVariableTable），堆区还有计数器等等的内容,也可以更清晰的明白字节码增强技术的原理。</p>
+
+<h4 id="section-1">字节码加载</h4>
+
+<p>有一个比较响亮的，一般都会知道的机制：双亲委派机制。具体的源码是（rt.jar包中的java.lang.ClassLoader类中）：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>protected synchronized Class&lt;?&gt; loadClass(String name, boolean resolve)	throws ClassNotFoundException{
+	// First, check if the class has already been loaded
+	Class c = findLoadedClass(name);
+	if (c == null) {
+		try {
+			if (parent != null) {
+				c = parent.loadClass(name, false);
+			} else {
+				c = findBootstrapClassOrNull(name);
+			}
+		} catch (ClassNotFoundException e) {
+			// ClassNotFoundException thrown if class not found
+			// from the non-null parent class loader
+		}
+		if (c == null) {
+			// If still not found, then invoke findClass in order
+			// to find the class.
+			c = findClass(name);
+		}
+	}
+	if (resolve) {
+		resolveClass(c);
+	}
+	return c;
+}
+</code></pre>
+</div>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/36ae57bce251209d328c62172e0f0b74.png" alt="类加载图" /></p>
+
+<p>JVM预定义的三种类型类加载器：</p>
+
+<p>启动（Bootstrap）类加载器：是用本地代码实现的类装入器，它负责将 <java_runtime_home>/lib下面的类库加载到内存中（比如rt.jar）。由于引导类加载器涉及到虚拟机本地实现细节，开发者无法直接获取到启动类加载器的引用，所以不允许直接通过引用进行操作。</java_runtime_home></p>
+
+<p>标准扩展（Extension）类加载器：是由 Sun 的 ExtClassLoader（sun.misc.Launcher$ExtClassLoader）实现的。它负责将&lt; Java_Runtime_Home &gt;/lib/ext或者由系统变量 java.ext.dir指定位置中的类库加载到内存中。开发者可以直接使用标准扩展类加载器。</p>
+
+<p>系统（System）类加载器：是由 Sun 的 AppClassLoader（sun.misc.Launcher$AppClassLoader）实现的。它负责将系统类路径（CLASSPATH）中指定的类库加载到内存中。开发者可以直接使用系统类加载器。
+除了以上列举的三种类加载器，还有一种比较特殊的类型 — 线程上下文类加载器。</p>
+
+<p>双亲委派机制描述
+某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
+
+<p>两个思考：</p>
+
+<p>1.如果我们定义了一个：java.lang.String，会出现什么情况？能够加载到吗？怎么才能够加载到呢？</p>
+
+<p>测试代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public static void main(String[] args){
+		String value = new String();
+		value.repeate("ppp");
+	}
+
+错误代码：
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.SecurityException: Prohibited package name: java.lang
+</code></pre>
+</div>
+
+<p>2.类加载的过程是单线程的吗？如果使用了没有加载的类会出现什么情况？</p>
+
+<p>确实是单线程的模式，所以我们的单例模式可以使用静态内部类来实现。但是不能够在静态的类中加入过多的逻辑，因为如果加载过程过长的话，多线程使用这个类的时候，就可能出现：NoDefClassFind的错误了。</p>
+
+</section>
+
+
+
+<section class="meta">
+  <br/>
+  <br/>
+<span class="sub_pagination">
+  
+    <a class="sub_pagination-item newer" href="/2016/07/7/">上一篇&nbsp  servlet总结（一）到底servlet是什么？ <i class="fa fa-chain"></i></a>
+  
+  
+    <a class="sub_pagination-item newer" href="/2016/05/5/">下一篇 &nbsp 第五个周末-沉下心来 <i class="fa fa-share"></i></a>
+  
+  </span>
+  <br/>
+  <br/>
+</section>
+<!--<span class="author">
+  <a href="http://blog.sevenche.com">flybread</a> - 程序员，企业管理与互联网结合应用的爱好者，现就职于北京。
+</span>
+<br /> 
+</br>
+<span class="license">
+  Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+</span>
+
+<span class="categories">
+  in categories
+  
+  <a href="/categories/#反省,庸人不自扰" title="反省,庸人不自扰">反省,庸人不自扰</a>&nbsp;
+  
+</span>
+
+
+<span class="tags">
+  tagged with 
+  
+  <a href="/tags/#反省" title="反省">反省</a>&nbsp;
+  
+  <a href="/tags/#庸人不自扰" title="庸人不自扰">庸人不自扰</a>&nbsp;
+  
+</span>
+
+<span class="time">
+  <br/>
+  <time datetime="2016-06-12">2016-06-12</time>
+</span>
+!-->
+
+
+
+<section  class="comment">
+<!-- baidu JIA -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- end of baidu JIA -->
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"flyBread"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+</section>
+
+
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://flybread.github.io//2016/05/5/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://flybread.github.io//2016/07/7/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+
+</script>
+
+<style type="text/css">
+/*resize the big pic*/
+div.resized_image p {
+  margin: 2px;
+  margin-top: 0;
+  font-size: 8px;
+  /* Awesome icon from here: http://www.famfamfam.com/lab/icons/silk/ */
+  background: url(http://i242.photobucket.com/albums/ff244/9861_omikron/error.png) no-repeat;
+  padding-left: 20px;
+  color: #333;
+}
+</style>
+<script type="text/javascript">
+//resize the big pic
+$(window).load(function() {
+  (
+    function(maxht, maxwt, minht, minwt) {
+      var imgs = document.getElementsByTagName('img');
+      // Image resizing function
+      var resize_image = function(img, newht, newwt) {
+        img.height = newht;
+        img.width  = newwt;
+        $(img).wrap('<table><tr><td class="tborder"><div class="resized_image"><a href="' + img.src + '" target="_blank"></a></div></td></tr></table>');
+        $(img).parent().before('<p>NOTE: This image was resized. To view it full-size, click on the image.</p>');
+        //$(img).parent().after('<p style="text-align:right;background:none;margin:0;padding-right:3px">Image resizing script by <a href="http://aetus.net/217/programming/automatically-resize-large-images-with-javascript/">Aetus Designs</a>.</p>');
+      };
+      
+      for (var i = 0; i < imgs.length; i++) {
+        // Set a variable for the current image to make the code make more sense.
+        var img = imgs[i];
+        if (img.height > maxht || img.width > maxwt) {
+          // Use Ratios to constraint proportions.
+          var old_ratio = img.height / img.width;
+          var min_ratio = minht / minwt;
+          // If it can scale perfectly.
+          if (old_ratio === min_ratio) {
+            resize_image(img, minht, minwt);
+          } 
+          // We need to do some magic now.
+          else {
+            var newdim = [img.height, img.width];
+            // Sort out the height first.
+            newdim[0] = minht;
+            // The logic behind this is that if ratio = ht / wt, then wt = ht / ratio.
+            newdim[1] = newdim[0] / old_ratio;
+            // Do we still have to sort out the width?
+            if (newdim[1] > maxwt) {
+              // Just do what we did with the height
+              newdim[1] = minwt;
+              newdim[0] = newdim[1] * old_ratio;
+            }
+            // So yeah, resize the image
+            resize_image(img, newdim[0], newdim[1]);
+          }
+        }
+      }
+    }
+  )(780, 780, 780, 780);
+});
+</script>
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Free hosted at <a href="https://github.com/flyBread">Github</a> | Copyright 2014 - 2017
+		<!-- *** Please Keep bellow link for at least 6 months! Thanks！*** -->
+		<a href="http://flybread.github.io/">Template Maintained by flyBread</a>
+
+		| <span class="label label-info">2017-01-12 19:55:43 CST</span></small></p>
+    </footer>
+
+    </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'Coder-zhailzh@126.com', 'flyBread.github.io');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

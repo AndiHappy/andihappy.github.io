@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="flybread" />
+    <meta name="viewport" content="width=device-width"> 
+    <title>javaScript</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="./value.js"></script>
+  </head>
+  <body>
+  <!-- script的脚本一开始就开始执行了 -->
+  <hr/>
+  <p id="demo"> Test1：script 直接的打印出html的标签, 进入body 就开始运行了</p>
+  <button type="button" onclick=myFunction()>修改上面的文本值</button>
+  <hr/>
+
+   <hr/>
+   <p> Test2： 点击按钮的实践</p>
+  <button type="button" onclick=onclik()>点击这里</button>
+  <hr/>
+
+
+  <hr/>
+   <p> Tes3： 点击变化图标</p>
+   <img id="myimage" onclick="changeImage()" src="./img/eg_bulboff.gif"/>
+   <br/>
+  <hr/>
+
+<p>请输入数字。如果输入值不是数字，浏览器会弹出提示框。</p>
+<input id="input" type="text"/>
+<button type="button" onclick="check()">点击这里</button>
+  </body>
+</html>

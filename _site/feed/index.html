@@ -7,8 +7,29 @@
     <title>andihappy</title>
     <link href="http://andihappy.github.io//feed/" rel="self" />
     <link href="http://geeklu.com" />
-    <lastBuildDate>2017-01-12T21:54:33+08:00</lastBuildDate>
+    <lastBuildDate>2017-01-15T17:19:00+08:00</lastBuildDate>
     <webMaster>kejinlu@gmail.com</webMaster>
+    
+    <item>
+      <title>fighting</title>
+      <link href="http://andihappy.github.io//2017/01/02/"/>
+      <pubDate>2017-01-15T00:00:00+08:00</pubDate>
+      <author>andihappy</author>
+      <guid>http://andihappy.github.io//2017/01/02</guid>
+      <content:encoded><![CDATA[<blockquote>
+  <p>现在努力的你，未来的事情谁说得清楚呢？ 但你不努力，未来是怎样大概都知道了。</p>
+</blockquote>
+
+<p>我曾七次鄙视自己的灵魂—纪伯伦   <br />
+第一次 当它本可进取时，却故作谦卑   <br />
+第二次当它空虚时，用爱欲来填充   <br />
+第三次 在困难和容易之间，它选择了容易   <br />
+第四次 它犯了错，却借由别人也会犯错来宽慰自己   <br />
+第五次 它自由软弱，却把它认为是生命的坚韧   <br />
+第六次 当它鄙夷一张丑恶的嘴脸时，却不知那正是自己面具中的一副   <br />
+第七次 它侧身于生活的污泥中虽不甘心，却又畏首畏尾</p>
+]]></content:encoded>
+    </item>
     
     <item>
       <title>鸡血激励站</title>
@@ -972,158 +993,6 @@ Note that the general pseudo-code above does not assume that the valid solutions
 <span class="o">}</span>
 </code></pre>
 </div>
-]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>栈算法描述+代码实现</title>
-      <link href="http://andihappy.github.io//2016/09/25/"/>
-      <pubDate>2016-09-21T00:00:00+08:00</pubDate>
-      <author>andihappy</author>
-      <guid>http://andihappy.github.io//2016/09/25</guid>
-      <content:encoded><![CDATA[<blockquote>
-  <p>栈算法描述+代码实现</p>
-</blockquote>
-
-<p>栈对外提供的方法，比较的简单，也不多。出栈，入栈，取栈顶元素，新建栈。  <br />
-    1. pop   <br />
-    2. push   <br />
-    3. peek  <br />
-    4. search（Java的JDK中提供了这个方法）</p>
-
-<p>具体的实现的代码是：</p>
-
-<pre><code class="language-Java">/**
- * @author zhailz
- *
- * 时间：2016年9月26日 ### 上午8:41:22
- *
- * 栈的逻辑
- *
- */
-public class MyStack&lt;E&gt; {
-
-	protected Object[] elementData;
-	protected int elementCount;
-	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-	protected int capacityIncrement;
-	protected transient int modCount = 0;
-
-	public MyStack(int initialCapacity, int capacityIncrement) {
-		if (initialCapacity &lt; 0)
-			throw new IllegalArgumentException("Illegal Capacity: " + initialCapacity);
-		this.elementData = new Object[initialCapacity];
-		this.capacityIncrement = capacityIncrement;
-	}
-
-	public MyStack(int initialCapacity) {
-		this(initialCapacity, 0);
-	}
-
-	public MyStack() {
-		this(10);
-	}
-
-	/**
-	 * 增加元素
-	 */
-	public E push(E item) {
-		addElement(item);
-		return item;
-	}
-
-	public synchronized E pop() {
-		E obj;
-		int len = size();
-		obj = peek();
-		removeElementAt(len - 1);
-		return obj;
-	}
-
-	public synchronized void removeElementAt(int index) {
-		modCount++;
-		if (index &gt;= elementCount) {
-			throw new ArrayIndexOutOfBoundsException(index + " &gt;= " + elementCount);
-		} else if (index &lt; 0) {
-			throw new ArrayIndexOutOfBoundsException(index);
-		}
-		int j = elementCount - index - 1;
-		//数组的复制，这种复制的方法免除了循环的复制的方法
-		if (j &gt; 0) {
-			// index + 1 ：复制开始的位置
-			// index ：复制到的位置开始
-			// j 复制的长度
-			System.arraycopy(elementData, index + 1, elementData, index, j);
-		}
-		elementCount--;
-		elementData[elementCount] = null; /* to let gc do its work */
-	}
-
-	public synchronized int size() {
-		return elementCount;
-	}
-
-	public synchronized E peek() {
-		int len = size();
-
-		if (len == 0)
-			throw new EmptyStackException();
-		return elementAt(len - 1);
-	}
-
-	private synchronized E elementAt(int index) {
-		if (index &gt;= elementCount) {
-			throw new ArrayIndexOutOfBoundsException(index + " &gt;= " + elementCount);
-		}
-
-		return elementData(index);
-	}
-
-	@SuppressWarnings("unchecked")
-	private E elementData(int index) {
-		return (E) elementData[index];
-	}
-
-	public synchronized void addElement(E obj) {
-		modCount++;
-		ensureCapacityHelper(elementCount + 1);
-		elementData[elementCount++] = obj;
-	}
-
-	// 保证容量
-	private void ensureCapacityHelper(int minCapacity) {
-		if (minCapacity - elementData.length &gt; 0)
-			grow(minCapacity);
-	}
-
-	private void grow(int minCapacity) {
-		// overflow-conscious code
-		int oldCapacity = elementData.length;
-		//如果设置了增长的元素，每次的增长就按照设置的增长，没有的话，直接*2的增长
-		int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ? capacityIncrement : oldCapacity);
-		if (newCapacity - minCapacity &lt; 0)
-			newCapacity = minCapacity;
-		//超大的栈的时候，怎么处理
-		if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
-			newCapacity = hugeCapacity(minCapacity);
-		elementData = Arrays.copyOf(elementData, newCapacity);
-	}
-
-	private static int hugeCapacity(int minCapacity) {
-		if (minCapacity &lt; 0) // overflow
-			throw new OutOfMemoryError();
-		return (minCapacity &gt; MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
-	}
-
-	public static void main(String[] args) {
-		int[] a1 = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
-		int[] a2 = new int[5];
-		System.arraycopy(a1, 6, a2, 2, 2);
-		System.out.println(Arrays.toString(a2));
-	}
-
-}
-</code></pre>
 ]]></content:encoded>
     </item>
     

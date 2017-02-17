@@ -16,7 +16,7 @@ layout: page
   {% endif %}
 
 {% if postcategory != "hiddle" %}
-  <div class="content-block ng-scope">
+  <!-- <div class="content-block ng-scope">
     <div class="content-heading">
       <h2 class="title"><small>{{ post.title }}</small></h2>
       <div class="date"><time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time></div>
@@ -27,7 +27,12 @@ layout: page
       <a href="{{ post.url }}" class="read" >阅读全文</a>
       <div class="clear"></div>
     </div>
-  </div>
+  </div> -->
+
+  <li class="listing-item">
+  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+  <a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+  </li>
   {% endif %}
 {% endfor %}
 </ul>

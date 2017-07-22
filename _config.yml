@@ -42,9 +42,9 @@ timezone:      null
 title: Jekyll Theme
 description: Just another Jekyll theme design and code by zhanxin.info.
 keywords: Jekyll Theme
-url: http://andihappy.github.io
+url: https://andihappy.github.io
 feed: /atom.xml
-favicon: http://andihappy.github.io/images/favicon.png
+favicon: https://andihappy.github.io/images/favicon.png
 
 #Nav config
 nav:

@@ -1,8 +1,8 @@
 # Where things are
 source:       .
 destination:  ./_site
-plugins:      ./_plugins
-layouts:      ./_layouts
+plugins_dir:      ./_plugins
+layouts_dir:      ./_layouts
 paginate:     8
 
 # Handling Reading
@@ -42,7 +42,7 @@ timezone:      null
 title: Jekyll Theme
 description: Just another Jekyll theme design and code by zhanxin.info.
 keywords: Jekyll Theme
-url: http://pizn.github.io/kunka
+url: http://andihappy.github.io/kunka
 feed: /atom.xml
 favicon: http://jekyllrb.com/favicon.png
 
@@ -116,3 +116,6 @@ disqus:
 duoshuo:
   config: false
   id: zhanxin
+
+  # Gems
+gems: [jekyll-paginate]

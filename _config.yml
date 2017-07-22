@@ -42,15 +42,15 @@ timezone:      null
 title: Jekyll Theme
 description: Just another Jekyll theme design and code by zhanxin.info.
 keywords: Jekyll Theme
-url: http://andihappy.github.io/kunka
+url: http://andihappy.github.io/
 feed: /atom.xml
-favicon: http://jekyllrb.com/favicon.png
+favicon: http://andihappy.github.io/images/favicon.png
 
 #Nav config
 nav:
   - text: 首页
     url: /index.html
-  - text: 分类目录 
+  - text: 分类目录
     url: /categories.html
   - text: 文章归档
     url: /archives.html

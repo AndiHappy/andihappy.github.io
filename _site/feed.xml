@@ -5,9 +5,53 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 27 Jul 2017 15:55:15 +0800</pubDate>
-    <lastBuildDate>Thu, 27 Jul 2017 15:55:15 +0800</lastBuildDate>
+    <pubDate>Thu, 27 Jul 2017 16:24:08 +0800</pubDate>
+    <lastBuildDate>Thu, 27 Jul 2017 16:24:08 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>再次出发</title>
+        <description>&lt;p&gt;终于再次的出发，想今后写点东西。&lt;/p&gt;
+
+&lt;p&gt;这个博客的样式的基础，首先要感谢Hux，现阶段先使用这个样式，自己有时间了，在慢慢的修改，变为自己喜欢的。 
+每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
+一个月，甚至是一年前的了。常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。
+又闻：唯上智与下愚不移，中智必乱。很庆幸自己就是中智，很不幸如果自己懒惰或者再次的三心二意，那么自己也就是一个庸庸碌碌一辈子了，
+可再也体会不到生活的美好了。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
+
+&lt;p&gt;接下来说说搭建这个博客的技术细节。&lt;/p&gt;
+
+&lt;p&gt;正好之前就有关注过 &lt;a href=&quot;https://pages.github.com/&quot;&gt;GitHub Pages&lt;/a&gt; + &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; 
+快速 Building Blog 的技术方案，非常轻松时尚。&lt;/p&gt;
+
+&lt;p&gt;其优点非常明显：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Markdown&lt;/strong&gt; 带来的优雅写作体验&lt;/li&gt;
+  &lt;li&gt;非常熟悉的 Git workflow ，&lt;strong&gt;Git Commit 即 Blog Post&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;利用 GitHub Pages 的域名和免费无限空间，不用自己折腾主机
+    &lt;ul&gt;
+      &lt;li&gt;如果需要自定义域名，也只需要简单改改 DNS 加个 CNAME 就好了&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Jekyll 的自定制非常容易，基本就是个模版引擎&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Wed, 26 Jul 2017 20:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/1/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/1/</guid>
+        
+        <category>记录</category>
+        
+        
+        <category>日常记录</category>
+        
+      </item>
     
   </channel>
 </rss>

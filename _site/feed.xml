@@ -5,49 +5,9 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 27 Jul 2017 09:40:28 +0800</pubDate>
-    <lastBuildDate>Thu, 27 Jul 2017 09:40:28 +0800</lastBuildDate>
+    <pubDate>Thu, 27 Jul 2017 15:55:15 +0800</pubDate>
+    <lastBuildDate>Thu, 27 Jul 2017 15:55:15 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
-    
-      <item>
-        <title>Hello World</title>
-        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;写下前言，知道展示到某一个more的链接为止！！&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
-
-&lt;p&gt;接下来说说搭建这个博客的技术细节。&lt;/p&gt;
-
-&lt;p&gt;正好之前就有关注过 &lt;a href=&quot;https://pages.github.com/&quot;&gt;GitHub Pages&lt;/a&gt; + &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; 
-快速 Building Blog 的技术方案，非常轻松时尚。&lt;/p&gt;
-
-&lt;p&gt;其优点非常明显：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Markdown&lt;/strong&gt; 带来的优雅写作体验&lt;/li&gt;
-  &lt;li&gt;非常熟悉的 Git workflow ，&lt;strong&gt;Git Commit 即 Blog Post&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;利用 GitHub Pages 的域名和免费无限空间，不用自己折腾主机
-    &lt;ul&gt;
-      &lt;li&gt;如果需要自定义域名，也只需要简单改改 DNS 加个 CNAME 就好了&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Jekyll 的自定制非常容易，基本就是个模版引擎&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Thu, 29 Jan 2015 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%B4%BB%E5%8A%A81/2015/01/29/hello-20/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%B4%BB%E5%8A%A81/2015/01/29/hello-20/</guid>
-        
-        <category>生活</category>
-        
-        
-        <category>活动1</category>
-        
-      </item>
     
   </channel>
 </rss>

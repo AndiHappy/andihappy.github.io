@@ -48,10 +48,10 @@ kramdown:
 
 
 # Disqus settings
-disqus_username: hux
+disqus_username: https-andihappy-github-io-2
 
 # Netease setttings
-netease_comment: false
+netease_comment: true
 
 
 

@@ -5,14 +5,13 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 08 Aug 2017 20:02:37 +0800</pubDate>
-    <lastBuildDate>Tue, 08 Aug 2017 20:02:37 +0800</lastBuildDate>
+    <pubDate>Tue, 08 Aug 2017 20:44:58 +0800</pubDate>
+    <lastBuildDate>Tue, 08 Aug 2017 20:44:58 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
         <title>activiti和设计模式(1)</title>
-        <description>&lt;h2 id=&quot;activiti-源码和设计模式1&quot;&gt;activiti 源码和设计模式（1）&lt;/h2&gt;
-&lt;ol&gt;
+        <description>&lt;ol&gt;
   &lt;li&gt;activiti的源码的主要的架构&lt;/li&gt;
   &lt;li&gt;activiti前两层包含的设计模式&lt;/li&gt;
 &lt;/ol&gt;
@@ -25,15 +24,97 @@
 &lt;p&gt;至于为什么选择了从设计模式分析activiti，主要是想提供一个另外的角度，看看能不能学到点大神设计框架的精髓。&lt;/p&gt;
 
 &lt;!--more--&gt;
+
+&lt;p&gt;activiti的总体的架构，我们可以简单的从一张图上面，大致的了解：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/1e08b5a26c027da0e7da4fcec3365d66.png&quot; alt=&quot;activiti架构图&quot; /&gt;  &lt;br /&gt;
+我们首先分析，上面的两层，首先看代码：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EngineServices&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;RepositoryService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getRepositoryService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;RuntimeService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getRuntimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;FormService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getFormService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;TaskService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getTaskService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;HistoryService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getHistoryService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;IdentityService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getIdentityService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;ManagementService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getManagementService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;DynamicBpmnService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDynamicBpmnService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;ProcessEngineConfiguration&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getProcessEngineConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们可以从EngineServer得到各个服务的，官网上面具体的调用的案例也证明了这一点，例如启动一个流程的代码：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;RuntimeService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtimeService&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;processEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRuntimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;ProcessInstance&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;processInstance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startProcessInstanceByKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;vacationRequest&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们可以明显的看出来，这个就是一个封装，针对引擎提供各个功能的分模块的封装，从接口的代码可以看出来分为了：     &lt;br /&gt;
+针对资源的RepositoryService    &lt;br /&gt;
+实时运行的RuntimeService   &lt;br /&gt;
+表单的FormService    &lt;br /&gt;
+任务的TaskService    &lt;br /&gt;
+历史的HistoryService    &lt;br /&gt;
+。。。。。&lt;/p&gt;
+
+&lt;p&gt;这个就是设计模式中的： Facade Pattern&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;The facade pattern (also spelled façade) is a software design pattern commonly used with object-oriented programming. The name is an analogy to an architectural façade.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A facade is an object that provides a simplified interface to a larger body of code, such as a class library. A facade can&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;make a software library easier to use, understand and test, since the facade has convenient methods for common tasks,
+make the library more readable, for the same reason,
+reduce dependencies of outside code on the inner workings of a library, since most code uses the facade, thus allowing more flexibility in developing the system,
+wrap a poorly designed collection of APIs with a single well-designed API.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/f24a768c242537604d16c79aa854f14e.png&quot; alt=&quot;FacadePattern的示意图&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;按照GOF的说法，Facade模式的意图是：为了子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。&lt;/p&gt;
+
+&lt;p&gt;其实activi在组织API的时候，采用了两次的Facade Pattern，第一次把各个功能归类，形成一个个的服务，例如在RepositoryService中包含了：&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+  &lt;span class=&quot;n&quot;&gt;DeploymentBuilder&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeploymentCascade&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cascade&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setDeploymentCategory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;category&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDeploymentResourceNames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;InputStream&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getResourceAsStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;    
+  &lt;span class=&quot;err&quot;&gt;。。。。。。&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;针对流程定义的部署，查找删除等等操作，这样我们关于资源，或者流程定义的操作，就直接到RepositoryService中查找即可，这个是第一次的封装，也是第一次的Facade Pattern。&lt;/p&gt;
+
+&lt;p&gt;然后activiti 把归类好的服务，又进行了一次封装，统一归类到了EngineService，这样我们调用API的入口，就有了统一的入口，更加的方便快捷了，而且也为后面的spring的注入，提供了良好的基础。&lt;/p&gt;
+
+&lt;p&gt;采用Facade Pattern 二次归类是一种非常常见的归类API的方法。由于API过于繁杂，进行归类，在统一的一个类中进行展示，这样调用方在调用的时候，只需要根据想调用的功能到得到具体的server，找到具体的功能的API即可，寻找起来比较的方便，而且代码比较的清晰，明了。&lt;/p&gt;
 </description>
         <pubDate>Wed, 02 Aug 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti,%20desigen%20pattern/2017/08/02/springcloud-1/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti,%20desigen%20pattern/2017/08/02/springcloud-1/</guid>
+        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/</link>
+        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/</guid>
         
         <category>学习</category>
         
         
-        <category>activiti, desigen pattern</category>
+        <category>activiti-desigen-pattern</category>
         
       </item>
     

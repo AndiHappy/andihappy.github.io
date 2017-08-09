@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
+    <meta name="theme-color" content="#000000">
+    
+    <title>activiti和设计模式(2) - 飞翔的面包 | FlyBread Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit2/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">飞翔的面包</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">首页</a>
+                    </li>
+                    <li>
+                        <a href="/about/">关于</a>
+                    </li>
+                    <li>
+                        <a href="/tags">标签</a>
+                    </li>
+                    <li>
+                        <a href="/category/">分类</a>
+                    </li>
+                   <!--  
+                    <li>
+                        <a href="/category/">分类展示</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                     -->
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-2015.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        
+                    </div>
+                    <h1>activiti和设计模式(2)</h1>
+                    
+                    
+                    <h2 class="subheading">activiti中server的实现包含的设计模式</h2>
+                    
+                    <span class="meta">Posted by zhailzh on August 2, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<p>acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。</p>
+
+<!--more-->
+
+<p>activity服务的实现，很有自己的特色，show code:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="n">String</span> <span class="n">businessKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="n">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+
+  <span class="o">}</span>
+
+<span class="err">……………</span>
+</code></pre>
+</div>
+
+<p>这里面有两个很引人注意的地方：</p>
+
+<ol>
+  <li>commandExecutor 这个究竟是什么东西？</li>
+  <li>XXXXXCmd 的类型<br />
+  其实这都是 命令行模式 的实现类，不过activiti里面命令行模式和普通的命令行模式还有点差别的，具体的我们后面会说到。首先看命令行模式：</li>
+</ol>
+
+<blockquote>
+  <p>In object-oriented programming, the command pattern is a behavioral design pattern in which <strong>an object is used to encapsulate all information needed to perform an action or trigger an event at a later time.</strong> This information includes the method name, the object that owns the method and values for the method parameters.</p>
+</blockquote>
+
+<p>命令行主要针对的是一个动作或者触发的封装</p>
+
+<blockquote>
+  <p>Four terms always associated with the command pattern are command, receiver, invoker and client.</p>
+</blockquote>
+
+<blockquote>
+  <p>A command object knows about receiver and invokes a method of the receiver. Values for parameters of the receiver method are stored in the command,</p>
+</blockquote>
+
+<blockquote>
+  <p>the receiver object to execute these methods is also stored in the command object by aggregation. The receiver then does the work when the execute() method in command is called.</p>
+</blockquote>
+
+<blockquote>
+  <p>An invoker object knows how to execute a command, and optionally does bookkeeping about the command execution. The invoker does not know anything about a concrete command, it knows only about command interface.</p>
+</blockquote>
+
+<blockquote>
+  <p>Invoker object(s), command objects and receiver objects are held by a client object, the client decides which receiver objects it assigns to the command objects, and which commands it assigns to the invoker. The client decides which commands to execute at which points. To execute a command, it passes the command object to the invoker object.</p>
+</blockquote>
+
+<p>共有四部分：command 命令，receiver 接受方，invoker 执行方，client，客户端也就是调用方。</p>
+
+<blockquote>
+  <p>Using command objects makes it easier to construct general components that need to delegate, sequence or execute method calls at a time of their choosing without the need to know the class of the method or the method parameters. Using an invoker object allows bookkeeping about command executions to be conveniently performed, as well as implementing different modes for commands, which are managed by the invoker object, without the need for the client to be aware of the existence of bookkeeping or modes.</p>
+</blockquote>
+
+<p>我们来看一下，RunTimeService的实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceImpl</span> <span class="o">{</span>
+
+    <span class="kd">protected</span> <span class="n">ProcessEngineConfigurationImpl</span> <span class="n">processEngineConfiguration</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">ServiceImpl</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">ServiceImpl</span><span class="o">(</span><span class="n">ProcessEngineConfigurationImpl</span> <span class="n">processEngineConfiguration</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">processEngineConfiguration</span> <span class="o">=</span> <span class="n">processEngineConfiguration</span><span class="o">;</span>
+    <span class="o">}</span>
+
+  <span class="kd">protected</span> <span class="n">CommandExecutor</span> <span class="n">commandExecutor</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="n">CommandExecutor</span> <span class="nf">getCommandExecutor</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCommandExecutor</span><span class="o">(</span><span class="n">CommandExecutor</span> <span class="n">commandExecutor</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">commandExecutor</span> <span class="o">=</span> <span class="n">commandExecutor</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>我们可以分析命令行模式的四个角色：</p>
+
+<ol>
+  <li>客户端，Client ，即RuntimeServiceImpl，包含了命令行，接收方。确定了调用的入口：</li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  @Autowired
+  public RuntimeService runtimeService;
+  ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variablesObject);
+</code></pre>
+</div>
+
+<ol>
+  <li>命令行，这个比较的明显,StartProcessInstanceCmd类，就像上面所说的：<strong>Values for parameters of the receiver method are stored in the command</strong> 代码：</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;,</span> <span class="n">Serializable</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">String</span> <span class="n">processDefinitionId</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">String</span> <span class="n">businessKey</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">String</span> <span class="n">tenantId</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="n">String</span> <span class="n">processInstanceName</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">StartProcessInstanceCmd</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="n">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
+   <span class="n">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">processDefinitionKey</span> <span class="o">=</span> <span class="n">processDefinitionKey</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">processDefinitionId</span> <span class="o">=</span> <span class="n">processDefinitionId</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">businessKey</span> <span class="o">=</span> <span class="n">businessKey</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">variables</span> <span class="o">=</span> <span class="n">variables</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre>
+</div>
+
+<p>实现的是命令行接口：Command<T></T></p>
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>剩下两个是：Invoker，和receiver 不是很好的区分，但是我们从RuntimeServiceImpl里面的类名称，可以探究一二：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>protected CommandExecutor commandExecutor;
+</code></pre>
+</div>
+
+<p>可以看出来：ComandExecutor 是执行者，另外我们从receiver的定义中：</p>
+
+<p>the receiver object to execute these methods is also stored in the command object by aggregation. The receiver then does the work when the execute() method in command is called.</p>
+
+<p>也能够看出来：CommandContext 是 receiver .</p>
+
+<p>下面让我们梳理一下，具体的执行的过程，也说明一下activiti的命令行模式的特殊的地方：</p>
+
+<ol>
+  <li>准备工作：receiver已经在引擎中配置完毕了:</li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  // 初始化引擎的时候，初始化了CommandContextFactory工厂类
+  protected void initCommandContextFactory() {
+  if (commandContextFactory==null) {
+   commandContextFactory = new CommandContextFactory();
+  }
+  commandContextFactory.setProcessEngineConfiguration(this);
+  }
+  //在factory中，可以根据command直接的创建CommandContext
+  public CommandContext createCommandContext(Command&lt;?&gt; cmd) {
+  return new CommandContext(cmd, processEngineConfiguration);
+  }
+</code></pre>
+</div>
+
+<p>0.1 执行者也是在命令行初始化之前完成的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/** this will be initialized during the configurationComplete() */
+ protected CommandExecutor commandExecutor;
+
+ // 执行者的设计，就是一个链式拦截器
+ protected void initCommandExecutor() {
+    if (commandExecutor==null) {
+      CommandInterceptor first = initInterceptorChain(commandInterceptors);
+      commandExecutor = new CommandExecutorImpl(getDefaultCommandConfig(), first);
+    }
+  }
+</code></pre>
+</div>
+
+<p>所以现在只剩下，建立命令行了：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>new StartProcessInstanceCmd&lt;ProcessInstance&gt;(processDefinitionKey, null, null, null)
+</code></pre>
+</div>
+
+<p>具体的执行的过程是： 一个命令是怎么在 client,receiver,invoker 之间运转的，明天分析</p>
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/activiti-desigen-pattern/2017/08/02/activit1/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(1)">
+                        Previous<br>
+                        <span>activiti和设计模式(1)</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+                <!-- 网易云跟帖 评论框 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <!-- 网易云跟帖 评论框 end -->
+                
+            </div>
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				<!-- 
+                            
+        				
+                            
+        				 -->
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 网易云跟帖JS代码 start -->
+<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+<script>
+  var cloudTieConfig = {
+    url: document.location.href,
+    sourceId: "",
+    productKey: "de25fc98a6fe48b3bc8a7ae765da99a0",
+    target: "cloud-tie-wrapper"
+  };
+  var yunManualLoad = true;
+  Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+</script>
+<!-- 网易云跟帖JS代码 end -->
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "https-andihappy-github-io-2";
+    var disqus_identifier = "/activiti-desigen-pattern/2017/08/02/activit2";
+    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit2/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Theme modify by <a href="http://huangxuan.me">飞翔的面包</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=andihappy&repo=andihappy.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+        var P = $('div.post-container'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

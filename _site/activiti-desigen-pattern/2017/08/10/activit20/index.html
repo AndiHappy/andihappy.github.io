@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
+    <meta name="theme-color" content="#000000">
+    
+    <title>activiti和设计模式(2.1) - 飞翔的面包 | FlyBread Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit20/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">飞翔的面包</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">首页</a>
+                    </li>
+                    <li>
+                        <a href="/about/">关于</a>
+                    </li>
+                    <li>
+                        <a href="/tags">标签</a>
+                    </li>
+                    <li>
+                        <a href="/category/">分类</a>
+                    </li>
+                   <!--  
+                    <li>
+                        <a href="/category/">分类展示</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                     -->
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-2015.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        
+                    </div>
+                    <h1>activiti和设计模式(2.1)</h1>
+                    
+                    
+                    <h2 class="subheading">activiti的每一个Command执行过程中的设计模式</h2>
+                    
+                    <span class="meta">Posted by zhailzh on August 10, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<p>activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：<strong>Interpreter pattern</strong>.
+<!--more--></p>
+
+<p>首先是启动的代码：</p>
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//调用方：</span>
+<span class="n">ProcessInstance</span> <span class="n">ins</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceById</span><span class="o">(</span><span class="n">workFlowId</span><span class="o">,</span> <span class="n">formId</span><span class="o">,</span><span class="n">variablesObject</span><span class="o">);</span>      
+
+<span class="c1">//调用的入口：</span>
+<span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceById</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
+    <span class="n">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="kc">null</span><span class="o">,</span>
+        <span class="n">processDefinitionId</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+  <span class="o">}</span>
+</code></pre>
+</div>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/fab71e2707099d49e0c04456244c7258.png" alt="debug页面" /></p>
+
+<p>从图中可以看出：CommandExecutor 已经包含了执行所需要的全部的内容，我们看一下执行的代码:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>@Override
+ public &lt;T&gt; T execute(Command&lt;T&gt; command) {
+   return execute(defaultConfig, command);
+ }
+
+ @Override
+  public &lt;T&gt; T execute(CommandConfig config, Command&lt;T&gt; command) {
+    return first.execute(config, command);
+  }
+  //这里我们可以看到，执行的过程进入了某一个链中。
+</code></pre>
+</div>
+
+<p>这个链总共有三个类构成：    <br />
+org.activiti.engine.impl.interceptor.LogInterceptor     <br />
+org.activiti.engine.impl.interceptor.CommandContextInterceptor     <br />
+org.activiti.engine.impl.interceptor.CommandInvoker</p>
+
+<p>这三个类全部实现了接口：CommandInterceptor</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>public interface CommandInterceptor {
+
+  &lt;T&gt; T execute(CommandConfig config, Command&lt;T&gt; command);
+  CommandInterceptor getNext();
+  void setNext(CommandInterceptor next);
+}
+</code></pre>
+</div>
+
+<p>通过这个代码的 setNext方法，这三个类构成了一个执行链，在引擎初始化的时候，能够发现这个执行链构造和初始化的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>protected void initCommandInvoker() {
+  if (commandInvoker==null) {
+    commandInvoker = new CommandInvoker();//③
+  }
+}
+
+protected void initCommandInterceptors() {
+    if (commandInterceptors==null) {
+      commandInterceptors = new ArrayList&lt;CommandInterceptor&gt;();
+      if (customPreCommandInterceptors!=null) {
+        commandInterceptors.addAll(customPreCommandInterceptors);
+      }
+      commandInterceptors.addAll(getDefaultCommandInterceptors());
+      if (customPostCommandInterceptors!=null) {
+        commandInterceptors.addAll(customPostCommandInterceptors);
+      }
+      commandInterceptors.add(commandInvoker);
+    }
+  }
+
+protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInterceptors() {
+   List&lt;CommandInterceptor&gt; interceptors = new ArrayList&lt;CommandInterceptor&gt;();
+   interceptors.add(new LogInterceptor());//①
+
+   CommandInterceptor transactionInterceptor = createTransactionInterceptor();
+   if (transactionInterceptor != null) {
+     interceptors.add(transactionInterceptor);
+   }
+
+   interceptors.add(new CommandContextInterceptor(commandContextFactory, this));//②
+   return interceptors;
+ }
+
+//初始化这条链
+ protected CommandInterceptor initInterceptorChain(List&lt;CommandInterceptor&gt; chain) {
+    if (chain==null || chain.isEmpty()) {
+      throw new ActivitiException("invalid command interceptor chain configuration: "+chain);
+    }
+    for (int i = 0; i &lt; chain.size()-1; i++) {
+      chain.get(i).setNext( chain.get(i+1) );
+    }
+    return chain.get(0);
+  }
+
+  // commandExecutor 初始化完成
+  protected void initCommandExecutor() {
+     if (commandExecutor==null) {
+       CommandInterceptor first = initInterceptorChain(commandInterceptors);
+       commandExecutor = new CommandExecutorImpl(getDefaultCommandConfig(), first);
+     }
+   }
+
+</code></pre>
+</div>
+
+<p>这个三个拦截链都做了什么呢？第一个就是日志记录，虽然个人感觉比较的无聊，但是也可能是一个扩展的示例：LogInterceptor</p>
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="c1">// do nothing here if we cannot log</span>
+      <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"--- starting {} --------------------------------------------------------"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">());</span>
+    <span class="k">try</span> <span class="o">{</span>
+
+      <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"--- {} finished --------------------------------------------------------"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">());</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre>
+</div>
+
+<p>第二个链：CommandContextInterceptor 主要是构建命令运行的执行的环境：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">CommandContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">();</span>  
+   <span class="kt">boolean</span> <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="c1">// We need to check the exception, because the transaction can be in a rollback state,</span>
+   <span class="c1">// and some other command is being fired to compensate (eg. decrementing job retries)</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">config</span><span class="o">.</span><span class="na">isContextReusePossible</span><span class="o">()</span> <span class="o">||</span> <span class="n">context</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">context</span><span class="o">.</span><span class="na">getException</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+     <span class="n">context</span> <span class="o">=</span> <span class="n">commandContextFactory</span><span class="o">.</span><span class="na">createCommandContext</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>    	
+   <span class="o">}</span>  
+   <span class="k">else</span> <span class="o">{</span>
+     <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Valid context found. Reusing it for the current command '{}'"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getCanonicalName</span><span class="o">());</span>
+     <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="k">try</span> <span class="o">{</span>
+     <span class="c1">// Push on stack</span>
+     <span class="n">Context</span><span class="o">.</span><span class="na">setCommandContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+     <span class="n">Context</span><span class="o">.</span><span class="na">setProcessEngineConfiguration</span><span class="o">(</span><span class="n">processEngineConfiguration</span><span class="o">);</span>
+     <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+     <span class="n">context</span><span class="o">.</span><span class="na">exception</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+   <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+     <span class="k">try</span> <span class="o">{</span>
+       <span class="k">if</span> <span class="o">(!</span><span class="n">contextReused</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">context</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+       <span class="o">}</span>
+     <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+       <span class="c1">// Pop from stack</span>
+       <span class="n">Context</span><span class="o">.</span><span class="na">removeCommandContext</span><span class="o">();</span>
+       <span class="n">Context</span><span class="o">.</span><span class="na">removeProcessEngineConfiguration</span><span class="o">();</span>
+       <span class="n">Context</span><span class="o">.</span><span class="na">removeBpmnOverrideContext</span><span class="o">();</span>
+     <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+ <span class="o">}</span>
+</code></pre>
+</div>
+
+<p>从这个环境构造，可以看出来两个问题：</p>
+<ol>
+  <li>context的组织方式，是根据Command进行的，并且Context是通过stack进行组织的。</li>
+  <li>既然context是根据stack组织的，说明有压栈，出栈的操作，也就说明Command之间存在嵌套的可能性。</li>
+</ol>
+
+<p>第三个链：CommandInvoker 命令行的执行：</p>
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">());</span>
+  <span class="o">}</span>
+</code></pre>
+</div>
+
+<p>可以看到最终执行的过程，还是到了每一个的command类中，这也是符合预期的。此例中最终进入StartProcessInstanceCmd类中，执行代码:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">DeploymentManager</span> <span class="n">deploymentManager</span> <span class="o">=</span> <span class="n">commandContext</span>
+      <span class="o">.</span><span class="na">getProcessEngineConfiguration</span><span class="o">()</span>
+      <span class="o">.</span><span class="na">getDeploymentManager</span><span class="o">();</span>
+
+    <span class="c1">// Find the process definition</span>
+    <span class="n">ProcessDefinitionEntity</span> <span class="n">processDefinition</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">processDefinitionId</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">processDefinition</span> <span class="o">=</span> <span class="n">deploymentManager</span><span class="o">.</span><span class="na">findDeployedProcessDefinitionById</span><span class="o">(</span><span class="n">processDefinitionId</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="err">。。。。。。。。</span>
+    <span class="c1">// Start the process instance</span>
+    <span class="n">ExecutionEntity</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">processDefinition</span><span class="o">.</span><span class="na">createProcessInstance</span><span class="o">(</span><span class="n">businessKey</span><span class="o">);</span>
+		<span class="err">。。。。。。。。</span>
+    <span class="n">processInstance</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+
+    <span class="k">return</span> <span class="n">processInstance</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre>
+</div>
+
+<p>可以看出来这个是 Interpreter pattern 和 Command Pattern 联合使用的一种情况，就目的而言，试分析一二：     <br />
+总结来自：</p>
+
+<p>1）一个产品或者一个项目，很少是一个人开发出来的，大多都涉及到协同工作。但是既然是一个框架，那么总体上面的需要有一个规范，利于大家的开发，利于大家的协调。这个就是架构的意义所在。 有了具体的架构的约束，加入一些基础的组件，基本上能够把实现的大体的过程规划出来，这样这个框架的整体的风格也就确定了。就像Activiti做的这样，明确以Command作为基本开发模型，辅之以Event-Listener，这样编程风格的整体性得到了保证。</p>
+
+<p>2）使用命令模式和责任链的好处 职责分离，解耦。有了Command，各个Service从角色上说只是一些协调者或者控制者，不需要知道具体怎么做，他只是把任务交给了各个命令。便于封装每一个的功能</p>
+
+<p>3）解耦之后，随之带来的一个好处，就是扩展或者说灵活性的增加，我们可以把自己扩展的动作按照同样的方式，封装成一个一个的command，更加的便于理解和别人的使用。大大的增加activiti的生态。</p>
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/activiti-desigen-pattern/2017/08/08/activit2/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(2)">
+                        Previous<br>
+                        <span>activiti和设计模式(2)</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+                <!-- 网易云跟帖 评论框 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <!-- 网易云跟帖 评论框 end -->
+                
+            </div>
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				<!-- 
+                            
+        				
+                            
+        				 -->
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 网易云跟帖JS代码 start -->
+<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+<script>
+  var cloudTieConfig = {
+    url: document.location.href,
+    sourceId: "",
+    productKey: "de25fc98a6fe48b3bc8a7ae765da99a0",
+    target: "cloud-tie-wrapper"
+  };
+  var yunManualLoad = true;
+  Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+</script>
+<!-- 网易云跟帖JS代码 end -->
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "https-andihappy-github-io-2";
+    var disqus_identifier = "/activiti-desigen-pattern/2017/08/10/activit20";
+    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit20/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Theme modify by <a href="http://huangxuan.me">飞翔的面包</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=andihappy&repo=andihappy.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+        var P = $('div.post-container'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

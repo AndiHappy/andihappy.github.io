@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>再次出发 - 飞翔的面包 | FlyBread Blog</title>
+    <title>activiti和设计模式(3) - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/">
+    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit3/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#记录" title="记录">记录</a>
+                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>再次出发</h1>
+                    <h1>activiti和设计模式(3)</h1>
                     
                     
-                    <h2 class="subheading">每一次的出发都是信心满满，就是不知道能坚持多久</h2>
+                    <h2 class="subheading">activiti中核心业务的组织，主要是组合和继承关系的使用。</h2>
                     
-                    <span class="meta">Posted by zhailzh on July 26, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 10, 2017</span>
                 </div>
             </div>
         </div>
@@ -209,35 +209,184 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>终于再次的出发，想今后写点东西。</p>
+				<p>提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。</p>
 
 <!--more-->
 
-<h2 id="正文">正文</h2>
+<p>首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？</p>
 
-<p>这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   <br />
-自己有时间了，在慢慢的修改，变为自己喜欢的。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>BpmnXMLConverter converter = new BpmnXMLConverter();
 
-<p>每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。			
-又闻：唯上智与下愚不移，中智必乱。		
-很庆幸自己就是中智，很不幸如果自己懒惰或者再次的三心二意，那么自己也就是一个庸庸碌碌一辈子了，
-可再也体会不到生活的美好了。</p>
+bpmnModel = converter.convertToBpmnModel(streamSource, validateSchema, enableSafeBpmnXml, encoding);
+//使用fasterxml 来解析xml
+if (ELEMENT_DEFINITIONS.equals(xtr.getLocalName())) {
+    definitionsParser.parse(xtr, model);
+} else if (ELEMENT_RESOURCE.equals(xtr.getLocalName())) {
+resourceParser.parse(xtr, model);
+} else if (ELEMENT_SIGNAL.equals(xtr.getLocalName())) {
+signalParser.parse(xtr, model);
+} else if (ELEMENT_MESSAGE.equals(xtr.getLocalName())) {
+          messageParser.parse(xtr, model);
+}
 
+//具体针对各个BPMN规范的解析
+protected BpmnEdgeParser bpmnEdgeParser = new BpmnEdgeParser();
+protected BpmnShapeParser bpmnShapeParser = new BpmnShapeParser();
+protected DefinitionsParser definitionsParser = new DefinitionsParser();
+protected DocumentationParser documentationParser = new DocumentationParser();
+protected ExtensionElementsParser extensionElementsParser = new ExtensionElementsParser();
+protected ImportParser importParser = new ImportParser();
+protected InterfaceParser interfaceParser = new InterfaceParser();
+protected ItemDefinitionParser itemDefinitionParser = new ItemDefinitionParser();
+protected IOSpecificationParser ioSpecificationParser = new IOSpecificationParser();
+protected DataStoreParser dataStoreParser = new DataStoreParser();
+protected LaneParser laneParser = new LaneParser();
+protected MessageParser messageParser = new MessageParser();
+protected MessageFlowParser messageFlowParser = new MessageFlowParser();
+protected MultiInstanceParser multiInstanceParser = new MultiInstanceParser();
+protected ParticipantParser participantParser = new ParticipantParser();
+protected PotentialStarterParser potentialStarterParser = new PotentialStarterParser();
+protected ProcessParser processParser = new ProcessParser();
+protected ResourceParser resourceParser = new ResourceParser();
+protected SignalParser signalParser = new SignalParser();
+protected SubProcessParser subProcessParser = new SubProcessParser();
+</code></pre>
+</div>
+<p>我们最后看一下，BpmnModel的组成：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	protected Map&lt;String, List&lt;ExtensionAttribute&gt;&gt; definitionsAttributes =
+new LinkedHashMap\&lt;String, List&lt;ExtensionAttribute&gt;\&gt;();
+	protected List&lt;Process&gt; processes = new ArrayList&lt;Process&gt;();
+	protected Map&lt;String, GraphicInfo&gt; locationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
+	protected Map&lt;String, GraphicInfo&gt; labelLocationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
+	protected Map&lt;String, List&lt;GraphicInfo&gt;&gt; flowLocationMap = new LinkedHashMap&lt;String, List&lt;GraphicInfo&gt;&gt;();
+	protected List&lt;Signal&gt; signals = new ArrayList&lt;Signal&gt;();
+	protected Map&lt;String, MessageFlow&gt; messageFlowMap = new LinkedHashMap&lt;String, MessageFlow&gt;();
+	protected Map&lt;String, Message&gt; messageMap = new LinkedHashMap&lt;String, Message&gt;();
+	protected Map&lt;String, String&gt; errorMap = new LinkedHashMap&lt;String, String&gt;();
+	protected Map&lt;String, ItemDefinition&gt; itemDefinitionMap = new LinkedHashMap&lt;String, ItemDefinition&gt;();
+	protected Map&lt;String, DataStore&gt; dataStoreMap = new LinkedHashMap&lt;String, DataStore&gt;();
+	protected List&lt;Pool&gt; pools = new ArrayList&lt;Pool&gt;();
+	protected List&lt;Import&gt; imports = new ArrayList&lt;Import&gt;();
+	protected List&lt;Interface&gt; interfaces = new ArrayList&lt;Interface&gt;();
+	protected List&lt;Artifact&gt; globalArtifacts = new ArrayList&lt;Artifact&gt;();
+	protected List&lt;Resource&gt; resources = new ArrayList&lt;Resource&gt;();
+	protected Map&lt;String, String&gt; namespaceMap = new LinkedHashMap&lt;String, String&gt;();
+	protected String targetNamespace;
+	protected List&lt;String&gt; userTaskFormTypes;
+	protected List&lt;String&gt; startEventFormTypes;
+	protected int nextFlowIdCounter = 1;
+</code></pre>
+</div>
+<p>你会发现，在调试的时候老出现的Activity之类的并没有出现，那么BpmnModel和ProcessDefinitionImpl是怎么关联起来的呢？同样是在BpmnParse中，可以发现：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public BpmnParse execute() {
+  。。。。。。
+// Validation successfull (or no validation)
+createImports();
+createItemDefinitions();
+createMessages();
+createOperations();
+transformProcessDefinitions();
+  。。。。。。
+}
+</code></pre>
+</div>
+<p>具体的操作是在：org.activiti.engine.impl.bpmn.parser.BpmnParse.processDI()中，主要的代码是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  // Parse diagram interchange information
+        ProcessDefinitionEntity processDefinition = getProcessDefinition(process.getId());
+        if (processDefinition != null) {
+          processDefinition.setGraphicalNotationDefined(true);
+          for (String shapeId : bpmnModel.getLocationMap().keySet()) {
+            if (processDefinition.findActivity(shapeId) != null) {
+              createBPMNShape(shapeId, bpmnModel.getGraphicInfo(shapeId), processDefinition);
+            }
+          }
+
+          for (String edgeId : bpmnModel.getFlowLocationMap().keySet()) {
+            if (bpmnModel.getFlowElement(edgeId) != null) {
+              createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId));
+            }
+          }
+</code></pre>
+</div>
+
+<p>从这里我们可以看出来：BpmnModel只要支持的Bpmn的规范，支持的是xml中定义的各个图形的对象，以及对象的属性。ProcessDefinitionEntity主要的是流程运转的过程中的对象，这点从类的命名上面也可以看出来。</p>
+
+<p>这里想说的是设计模式：组合模式（Composite pattern），以及解析过程中的工程模式（Abstract factory pattern）。</p>
+
+<p>组合模式：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>首先是每一个元素都会含有实行，在activiti中属性抽象为一个接口，
+所有的基础元素都会实现该接口：			
+org.activiti.bpmn.model.HasExtensionAttribute     
+
+public abstract class BaseElement implements HasExtensionAttributes
+public abstract class FlowElement extends BaseElement implements HasExecutionListeners
+
+BaseElement 被设计为抽象的类型，这个感觉基础元素，不会出现在xml定义中，也就符合了抽象类：不能被实例化的特性。
+
+BaseElement的继承的体系，如附件所示：
+
+其中我们比较属性的Usertask，Process的集成体系也如附件中体现：
+</code></pre>
+</div>
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/51a6be4efb9206b6a0326456e01e1a7f.png" alt="baseElement的集成体系" />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/9eed650ff7bdedacf4170f0d064bff0c.png" alt="flowElement继承体系" /></p>
+
+<p>单独的把FlowElement列出来，是因为抽象类FlowElement中有一个比较好玩的，也是比较重要的方法：
+ public abstract FlowElement clone();</p>
+
+<p>可以直接的克隆一个元素出来，在后期的扩展中，这个是比较有用的一个方法，在继承体系，所有的元素都实现了这个方法，也就为了后面的扩展提供了基础。</p>
+
+<p>上面的BpmnModel就是典型的组合模式，但是在继承体系中，也是含有组合的，最容易理解的莫过于子流程的定义了，即：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class SubProcess extends Activity implements FlowElementsContainer {
+  protected List&lt;FlowElement&gt; flowElementList = new ArrayList&lt;FlowElement&gt;();
+  protected List&lt;Artifact&gt; artifactList = new ArrayList&lt;Artifact&gt;();
+  protected List&lt;ValuedDataObject&gt; dataObjects = new ArrayList&lt;ValuedDataObject&gt;();
+</code></pre>
+</div>
+
+<p>在BPMN的解析的过程中，使用到了抽象工厂的类：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public interface BpmnParseFactory {
+  BpmnParse createBpmnParse(BpmnParser bpmnParser);
+}
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public class DefaultBpmnParseFactory implements BpmnParseFactory {
+
+  public BpmnParse createBpmnParse(BpmnParser bpmnParser) {
+    return new BpmnParse(bpmnParser);
+  }
+}
+</code></pre>
+</div>
+<p>使用的情况：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>if (bpmnParseFactory == null) {
+      bpmnParseFactory = new DefaultBpmnParseFactory();
+    }
+</code></pre>
+</div>
+
+<p>个人感觉有点过度设计的感觉，但是为了扩展，也是无可厚非。</p>
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/activiti-desigen-pattern/2017/08/02/activit1/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(1)">
-                        Next<br>
-                        <span>activiti和设计模式(1)</span>
+                    <li class="previous">
+                        <a href="/activiti-desigen-pattern/2017/08/10/activit20/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(2.1)">
+                        Previous<br>
+                        <span>activiti和设计模式(2.1)</span>
                         </a>
                     </li>
+                    
                     
                 </ul>
 
@@ -329,8 +478,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine";
-    var disqus_url = "http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/";
+    var disqus_identifier = "/activiti-desigen-pattern/2017/08/10/activit3";
+    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit3/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

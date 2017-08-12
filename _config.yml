@@ -56,7 +56,7 @@ netease_comment: true
 
 
 # Analytics settings
-# Baidu Analytics 
+# Baidu Analytics
 # ba_track_id: [your track id]
 
 # Google Analytics
@@ -86,5 +86,6 @@ chrome-tab-theme-color: "#000000"
 service-worker: true
 excerpt_separator: <!--more-->
 
+featured-condition-size: 1
 
 # Friends

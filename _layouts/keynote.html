@@ -105,11 +105,11 @@ layout: default
                 col-md-10 col-md-offset-1 ">
 
                 <!-- Featured Tags -->
-                {% if site.featured-tags %}
+               <!--  {% if site.featured-tags %} -->
                 <section>
                     <hr class="hidden-sm hidden-xs">
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
-                    <div class="tags">
+                    <!-- <div class="tags">
                         {% for tag in site.tags %}
                             {% if tag[1].size > {{site.featured-condition-size}} %}
                                 <a href="/tags/#{{ tag[0] }}" title="{{ tag[0] }}" rel="{{ tag[1].size }}">
@@ -117,9 +117,9 @@ layout: default
                                 </a>
                             {% endif %}
                         {% endfor %}
-                    </div>
+                    </div> -->
                 </section>
-                {% endif %}
+               <!--  {% endif %} -->
 
                 <!-- Friends Blog -->
                 {% if site.friends %}

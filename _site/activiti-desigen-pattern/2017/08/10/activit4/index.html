@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>activiti和设计模式(3) - 飞翔的面包 | FlyBread Blog</title>
+    <title>activiti和设计模式(4) - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit3/">
+    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,10 +186,10 @@
                         <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>activiti和设计模式(3)</h1>
+                    <h1>activiti和设计模式(4)</h1>
                     
                     
-                    <h2 class="subheading">activiti中核心业务的组织，主要是组合和继承关系的使用。</h2>
+                    <h2 class="subheading">activiti中核心业务的组织，</h2>
                     
                     <span class="meta">Posted by zhailzh on August 10, 2017</span>
                 </div>
@@ -209,175 +209,128 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
-中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。</p>
+				<p>此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。</p>
 
 <!--more-->
+<ol>
+  <li>首先是找到流程的定义：</li>
+</ol>
 
-<p>首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>BpmnXMLConverter converter = new BpmnXMLConverter();
-
-bpmnModel = converter.convertToBpmnModel(streamSource, validateSchema, enableSafeBpmnXml, encoding);
-//使用fasterxml 来解析xml
-if (ELEMENT_DEFINITIONS.equals(xtr.getLocalName())) {
-    definitionsParser.parse(xtr, model);
-} else if (ELEMENT_RESOURCE.equals(xtr.getLocalName())) {
-resourceParser.parse(xtr, model);
-} else if (ELEMENT_SIGNAL.equals(xtr.getLocalName())) {
-signalParser.parse(xtr, model);
-} else if (ELEMENT_MESSAGE.equals(xtr.getLocalName())) {
-          messageParser.parse(xtr, model);
-}
-
-//具体针对各个BPMN规范的解析
-protected BpmnEdgeParser bpmnEdgeParser = new BpmnEdgeParser();
-protected BpmnShapeParser bpmnShapeParser = new BpmnShapeParser();
-protected DefinitionsParser definitionsParser = new DefinitionsParser();
-protected DocumentationParser documentationParser = new DocumentationParser();
-protected ExtensionElementsParser extensionElementsParser = new ExtensionElementsParser();
-protected ImportParser importParser = new ImportParser();
-protected InterfaceParser interfaceParser = new InterfaceParser();
-protected ItemDefinitionParser itemDefinitionParser = new ItemDefinitionParser();
-protected IOSpecificationParser ioSpecificationParser = new IOSpecificationParser();
-protected DataStoreParser dataStoreParser = new DataStoreParser();
-protected LaneParser laneParser = new LaneParser();
-protected MessageParser messageParser = new MessageParser();
-protected MessageFlowParser messageFlowParser = new MessageFlowParser();
-protected MultiInstanceParser multiInstanceParser = new MultiInstanceParser();
-protected ParticipantParser participantParser = new ParticipantParser();
-protected PotentialStarterParser potentialStarterParser = new PotentialStarterParser();
-protected ProcessParser processParser = new ProcessParser();
-protected ResourceParser resourceParser = new ResourceParser();
-protected SignalParser signalParser = new SignalParser();
-protected SubProcessParser subProcessParser = new SubProcessParser();
-</code></pre>
-</div>
-<p>我们最后看一下，BpmnModel的组成：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>	protected Map&lt;String, List&lt;ExtensionAttribute&gt;&gt; definitionsAttributes =
-new LinkedHashMap\&lt;String, List&lt;ExtensionAttribute&gt;\&gt;();
-	protected List&lt;Process&gt; processes = new ArrayList&lt;Process&gt;();
-	protected Map&lt;String, GraphicInfo&gt; locationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
-	protected Map&lt;String, GraphicInfo&gt; labelLocationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
-	protected Map&lt;String, List&lt;GraphicInfo&gt;&gt; flowLocationMap = new LinkedHashMap&lt;String, List&lt;GraphicInfo&gt;&gt;();
-	protected List&lt;Signal&gt; signals = new ArrayList&lt;Signal&gt;();
-	protected Map&lt;String, MessageFlow&gt; messageFlowMap = new LinkedHashMap&lt;String, MessageFlow&gt;();
-	protected Map&lt;String, Message&gt; messageMap = new LinkedHashMap&lt;String, Message&gt;();
-	protected Map&lt;String, String&gt; errorMap = new LinkedHashMap&lt;String, String&gt;();
-	protected Map&lt;String, ItemDefinition&gt; itemDefinitionMap = new LinkedHashMap&lt;String, ItemDefinition&gt;();
-	protected Map&lt;String, DataStore&gt; dataStoreMap = new LinkedHashMap&lt;String, DataStore&gt;();
-	protected List&lt;Pool&gt; pools = new ArrayList&lt;Pool&gt;();
-	protected List&lt;Import&gt; imports = new ArrayList&lt;Import&gt;();
-	protected List&lt;Interface&gt; interfaces = new ArrayList&lt;Interface&gt;();
-	protected List&lt;Artifact&gt; globalArtifacts = new ArrayList&lt;Artifact&gt;();
-	protected List&lt;Resource&gt; resources = new ArrayList&lt;Resource&gt;();
-	protected Map&lt;String, String&gt; namespaceMap = new LinkedHashMap&lt;String, String&gt;();
-	protected String targetNamespace;
-	protected List&lt;String&gt; userTaskFormTypes;
-	protected List&lt;String&gt; startEventFormTypes;
-	protected int nextFlowIdCounter = 1;
-</code></pre>
-</div>
-<p>你会发现，在调试的时候老出现的Activity之类的并没有出现，那么BpmnModel和ProcessDefinitionImpl是怎么关联起来的呢？同样是在BpmnParse中，可以发现：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>public BpmnParse execute() {
-  。。。。。。
-// Validation successfull (or no validation)
-createImports();
-createItemDefinitions();
-createMessages();
-createOperations();
-transformProcessDefinitions();
-  。。。。。。
-}
-</code></pre>
-</div>
-<p>具体的操作是在：org.activiti.engine.impl.bpmn.parser.BpmnParse.processDI()中，主要的代码是：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>  // Parse diagram interchange information
-        ProcessDefinitionEntity processDefinition = getProcessDefinition(process.getId());
-        if (processDefinition != null) {
-          processDefinition.setGraphicalNotationDefined(true);
-          for (String shapeId : bpmnModel.getLocationMap().keySet()) {
-            if (processDefinition.findActivity(shapeId) != null) {
-              createBPMNShape(shapeId, bpmnModel.getGraphicInfo(shapeId), processDefinition);
-            }
-          }
-
-          for (String edgeId : bpmnModel.getFlowLocationMap().keySet()) {
-            if (bpmnModel.getFlowElement(edgeId) != null) {
-              createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId));
-            }
-          }
+<div class="highlighter-rouge"><pre class="highlight"><code>ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
+workFlowId).processDefinitionTenantId(orgId).singleResult();
 </code></pre>
 </div>
 
-<p>从这里我们可以看出来：BpmnModel只要支持的Bpmn的规范，支持的是xml中定义的各个图形的对象，以及对象的属性。ProcessDefinitionEntity主要的是流程运转的过程中的对象，这点从类的命名上面也可以看出来。</p>
+<p>有一个需要注意的问题，这种情况下查找的流程定义，ProcessDefinition没有进行解析彻底，只是数据库字段的映射。</p>
 
-<p>这里想说的是设计模式：组合模式（Composite pattern），以及解析过程中的工程模式（Abstract factory pattern）。</p>
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/400f810b94ca69ac6171fc1c29bed382.png" alt="" /></p>
 
-<p>组合模式：</p>
+<ol>
+  <li>启动流程实例：</li>
+</ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>首先是每一个元素都会含有实行，在activiti中属性抽象为一个接口，
-所有的基础元素都会实现该接口：			
-org.activiti.bpmn.model.HasExtensionAttribute     
-
-public abstract class BaseElement implements HasExtensionAttributes
-public abstract class FlowElement extends BaseElement implements HasExecutionListeners
-
-BaseElement 被设计为抽象的类型，这个感觉基础元素，不会出现在xml定义中，也就符合了抽象类：不能被实例化的特性。
-
-BaseElement的继承的体系，如附件所示：
-
-其中我们比较属性的Usertask，Process的集成体系也如附件中体现：
-</code></pre>
-</div>
-<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/51a6be4efb9206b6a0326456e01e1a7f.png" alt="baseElement的集成体系" />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/9eed650ff7bdedacf4170f0d064bff0c.png" alt="flowElement继承体系" /></p>
-
-<p>单独的把FlowElement列出来，是因为抽象类FlowElement中有一个比较好玩的，也是比较重要的方法：
- public abstract FlowElement clone();</p>
-
-<p>可以直接的克隆一个元素出来，在后期的扩展中，这个是比较有用的一个方法，在继承体系，所有的元素都实现了这个方法，也就为了后面的扩展提供了基础。</p>
-
-<p>上面的BpmnModel就是典型的组合模式，但是在继承体系中，也是含有组合的，最容易理解的莫过于子流程的定义了，即：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>public class SubProcess extends Activity implements FlowElementsContainer {
-  protected List&lt;FlowElement&gt; flowElementList = new ArrayList&lt;FlowElement&gt;();
-  protected List&lt;Artifact&gt; artifactList = new ArrayList&lt;Artifact&gt;();
-  protected List&lt;ValuedDataObject&gt; dataObjects = new ArrayList&lt;ValuedDataObject&gt;();
+<div class="highlighter-rouge"><pre class="highlight"><code> ProcessInstance ins = runtimeService
+ .startProcessInstanceById(workFlowId, formId,variablesObject);
 </code></pre>
 </div>
 
-<p>在BPMN的解析的过程中，使用到了抽象工厂的类：</p>
+<p>进入命令行：StartProcessInstanceCmd<ProcessInstance>，返回的是一个ProcessInstance,具体的代码是：</ProcessInstance></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface BpmnParseFactory {
-  BpmnParse createBpmnParse(BpmnParser bpmnParser);
-}   
+<div class="highlighter-rouge"><pre class="highlight"><code>public ProcessInstance execute(CommandContext commandContext) {
+// 找到部署管理器DeploymentManager
+  DeploymentManager deploymentManager = commandContext
+    .getProcessEngineConfiguration()//说明①
+    .getDeploymentManager();
 
-</code></pre>
-</div>
+  // Find the process definition
+  ProcessDefinitionEntity processDefinition = null;
+  if (processDefinitionId != null) {
+    processDefinition = deploymentManager.findDeployedProcessDefinitionById(processDefinitionId);//说明②
+  } 
+  // .......
+  //这个地方省略了依靠其他参变量寻找processDefiniton的代码
 
-<p>默认的工程类：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>public class DefaultBpmnParseFactory implements BpmnParseFactory {
-
-  public BpmnParse createBpmnParse(BpmnParser bpmnParser) {
-    return new BpmnParse(bpmnParser);
+  // Do not start process a process instance if the process definition is suspended
+  if (deploymentManager.isProcessDefinitionSuspended(processDefinition.getId())) {
+    throw new ActivitiException("Cannot start process instance. Process definition "
+            + processDefinition.getName() + " (id = " + processDefinition.getId() + ") is suspended");
   }
+
+  // Start the process instance
+  ExecutionEntity processInstance = processDefinition.createProcessInstance(businessKey);//说明③
+
+  // now set the variables passed into the start command
+  initializeVariables(processInstance);//说明④
+
+  // now set processInstance name
+  if (processInstanceName != null) {
+    processInstance.setName(processInstanceName);
+    commandContext.getHistoryManager().recordProcessInstanceNameChange(processInstance.getId(), processInstanceName);
+  }
+
+  processInstance.start();//说明⑤
+
+  return processInstance;
 }
+
 </code></pre>
 </div>
-<p>使用的情况：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>if (bpmnParseFactory == null) {
-      bpmnParseFactory = new DefaultBpmnParseFactory();
+<p>说明①：CommandContext,以及processEngineConfiguration 都是单例的模式，只不过从代码上面看，和一般的单例模式不太一样，找不到private的构造方法。</p>
+
+<p>说明②: 通过部署管理器寻找流程定义的过程：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>org.activiti.engine.impl.persistence.deploy.DeploymentManager.
+findDeployedProcessDefinitionById(String)
+</code></pre>
+</div>
+<p>首先是到缓存中查找，如果缓存中没有，再到数据库中查找，这个缓存的大小，可以在引擎的配置文件中配置：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;property name="processDefinitionCacheLimit" value="10" /&gt;
+</code></pre>
+</div>
+<p>通过数据库查找的流程定义依然是没有完全解析的，具体的全部的解析的过程在什么地方呢？</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
+    String processDefinitionId = processDefinition.getId();
+    String deploymentId = processDefinition.getDeploymentId();
+    processDefinition = processDefinitionCache.get(processDefinitionId);
+    if (processDefinition==null) {
+      DeploymentEntity deployment = Context
+        .getCommandContext()
+        .getDeploymentEntityManager()
+        .findDeploymentById(deploymentId);//在这个地方拿到具体的流程定义文件，resource红有值了。
+      deployment.setNew(false);
+      deploy(deployment, null);//具体的解析发生在这个过程中，activitis填充了解析的内容
+      processDefinition = processDefinitionCache.get(processDefinitionId);
+      
+      if (processDefinition==null) {
+        throw new ActivitiException("deployment '"+deploymentId+"' didn't put process definition '"+processDefinitionId+"' in the cache");
+      }
+    }
+    return processDefinition;
+  }
+</code></pre>
+</div>
+
+<p>说明③：activiti中没有ProcessInstanceEntity，有的只是ExecutionEntity。创建ExecutionEntity的时候，把历史数据全部的创建，并且插入了数据库中。</p>
+
+<p>另外还有流程实例创建的事件广播出去，这个使用的是观察者模式，这个模式在activiti中可谓是到处都是，主要用于事件的通知，订阅之类的。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// 实例数据创建
+ Context.getCommandContext().getHistoryManager()
+      .recordProcessInstanceStart(processInstance);
+      
+      // 事件广播
+      if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+                ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processInstance));
     }
 </code></pre>
 </div>
+<p>说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。</p>
 
-<p>个人感觉有点过度设计的感觉，但是为了扩展，也是无可厚非。</p>
+<p>说明⑤：进入状态机的设计模式</p>
 
 
 
@@ -386,19 +339,12 @@ BaseElement的继承的体系，如附件所示：
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/activiti-desigen-pattern/2017/08/10/activit20/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(2.1)">
+                        <a href="/activiti-desigen-pattern/2017/08/10/activit3/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(3)">
                         Previous<br>
-                        <span>activiti和设计模式(2.1)</span>
+                        <span>activiti和设计模式(3)</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/activiti-desigen-pattern/2017/08/10/activit4/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(4)">
-                        Next<br>
-                        <span>activiti和设计模式(4)</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -489,8 +435,8 @@ BaseElement的继承的体系，如附件所示：
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/activiti-desigen-pattern/2017/08/10/activit3";
-    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit3/";
+    var disqus_identifier = "/activiti-desigen-pattern/2017/08/10/activit4";
+    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

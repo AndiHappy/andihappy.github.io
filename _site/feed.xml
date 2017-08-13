@@ -5,13 +5,151 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 12 Aug 2017 11:19:58 +0800</pubDate>
-    <lastBuildDate>Sat, 12 Aug 2017 11:19:58 +0800</lastBuildDate>
+    <pubDate>Sun, 13 Aug 2017 20:02:13 +0800</pubDate>
+    <lastBuildDate>Sun, 13 Aug 2017 20:02:13 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
+        <title>activiti和设计模式(4)</title>
+        <description>&lt;p&gt;此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。&lt;/p&gt;
+
+&lt;!--more--&gt;
+&lt;ol&gt;
+  &lt;li&gt;首先是找到流程的定义：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
+workFlowId).processDefinitionTenantId(orgId).singleResult();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;有一个需要注意的问题，这种情况下查找的流程定义，ProcessDefinition没有进行解析彻底，只是数据库字段的映射。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/400f810b94ca69ac6171fc1c29bed382.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;启动流程实例：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ProcessInstance ins = runtimeService
+ .startProcessInstanceById(workFlowId, formId,variablesObject);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;进入命令行：StartProcessInstanceCmd&lt;ProcessInstance&gt;，返回的是一个ProcessInstance,具体的代码是：&lt;/ProcessInstance&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ProcessInstance execute(CommandContext commandContext) {
+// 找到部署管理器DeploymentManager
+  DeploymentManager deploymentManager = commandContext
+    .getProcessEngineConfiguration()//说明①
+    .getDeploymentManager();
+
+  // Find the process definition
+  ProcessDefinitionEntity processDefinition = null;
+  if (processDefinitionId != null) {
+    processDefinition = deploymentManager.findDeployedProcessDefinitionById(processDefinitionId);//说明②
+  } 
+  // .......
+  //这个地方省略了依靠其他参变量寻找processDefiniton的代码
+
+  // Do not start process a process instance if the process definition is suspended
+  if (deploymentManager.isProcessDefinitionSuspended(processDefinition.getId())) {
+    throw new ActivitiException(&quot;Cannot start process instance. Process definition &quot;
+            + processDefinition.getName() + &quot; (id = &quot; + processDefinition.getId() + &quot;) is suspended&quot;);
+  }
+
+  // Start the process instance
+  ExecutionEntity processInstance = processDefinition.createProcessInstance(businessKey);//说明③
+
+  // now set the variables passed into the start command
+  initializeVariables(processInstance);//说明④
+
+  // now set processInstance name
+  if (processInstanceName != null) {
+    processInstance.setName(processInstanceName);
+    commandContext.getHistoryManager().recordProcessInstanceNameChange(processInstance.getId(), processInstanceName);
+  }
+
+  processInstance.start();//说明⑤
+
+  return processInstance;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;说明①：CommandContext,以及processEngineConfiguration 都是单例的模式，只不过从代码上面看，和一般的单例模式不太一样，找不到private的构造方法。&lt;/p&gt;
+
+&lt;p&gt;说明②: 通过部署管理器寻找流程定义的过程：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;org.activiti.engine.impl.persistence.deploy.DeploymentManager.
+findDeployedProcessDefinitionById(String)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;首先是到缓存中查找，如果缓存中没有，再到数据库中查找，这个缓存的大小，可以在引擎的配置文件中配置：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;property name=&quot;processDefinitionCacheLimit&quot; value=&quot;10&quot; /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;通过数据库查找的流程定义依然是没有完全解析的，具体的全部的解析的过程在什么地方呢？&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
+    String processDefinitionId = processDefinition.getId();
+    String deploymentId = processDefinition.getDeploymentId();
+    processDefinition = processDefinitionCache.get(processDefinitionId);
+    if (processDefinition==null) {
+      DeploymentEntity deployment = Context
+        .getCommandContext()
+        .getDeploymentEntityManager()
+        .findDeploymentById(deploymentId);//在这个地方拿到具体的流程定义文件，resource红有值了。
+      deployment.setNew(false);
+      deploy(deployment, null);//具体的解析发生在这个过程中，activitis填充了解析的内容
+      processDefinition = processDefinitionCache.get(processDefinitionId);
+      
+      if (processDefinition==null) {
+        throw new ActivitiException(&quot;deployment '&quot;+deploymentId+&quot;' didn't put process definition '&quot;+processDefinitionId+&quot;' in the cache&quot;);
+      }
+    }
+    return processDefinition;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;说明③：activiti中没有ProcessInstanceEntity，有的只是ExecutionEntity。创建ExecutionEntity的时候，把历史数据全部的创建，并且插入了数据库中。&lt;/p&gt;
+
+&lt;p&gt;另外还有流程实例创建的事件广播出去，这个使用的是观察者模式，这个模式在activiti中可谓是到处都是，主要用于事件的通知，订阅之类的。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 实例数据创建
+ Context.getCommandContext().getHistoryManager()
+      .recordProcessInstanceStart(processInstance);
+      
+      // 事件广播
+      if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+                ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processInstance));
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。&lt;/p&gt;
+
+&lt;p&gt;说明⑤：进入状态机的设计模式&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 10 Aug 2017 21:00:00 +0800</pubDate>
+        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/</link>
+        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>activiti-desigen-pattern</category>
+        
+      </item>
+    
+      <item>
         <title>activiti和设计模式(3)</title>
-        <description>&lt;p&gt;提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。&lt;/p&gt;
+        <description>&lt;p&gt;提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
+中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -155,9 +293,12 @@ BaseElement的继承的体系，如附件所示：
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface BpmnParseFactory {
   BpmnParse createBpmnParse(BpmnParser bpmnParser);
-}
+}   
+
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;默认的工程类：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class DefaultBpmnParseFactory implements BpmnParseFactory {
 
@@ -176,6 +317,7 @@ BaseElement的继承的体系，如附件所示：
 &lt;/div&gt;
 
 &lt;p&gt;个人感觉有点过度设计的感觉，但是为了扩展，也是无可厚非。&lt;/p&gt;
+
 </description>
         <pubDate>Thu, 10 Aug 2017 21:00:00 +0800</pubDate>
         <link>http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit3/</link>

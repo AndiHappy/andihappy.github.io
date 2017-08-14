@@ -5,9 +5,184 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 13 Aug 2017 20:02:13 +0800</pubDate>
-    <lastBuildDate>Sun, 13 Aug 2017 20:02:13 +0800</lastBuildDate>
+    <pubDate>Mon, 14 Aug 2017 11:40:26 +0800</pubDate>
+    <lastBuildDate>Mon, 14 Aug 2017 11:40:26 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>activiti和设计模式(5)</title>
+        <description>&lt;p&gt;此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;首先我们还是看代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+           ActivitiEventBuilder.createEntityEvent(
+           ActivitiEventType.ENTITY_CREATED, processInstance
+           ));
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;在看一下观察者模式说明：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;The observer pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;subject,observers 这是观察者和被观察者两个角色，构成这个模式的主题&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It is mainly used to implement distributed event handling systems, in “event driven” software. Most modern languages such as Java and C# have built in “event” constructs which implement the observer pattern components, for easy programming and short code.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The observer pattern is also a key part in the familiar model–view–controller (MVC) architectural pattern.[1] The observer pattern is implemented in numerous programming libraries and systems, including almost all GUI toolkits.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;这个设计模式很通用，从JDK里面支持的Event构造就知道了。&lt;/p&gt;
+
+&lt;p&gt;我们看一下主要的支持的框架的Interface：  &lt;br /&gt;
+主题的框架，实现增加（删除）观察者，通知观察者等。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivitiEventDispatcher {
+   void addEventListener(ActivitiEventListener listenerToAdd);
+   void addEventListener(ActivitiEventListener listenerToAdd, ActivitiEventType... types);
+   void removeEventListener(ActivitiEventListener listenerToRemove);
+   void dispatchEvent(ActivitiEvent event);
+   void setEnabled(boolean enabled);
+   boolean isEnabled();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;这个会在引擎初始化的时候，初始化该接口对应的实现类：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void initEventDispatcher() {
+  	if(this.eventDispatcher == null) {
+  		this.eventDispatcher = new ActivitiEventDispatcherImpl();
+  	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;这个实现类中也有一个比较有意思的点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher
+   //该类的成员变量
+	protected ActivitiEventSupport eventSupport;
+	protected boolean enabled = true;
+
+public class ActivitiEventSupport
+  //该类的成员变量，以及构造函数
+	protected List&amp;lt;ActivitiEventListener&amp;gt; eventListeners;
+	protected Map&amp;lt;ActivitiEventType, List&amp;lt;ActivitiEventListener&amp;gt;&amp;gt; typedListeners;
+	public ActivitiEventSupport() {
+		eventListeners = new CopyOnWriteArrayList&amp;lt;ActivitiEventListener&amp;gt;();//有意思的点①
+		typedListeners = new HashMap&amp;lt;ActivitiEventType, List&amp;lt;ActivitiEventListener&amp;gt;&amp;gt;();
+	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;说明有意思的点①：为什么是CopyOnWriteArrayList？&lt;/p&gt;
+
+&lt;p&gt;CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。&lt;/p&gt;
+
+&lt;p&gt;　在使用CopyOnWriteArrayList之前，我们先阅读其源码了解下它是如何实现的。以下代码是向CopyOnWriteArrayList中add方法的实现（向CopyOnWriteArrayList里添加元素），可以发现在添加的时候是需要加锁的，否则多线程写的时候会Copy出N个副本出来。
+　
+　&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param e element to be appended to this list
+     * @return {@code true} (as specified by {@link Collection#add})
+     */
+    public boolean add(E e) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Object[] elements = getArray();
+            int len = elements.length;
+            Object[] newElements = Arrays.copyOf(elements, len + 1);
+            newElements[len] = e;
+            setArray(newElements);
+            return true;
+        } finally {
+            lock.unlock();
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;但是CopyOnWriteArrayList 在读的时候是不加锁的：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E get(int index) {
+        return get(getArray(), index);
+    }
+    private E get(Object[] a, int index) {
+        return (E) a[index];
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;这也就导致了CopyOnWriteArrayList的APIDOC所说的那样：This is ordinarily too costly, but may be more efficient than alternatives when traversal operations vastly outnumber mutations, and is useful when you cannot or don’t want to synchronize traversals, yet need to preclude interference among concurrent threads.&lt;/p&gt;
+
+&lt;p&gt;所以：CopyOnWrite并发容器用于读多写少的并发场景。比如白名单，黑名单，商品类目的访问和更新场景。
+在Activiti引擎中的场景可谓是恰到好处，因为在引擎中的CopyOnWrite的存储的内容是：ActivitiEventListener，都是需要事先定义好的，比如：流程启动的时候需要做哪些事情，流程结束的时候需要做哪些事情，这些需要自定义扩展逻辑的时候，都应该在引擎加载的时候完成ActivitiEventListener的定义，所以使用CopyOnWrite恰恰好！&lt;/p&gt;
+
+&lt;p&gt;观察者模式中的观察者接口：需要监听的事件，以及监听消息的后续逻辑失败了，是否返回异常的接口&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivitiEventListener {
+
+	/**
+	 * Called when an event has been fired
+	 * @param event the event
+	 */
+	void onEvent(ActivitiEvent event);
+
+	/**
+	 * @return whether or not the current operation should fail when this listeners execution
+	 * throws an exception.
+	 */
+	boolean isFailOnException();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;具体的调用逻辑在ActivitiEventSupport中：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void dispatchEvent(ActivitiEvent event, ActivitiEventListener listener) {
+		try {
+			listener.onEvent(event);
+		} catch (Throwable t) {
+			if (listener.isFailOnException()) {
+				throw new ActivitiException(&quot;Exception while executing event-listener&quot;, t);
+			} else {
+				// Ignore the exception and continue notifying remaining listeners. The
+				// listener
+				// explicitly states that the exception should not bubble up
+				LOG.warn(&quot;Exception while executing event-listener, which was ignored&quot;, t);
+			}
+		}
+	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;具体的事件的封装，也没有使用JDK的event支持类，activiti自己封装的ActivitiEventImpl&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ActivitiEventImpl implements ActivitiEvent
+	protected ActivitiEventType type;
+	protected String executionId;
+	protected String processInstanceId;
+	protected String processDefinitionId;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;感谢：http://ifeve.com/java-copy-on-write/&lt;/p&gt;
+</description>
+        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activit5/</link>
+        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activit5/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>activiti-desigen-pattern</category>
+        
+      </item>
     
       <item>
         <title>activiti和设计模式(4)</title>
@@ -48,7 +223,7 @@ workFlowId).processDefinitionTenantId(orgId).singleResult();
   ProcessDefinitionEntity processDefinition = null;
   if (processDefinitionId != null) {
     processDefinition = deploymentManager.findDeployedProcessDefinitionById(processDefinitionId);//说明②
-  } 
+  }
   // .......
   //这个地方省略了依靠其他参变量寻找processDefiniton的代码
 
@@ -105,7 +280,7 @@ findDeployedProcessDefinitionById(String)
       deployment.setNew(false);
       deploy(deployment, null);//具体的解析发生在这个过程中，activitis填充了解析的内容
       processDefinition = processDefinitionCache.get(processDefinitionId);
-      
+
       if (processDefinition==null) {
         throw new ActivitiException(&quot;deployment '&quot;+deploymentId+&quot;' didn't put process definition '&quot;+processDefinitionId+&quot;' in the cache&quot;);
       }
@@ -122,7 +297,7 @@ findDeployedProcessDefinitionById(String)
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 实例数据创建
  Context.getCommandContext().getHistoryManager()
       .recordProcessInstanceStart(processInstance);
-      
+
       // 事件广播
       if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
         Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
@@ -133,7 +308,6 @@ findDeployedProcessDefinitionById(String)
 &lt;p&gt;说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。&lt;/p&gt;
 
 &lt;p&gt;说明⑤：进入状态机的设计模式&lt;/p&gt;
-
 </description>
         <pubDate>Thu, 10 Aug 2017 21:00:00 +0800</pubDate>
         <link>http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/</link>

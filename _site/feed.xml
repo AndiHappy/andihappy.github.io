@@ -5,13 +5,492 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 14 Aug 2017 20:12:24 +0800</pubDate>
-    <lastBuildDate>Mon, 14 Aug 2017 20:12:24 +0800</lastBuildDate>
+    <pubDate>Wed, 16 Aug 2017 15:37:26 +0800</pubDate>
+    <lastBuildDate>Wed, 16 Aug 2017 15:37:26 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
+        <title>activiti和设计模式(7)</title>
+        <description>&lt;p&gt;一个具体的流程启动以后，具体流程示意图：   &lt;br /&gt;
+&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png&quot; alt=&quot;简单会签流程示意图&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;追踪流程的运转的情况，找到好玩的代码。  &lt;br /&gt;
+&lt;!--more--&gt;
+根据状态机的跳转的动作：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们看到第一个的开始节点的执行：      &lt;br /&gt;
+&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/ed93f1f1941a9f0feba1f9c1b123b15b.png&quot; alt=&quot;开始节点的执行&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class NoneStartEventActivityBehavior extends FlowNodeActivityBehavior {
+
+  // Nothing to see here.
+  // The default behaviour of the BpmnActivity is exactly what
+  // a none start event should be doing.
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;实现的在FlowNodeActivityBehavior中&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
+
+ /**
+  * Default behaviour: just leave the activity with no extra functionality.
+  */
+ public void execute(ActivityExecution execution) throws Exception {
+   leave(execution);
+ }
+
+ /**
+  * Default way of leaving a BPMN 2.0 activity: evaluate the conditions on the
+  * outgoing sequence flow and take those that evaluate to true.
+  */
+ protected void leave(ActivityExecution execution) {
+   bpmnActivityBehavior.performDefaultOutgoingBehavior(execution);
+ }
+
+ protected void leaveIgnoreConditions(ActivityExecution activityContext) {
+   bpmnActivityBehavior.performIgnoreConditionsOutgoingBehavior(activityContext);
+ }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;默认的bpmnActivityBehavior沿着默认的线达到下一个节点，是吗？&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void performOutgoingBehavior(ActivityExecution execution,
+         boolean checkConditions, boolean throwExceptionIfExecutionStuck, List&amp;lt;ActivityExecution&amp;gt; reusableExecutions) {
+
+   if (log.isDebugEnabled()) {
+     log.debug(&quot;Leaving activity '{}'&quot;, execution.getActivity().getId());
+   }
+
+   String defaultSequenceFlow = (String) execution.getActivity().getProperty(&quot;default&quot;);//说明①
+   List&amp;lt;PvmTransition&amp;gt; transitionsToTake = new ArrayList&amp;lt;PvmTransition&amp;gt;();
+
+   List&amp;lt;PvmTransition&amp;gt; outgoingTransitions = execution.getActivity().getOutgoingTransitions();
+   for (PvmTransition outgoingTransition : outgoingTransitions) {
+     Expression skipExpression = outgoingTransition.getSkipExpression();
+    //如果不是蹦跳的skipExpression
+     if (!SkipExpressionUtil.isSkipExpressionEnabled(execution, skipExpression)) {
+       // 没有默认线或者出去的线不是默认线
+       if (defaultSequenceFlow == null || !outgoingTransition.getId().equals(defaultSequenceFlow)) {
+         Condition condition = (Condition) outgoingTransition.getProperty(BpmnParse.PROPERTYNAME_CONDITION);
+         //线上没有条件或者，限定了不检查线上条件，或者线上条件符合要求
+         if (condition == null || !checkConditions || condition.evaluate(outgoingTransition.getId(), execution)) {
+           transitionsToTake.add(outgoingTransition);
+         }
+       }
+
+     } else if (SkipExpressionUtil.shouldSkipFlowElement(execution, skipExpression)){
+       transitionsToTake.add(outgoingTransition);
+     }
+   }
+   //说明②
+   if (transitionsToTake.size() == 1) {
+     //只有一条线的时候，直接的走take逻辑
+     execution.take(transitionsToTake.get(0));
+   } else if (transitionsToTake.size() &amp;gt;= 1) {
+     //有多条线的时候
+     execution.inactivate();
+     if (reusableExecutions == null || reusableExecutions.isEmpty()) {
+       execution.takeAll(transitionsToTake, Arrays.asList(execution));
+     } else {
+       execution.takeAll(transitionsToTake, reusableExecutions);
+     }
+
+   } else {
+    //没有满足条件出去的线，如果有默认的线
+     if (defaultSequenceFlow != null) {
+       PvmTransition defaultTransition = execution.getActivity().findOutgoingTransition(defaultSequenceFlow);
+       if (defaultTransition != null) {
+         execution.take(defaultTransition);
+       } else {
+         throw new ActivitiException(&quot;Default sequence flow '&quot; + defaultSequenceFlow + &quot;' could not be not found&quot;);
+       }
+     } else {
+       //如果有补偿事件
+       Object isForCompensation = execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION);
+       if(isForCompensation != null &amp;amp;&amp;amp; (Boolean) isForCompensation) {
+         if (execution instanceof ExecutionEntity) {
+           Context.getCommandContext().getHistoryManager().recordActivityEnd((ExecutionEntity) execution);
+         }
+         InterpretableExecution parentExecution = (InterpretableExecution) execution.getParent();
+         ((InterpretableExecution)execution).remove();
+         parentExecution.signal(&quot;compensationDone&quot;, null);
+
+       } else {
+         //暂停了，抛出错误
+         if (log.isDebugEnabled()) {
+           log.debug(&quot;No outgoing sequence flow found for {}. Ending execution.&quot;, execution.getActivity().getId());
+         }
+         execution.end();
+
+         if (throwExceptionIfExecutionStuck) {
+           throw new ActivitiException(&quot;No outgoing sequence flow of the inclusive gateway '&quot; + execution.getActivity().getId()
+                 + &quot;' could be selected for continuing the process&quot;);
+         }
+       }
+
+     }
+   }
+ }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;流程定义节点之间的转移，是先找到满足条件的离开的线：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void take(PvmTransition transition) {
+  	take(transition, true);
+  }
+
+  public void take(PvmTransition transition, boolean fireActivityCompletionEvent) {
+
+  	if (fireActivityCompletionEvent) {
+	  	fireActivityCompletedEvent();
+  	}
+
+    if (this.transition!=null) {
+      throw new PvmException(&quot;already taking a transition&quot;);
+    }
+    if (transition==null) {
+      throw new PvmException(&quot;transition is null&quot;);
+    }
+    setActivity((ActivityImpl)transition.getSource());
+    setTransition((TransitionImpl) transition);
+    performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_END);
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;说的转移，只是同一个ExecutionEntity里面的 Activity修改了，Transition修改了，然后开始执行：TRANSITION_NOTIFY_LISTENER_END.  但是和我们想象的不一样，这里设置的Activiti是Transition的Source，也就是“刚刚执行结束”的活动定义：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/ea742aca518a53df8dbeb1f64c8c42c6.png&quot; alt=&quot;Execution设置activity&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
+||
+TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;执行的过程：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public void execute(InterpretableExecution execution) {
+    ScopeImpl scope = getScope(execution);
+    List&amp;lt;ExecutionListener&amp;gt; exectionListeners = scope.getExecutionListeners(getEventName());
+    int executionListenerIndex = execution.getExecutionListenerIndex();
+    
+    if (exectionListeners.size()&amp;gt;executionListenerIndex) {
+      execution.setEventName(getEventName());
+      execution.setEventSource(scope);
+      ExecutionListener listener = exectionListeners.get(executionListenerIndex);
+      try {
+        listener.notify(execution);
+      } catch (RuntimeException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new PvmException(&quot;couldn't execute event listener : &quot;+e.getMessage(), e);
+      }
+      execution.setExecutionListenerIndex(executionListenerIndex+1);
+      execution.performOperation(this);//说明①
+
+    } else {
+      execution.setExecutionListenerIndex(0);
+      execution.setEventName(null);
+      execution.setEventSource(null);
+      eventNotificationsCompleted(execution);
+    }
+  }
+  
+  @Override
+  protected void eventNotificationsCompleted(InterpretableExecution execution) {
+    execution.performOperation(TRANSITION_DESTROY_SCOPE);
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;说明①: 这个是一个循环调用的，为了循环的发送监听事件
+现在运行到了：TRANSITION_DESTROY_SCOPE&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;||
+TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
+public class AtomicOperationTransitionDestroyScope implements AtomicOperation
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;说明：TRANSITION_DESTROY_SCOPE直接实现了接口，没有像TRANSITION_NOTIFY_LISTENER_END一样，在抽象类的基础方面实现。这可能也是为什么有了接口，还有抽象类的原因？&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void execute(InterpretableExecution execution) {
+    InterpretableExecution propagatingExecution = null;
+
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+    // if this transition is crossing a scope boundary
+    if (activity.isScope()) {//当前的任务是否是一个包含的活动节点
+      
+      InterpretableExecution parentScopeInstance = null;
+      // if this is a concurrent execution crossing a scope boundary
+      if (execution.isConcurrent() &amp;amp;&amp;amp; !execution.isScope()) {
+        // first remove the execution from the current root
+        InterpretableExecution concurrentRoot = (InterpretableExecution) execution.getParent();
+        parentScopeInstance = (InterpretableExecution) execution.getParent().getParent();
+
+        log.debug(&quot;moving concurrent {} one scope up under {}&quot;, execution, parentScopeInstance);
+        List&amp;lt;InterpretableExecution&amp;gt; parentScopeInstanceExecutions = (List&amp;lt;InterpretableExecution&amp;gt;) parentScopeInstance.getExecutions();
+        List&amp;lt;InterpretableExecution&amp;gt; concurrentRootExecutions = (List&amp;lt;InterpretableExecution&amp;gt;) concurrentRoot.getExecutions();
+        // if the parent scope had only one single scope child
+        if (parentScopeInstanceExecutions.size()==1) {
+          // it now becomes a concurrent execution
+          parentScopeInstanceExecutions.get(0).setConcurrent(true);
+        }
+        
+        concurrentRootExecutions.remove(execution);
+        parentScopeInstanceExecutions.add(execution);
+        execution.setParent(parentScopeInstance);
+        execution.setActivity(activity);
+        propagatingExecution = execution;
+        
+        // if there is only a single concurrent execution left
+        // in the concurrent root, auto-prune it.  meaning, the 
+        // last concurrent child execution data should be cloned into
+        // the concurrent root.   
+        if (concurrentRootExecutions.size()==1) {
+          InterpretableExecution lastConcurrent = concurrentRootExecutions.get(0);
+          if (lastConcurrent.isScope()) {
+            lastConcurrent.setConcurrent(false);
+            
+          } else {
+            log.debug(&quot;merging last concurrent {} into concurrent root {}&quot;, lastConcurrent, concurrentRoot);
+            
+            // We can't just merge the data of the lastConcurrent into the concurrentRoot.
+            // This is because the concurrent root might be in a takeAll-loop.  So the 
+            // concurrent execution is the one that will be receiving the take
+            concurrentRoot.setActivity((ActivityImpl) lastConcurrent.getActivity());
+            concurrentRoot.setActive(lastConcurrent.isActive());
+            lastConcurrent.setReplacedBy(concurrentRoot);
+            lastConcurrent.remove();
+          }
+        }
+
+      } else if (execution.isConcurrent() &amp;amp;&amp;amp; execution.isScope()) {
+        log.debug(&quot;scoped concurrent {} becomes concurrent and remains under {}&quot;, execution, execution.getParent());
+
+        // TODO!
+        execution.destroy();
+        propagatingExecution = execution;
+        
+      } else {
+        propagatingExecution = (InterpretableExecution) execution.getParent();
+        propagatingExecution.setActivity((ActivityImpl) execution.getActivity());
+        propagatingExecution.setTransition(execution.getTransition());
+        propagatingExecution.setActive(true);
+        log.debug(&quot;destroy scope: scoped {} continues as parent scope {}&quot;, execution, propagatingExecution);
+        execution.destroy();
+        execution.remove();
+      }
+      
+    } else {
+      propagatingExecution = execution;
+    }
+    
+    // if there is another scope element that is ended
+    // 父级别的元素，普通元素的父元素是流程定义ProcessDefinition
+    ScopeImpl nextOuterScopeElement = activity.getParent();
+    TransitionImpl transition = propagatingExecution.getTransition();
+    // 目标节点
+    ActivityImpl destination = transition.getDestination();
+    //判断目标节点是否在父节点中，如果不在（考虑到子流程结束后的下一个元素是子流程以外的元素了）
+    if (transitionLeavesNextOuterScope(nextOuterScopeElement, destination)) {
+      propagatingExecution.setActivity((ActivityImpl) nextOuterScopeElement);
+      //再次进入：TRANSITION_NOTIFY_LISTENER_END
+      propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_END);
+    } else {
+    //进入：TRANSITION_NOTIFY_LISTENER_TAKE
+      propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_TAKE);
+    }
+  }
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;从最后的逻辑，我们可以看到一个循环：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
+||
+TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
+||
+TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
+||
+TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情况就是再次的循环一次）
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;TRANSITION_NOTIFY_LISTENER_TAKE 这个就是对应线的逻辑了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;执行逻辑：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+  public void execute(InterpretableExecution execution) {
+    TransitionImpl transition = execution.getTransition();
+    
+    List&amp;lt;ExecutionListener&amp;gt; executionListeners = transition.getExecutionListeners();
+    int executionListenerIndex = execution.getExecutionListenerIndex();
+    
+    if (executionListeners.size()&amp;gt;executionListenerIndex) {
+      execution.setEventName(org.activiti.engine.impl.pvm.PvmEvent.EVENTNAME_TAKE);
+      execution.setEventSource(transition);
+      ExecutionListener listener = executionListeners.get(executionListenerIndex);
+      try {
+        listener.notify(execution);
+      } catch (RuntimeException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new PvmException(&quot;couldn't execute event listener : &quot;+e.getMessage(), e);
+      }
+      execution.setExecutionListenerIndex(executionListenerIndex+1);
+      execution.performOperation(this);
+      //上面的这部分逻辑和抽象类里面的逻辑基本的一样
+    } else {
+    	if (log.isDebugEnabled()) {
+    		log.debug(&quot;{} takes transition {}&quot;, execution, transition);
+    	}
+      execution.setExecutionListenerIndex(0);
+      execution.setEventName(null);
+      execution.setEventSource(null);
+
+      ActivityImpl activity = (ActivityImpl) execution.getActivity();
+      ActivityImpl nextScope = findNextScope(activity.getParent(), transition.getDestination());
+      execution.setActivity(nextScope);//到这里ExecutionEntity的activity才再次的修改，但是Transition并没有修改
+      
+      // Firing event that transition is being taken     	。。。。。。。。      
+      execution.performOperation(TRANSITION_CREATE_SCOPE);
+    }
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;然后就到了：TRANSITION_CREATE_SCOPE&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;执行逻辑：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void execute(InterpretableExecution execution) {
+    InterpretableExecution propagatingExecution = null;
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+    if (activity.isScope()) {//activity扩展自Scope
+      // 重新创建了一个Execution，称之为： propagatingExecution
+      // 该propagatingExecution的Transition仍然是：(startevent1)--flow1--&amp;gt;(usertask1)
+      //并不是Null
+      propagatingExecution = (InterpretableExecution) execution.createExecution();
+      propagatingExecution.setActivity(activity);
+      propagatingExecution.setTransition(execution.getTransition());
+      
+      execution.setTransition(null);
+      execution.setActivity(null);
+      execution.setActive(false);
+      // Execution的activity，Transition全部都是null
+      log.debug(&quot;create scope: parent {} continues as execution {}&quot;, execution, propagatingExecution);
+      propagatingExecution.initialize();
+
+    } else {
+      propagatingExecution = execution;
+    }
+   propagatingExecution.performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_START);
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;到了：AtomicOperation.TRANSITION_NOTIFY_LISTENER_START       &lt;br /&gt;
+public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventAtomicOperation   &lt;br /&gt;
+扩展自抽象类：AbstractEventAtomicOperation    具体的执行的过程是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  @Override
+  protected void eventNotificationsCompleted(InterpretableExecution execution) {
+    TransitionImpl transition = execution.getTransition();
+    ActivityImpl destination = null;
+    if(transition == null) { // this is null after async cont. -&amp;gt; transition is not stored in execution
+      destination = (ActivityImpl) execution.getActivity();
+    } else {
+      destination = transition.getDestination();
+    }    
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+    if (activity!=destination) {
+      ActivityImpl nextScope = AtomicOperationTransitionNotifyListenerTake.findNextScope(activity, destination);
+      execution.setActivity(nextScope);
+      //进入了scope，创建scope
+      execution.performOperation(TRANSITION_CREATE_SCOPE);
+    } else {
+      //在这个地方设置了Transition为null
+      execution.setTransition(null);
+      //终于设置了目标activity
+      execution.setActivity(destination);
+      execution.performOperation(ACTIVITY_EXECUTE);
+    }
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;所以总体的循环就是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUTE（执行） = new AtomicOperationActivityExecute();
+||
+TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
+||
+TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
+||
+TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情况就是再次的循环一次）
+||
+TRANSITION_CREATE_SCOPE（创建） = new AtomicOperationTransitionCreateScope();
+||
+TRANSITION_NOTIFY_LISTENER_START = new AtomicOperationTransitionNotifyListenerStart();
+||
+TRANSITION_CREATE_SCOPE（再次创建），ACTIVITY_EXECUTE（再次进入）
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这个就是节点转移的全过程：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;转移的过程主要的逻辑点：
+1.拿到目标节点（dedestination），Scope就是包含活动节点之类的元素（子流程）开始和结束的时候的处理。&lt;/strong&gt;       &lt;br /&gt;
+&lt;strong&gt;2.转移过程中监听事件的发送。&lt;/strong&gt;          &lt;br /&gt;
+&lt;strong&gt;3.节点的执行，根据各个节点的Behavior运行。&lt;/strong&gt;
+选择那条线，以及流程定义中不同节点的判断全部的放在了Behavior中了&lt;/p&gt;
+&lt;/blockquote&gt;
+
+</description>
+        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti7/</link>
+        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti7/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>activiti-desigen-pattern</category>
+        
+      </item>
+    
+      <item>
         <title>activiti和设计模式(6)</title>
-        <description>&lt;p&gt;流程启动的过程中涉及到的状态机模型，这个是引擎运转的核心的设计模式，而且activiti的状态机模式和普通的状态机还不一样。&lt;/p&gt;
+        <description>&lt;p&gt;流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？&lt;/p&gt;
 
 &lt;!--more--&gt;
 &lt;p&gt;state Pattern：&lt;/p&gt;

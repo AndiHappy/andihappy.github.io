@@ -193,6 +193,44 @@
             ">
     			
 <div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti7/">
+        <h2 class="post-title">
+            activiti和设计模式(7)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中流程定义中节点的跳转
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>一个具体的流程启动以后，具体流程示意图：   <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png" alt="简单会签流程示意图" /></p>
+
+<p>追踪流程的运转的情况，找到好玩的代码。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            一个具体的流程启动以后，具体流程示意图：   
+
+
+追踪流程的运转的情况，找到好玩的代码。  
+
+根据状态机的跳转的动作：
+PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUT...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/activiti-desigen-pattern/2017/08/13/activiti6/">
         <h2 class="post-title">
             activiti和设计模式(6)
@@ -203,18 +241,18 @@
         </h3>
         
         <div class="post-content-preview">
-        <p>流程启动的过程中涉及到的状态机模型，这个是引擎运转的核心的设计模式，而且activiti的状态机模式和普通的状态机还不一样。</p>
+        <p>流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？</p>
 
 
         </div>
         <!-- <div class="post-content-preview">
-            流程启动的过程中涉及到的状态机模型，这个是引擎运转的核心的设计模式，而且activiti的状态机模式和普通的状态机还不一样。
+            流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？
 
 
 state Pattern：
 
 
-  The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented w...
+  The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. Wit...
         </div> -->
     </a>
     <p class="post-meta">
@@ -491,7 +529,7 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                         
                             
-                                <a href="/tags/#学习" title="学习" rel="7">
+                                <a href="/tags/#学习" title="学习" rel="8">
                                     学习
                                 </a>
                             

@@ -5,9 +5,163 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 16 Aug 2017 15:37:26 +0800</pubDate>
-    <lastBuildDate>Wed, 16 Aug 2017 15:37:26 +0800</lastBuildDate>
+    <pubDate>Sun, 27 Aug 2017 18:49:24 +0800</pubDate>
+    <lastBuildDate>Sun, 27 Aug 2017 18:49:24 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>JDK并发框架的描述（一）</title>
+        <description>&lt;p&gt;梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现锁的基础呢？  &lt;br /&gt;
+这个我们需要从头说起。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 26 Aug 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/concurrent/2017/08/26/concurrent/</link>
+        <guid isPermaLink="true">http://localhost:4000/concurrent/2017/08/26/concurrent/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>concurrent</category>
+        
+      </item>
+    
+      <item>
+        <title>复习算法和数据结构（1）</title>
+        <description>
+</description>
+        <pubDate>Fri, 18 Aug 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/</guid>
+        
+        <category>温故而知新</category>
+        
+        
+        <category>算法和数据结构</category>
+        
+      </item>
+    
+      <item>
+        <title>activiti和设计模式(8)</title>
+        <description>&lt;p&gt;BPMN中不仅规定了每一个图标代表的意义，例如：    &lt;br /&gt;
+&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png&quot; alt=&quot;exclusivegateway的示意图&quot; /&gt;  &lt;br /&gt;
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  &lt;br /&gt;
+&lt;!--more--&gt;
+首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivityBehaviorFactory {
+
+  public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
+
+  public abstract EventSubProcessStartEventActivityBehavior createEventSubProcessStartEventActivityBehavior(StartEvent startEvent, String activityId);
+
+  public abstract TaskActivityBehavior createTaskActivityBehavior(Task task);
+
+  public abstract ManualTaskActivityBehavior createManualTaskActivityBehavior(ManualTask manualTask);
+
+  public abstract ReceiveTaskActivityBehavior createReceiveTaskActivityBehavior(ReceiveTask receiveTask);
+
+  public abstract UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask, TaskDefinition taskDefinition);
+
+  public abstract ClassDelegate createClassDelegateServiceTask(ServiceTask serviceTask);
+
+  public abstract ServiceTaskDelegateExpressionActivityBehavior createServiceTaskDelegateExpressionActivityBehavior(ServiceTask serviceTask);
+
+  public abstract ServiceTaskExpressionActivityBehavior createServiceTaskExpressionActivityBehavior(ServiceTask serviceTask);
+
+  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask);
+
+  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask);
+
+  public abstract MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask);
+
+  public abstract MailActivityBehavior createMailActivityBehavior(SendTask sendTask);
+
+  // We do not want a hard dependency on the Mule module, hence we return ActivityBehavior and instantiate
+  // the delegate instance using a string instead of the Class itself.
+  public abstract ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createMuleActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createCamelActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
+
+  public abstract ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask);
+
+  public abstract ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask);
+
+  public abstract ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask);
+
+  public abstract ExclusiveGatewayActivityBehavior createExclusiveGatewayActivityBehavior(ExclusiveGateway exclusiveGateway);
+
+  public abstract ParallelGatewayActivityBehavior createParallelGatewayActivityBehavior(ParallelGateway parallelGateway);
+
+  public abstract InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway);
+
+  public abstract EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway);
+
+  public abstract SequentialMultiInstanceBehavior createSequentialMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
+
+  public abstract ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
+
+  public abstract SubProcessActivityBehavior createSubprocActivityBehavior(SubProcess subProcess);
+
+  public abstract CallActivityBehavior createCallActivityBehavior(CallActivity callActivity);
+
+  public abstract TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction);
+
+  public abstract IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent);
+
+  public abstract IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent);
+
+  public abstract IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent, Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration);
+
+  public abstract IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent, CompensateEventDefinition compensateEventDefinition);
+
+ ...........
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;默认的实现是：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DefaultActivityBehaviorFactory&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractBehaviorFactory&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ActivityBehaviorFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Start event&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EXCEPTION_MAP_FIELD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;mapExceptions&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoneStartEventActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createNoneStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartEvent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startEvent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;NoneStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EventSubProcessStartEventActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createEventSubProcessStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartEvent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startEvent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activityId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EventSubProcessStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activityId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Task&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TaskActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createTaskActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TaskActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;...........&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/</link>
+        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>activiti-desigen-pattern</category>
+        
+      </item>
     
       <item>
         <title>activiti和设计模式(7)</title>
@@ -1651,145 +1805,6 @@ protected Collection&amp;lt; ? extends CommandInterceptor&amp;gt; getDefaultComm
         
         
         <category>activiti-desigen-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>activiti和设计模式(1)</title>
-        <description>&lt;ol&gt;
-  &lt;li&gt;activiti的源码的主要的架构&lt;/li&gt;
-  &lt;li&gt;activiti前两层包含的设计模式&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   &lt;br /&gt;
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！&lt;/p&gt;
-
-&lt;p&gt;另外的一个原因，在于activiti的主设计人员已经经历了一次设计jbpmn，可能被坑过一次了，所以在第二次设计的时候，更加的完善。&lt;/p&gt;
-
-&lt;p&gt;至于为什么选择了从设计模式分析activiti，主要是想提供一个另外的角度，看看能不能学到点大神设计框架的精髓。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;activiti的总体的架构，我们可以简单的从一张图上面，大致的了解：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/1e08b5a26c027da0e7da4fcec3365d66.png&quot; alt=&quot;activiti架构图&quot; /&gt;  &lt;br /&gt;
-我们首先分析，上面的两层，首先看代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EngineServices&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;RepositoryService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getRepositoryService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;RuntimeService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getRuntimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;FormService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getFormService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;TaskService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getTaskService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;HistoryService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getHistoryService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;IdentityService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getIdentityService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;ManagementService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getManagementService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;DynamicBpmnService&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDynamicBpmnService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;ProcessEngineConfiguration&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getProcessEngineConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;我们可以从EngineServer得到各个服务的，官网上面具体的调用的案例也证明了这一点，例如启动一个流程的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;RuntimeService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtimeService&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;processEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRuntimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ProcessInstance&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;processInstance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtimeService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startProcessInstanceByKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;vacationRequest&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;我们可以明显的看出来，这个就是一个封装，针对引擎提供各个功能的分模块的封装，从接口的代码可以看出来分为了：     &lt;br /&gt;
-针对资源的RepositoryService    &lt;br /&gt;
-实时运行的RuntimeService   &lt;br /&gt;
-表单的FormService    &lt;br /&gt;
-任务的TaskService    &lt;br /&gt;
-历史的HistoryService    &lt;br /&gt;
-。。。。。&lt;/p&gt;
-
-&lt;p&gt;这个就是设计模式中的： Facade Pattern&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;The facade pattern (also spelled façade) is a software design pattern commonly used with object-oriented programming. The name is an analogy to an architectural façade.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;A facade is an object that provides a simplified interface to a larger body of code, such as a class library. A facade can&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;make a software library easier to use, understand and test, since the facade has convenient methods for common tasks,
-make the library more readable, for the same reason,
-reduce dependencies of outside code on the inner workings of a library, since most code uses the facade, thus allowing more flexibility in developing the system,
-wrap a poorly designed collection of APIs with a single well-designed API.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/f24a768c242537604d16c79aa854f14e.png&quot; alt=&quot;FacadePattern的示意图&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;按照GOF的说法，Facade模式的意图是：为了子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。&lt;/p&gt;
-
-&lt;p&gt;其实activi在组织API的时候，采用了两次的Facade Pattern，第一次把各个功能归类，形成一个个的服务，例如在RepositoryService中包含了：&lt;/p&gt;
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-  &lt;span class=&quot;n&quot;&gt;DeploymentBuilder&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeploymentCascade&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deleteDeployment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cascade&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setDeploymentCategory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;category&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDeploymentResourceNames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;InputStream&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getResourceAsStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deploymentId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;    
-  &lt;span class=&quot;err&quot;&gt;。。。。。。&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;针对流程定义的部署，查找删除等等操作，这样我们关于资源，或者流程定义的操作，就直接到RepositoryService中查找即可，这个是第一次的封装，也是第一次的Facade Pattern。&lt;/p&gt;
-
-&lt;p&gt;然后activiti 把归类好的服务，又进行了一次封装，统一归类到了EngineService，这样我们调用API的入口，就有了统一的入口，更加的方便快捷了，而且也为后面的spring的注入，提供了良好的基础。&lt;/p&gt;
-
-&lt;p&gt;采用Facade Pattern 二次归类是一种非常常见的归类API的方法。由于API过于繁杂，进行归类，在统一的一个类中进行展示，这样调用方在调用的时候，只需要根据想调用的功能到得到具体的server，找到具体的功能的API即可，寻找起来比较的方便，而且代码比较的清晰，明了。&lt;/p&gt;
-</description>
-        <pubDate>Wed, 02 Aug 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>activiti-desigen-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>再次出发</title>
-        <description>&lt;p&gt;终于再次的出发，想今后写点东西。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
-
-&lt;p&gt;这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   &lt;br /&gt;
-自己有时间了，在慢慢的修改，变为自己喜欢的。&lt;/p&gt;
-
-&lt;p&gt;每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。			
-又闻：唯上智与下愚不移，中智必乱。		
-很庆幸自己就是中智，很不幸如果自己懒惰或者再次的三心二意，那么自己也就是一个庸庸碌碌一辈子了，
-可再也体会不到生活的美好了。&lt;/p&gt;
-
-</description>
-        <pubDate>Wed, 26 Jul 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/</guid>
-        
-        <category>记录</category>
-        
-        
-        <category>日常记录</category>
         
       </item>
     

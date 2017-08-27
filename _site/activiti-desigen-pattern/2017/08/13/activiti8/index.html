@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>再次出发 - 飞翔的面包 | FlyBread Blog</title>
+    <title>activiti和设计模式(8) - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/">
+    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#记录" title="记录">记录</a>
+                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>再次出发</h1>
+                    <h1>activiti和设计模式(8)</h1>
                     
                     
-                    <h2 class="subheading">每一次的出发都是信心满满，就是不知道能坚持多久</h2>
+                    <h2 class="subheading">activiti中流程各个节点的行为数据</h2>
                     
-                    <span class="meta">Posted by zhailzh on July 26, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 13, 2017</span>
                 </div>
             </div>
         </div>
@@ -209,33 +209,130 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>终于再次的出发，想今后写点东西。</p>
-
+				<p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  <br />
 <!--more-->
+首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：</p>
 
-<h2 id="正文">正文</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
 
-<p>这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   <br />
-自己有时间了，在慢慢的修改，变为自己喜欢的。</p>
+  public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
 
-<p>每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。			
-又闻：唯上智与下愚不移，中智必乱。		
-很庆幸自己就是中智，很不幸如果自己懒惰或者再次的三心二意，那么自己也就是一个庸庸碌碌一辈子了，
-可再也体会不到生活的美好了。</p>
+  public abstract EventSubProcessStartEventActivityBehavior createEventSubProcessStartEventActivityBehavior(StartEvent startEvent, String activityId);
 
+  public abstract TaskActivityBehavior createTaskActivityBehavior(Task task);
+
+  public abstract ManualTaskActivityBehavior createManualTaskActivityBehavior(ManualTask manualTask);
+
+  public abstract ReceiveTaskActivityBehavior createReceiveTaskActivityBehavior(ReceiveTask receiveTask);
+
+  public abstract UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask, TaskDefinition taskDefinition);
+
+  public abstract ClassDelegate createClassDelegateServiceTask(ServiceTask serviceTask);
+
+  public abstract ServiceTaskDelegateExpressionActivityBehavior createServiceTaskDelegateExpressionActivityBehavior(ServiceTask serviceTask);
+
+  public abstract ServiceTaskExpressionActivityBehavior createServiceTaskExpressionActivityBehavior(ServiceTask serviceTask);
+
+  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask);
+
+  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask);
+
+  public abstract MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask);
+
+  public abstract MailActivityBehavior createMailActivityBehavior(SendTask sendTask);
+
+  // We do not want a hard dependency on the Mule module, hence we return ActivityBehavior and instantiate
+  // the delegate instance using a string instead of the Class itself.
+  public abstract ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createMuleActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createCamelActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
+
+  public abstract ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
+
+  public abstract ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask);
+
+  public abstract ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask);
+
+  public abstract ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask);
+
+  public abstract ExclusiveGatewayActivityBehavior createExclusiveGatewayActivityBehavior(ExclusiveGateway exclusiveGateway);
+
+  public abstract ParallelGatewayActivityBehavior createParallelGatewayActivityBehavior(ParallelGateway parallelGateway);
+
+  public abstract InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway);
+
+  public abstract EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway);
+
+  public abstract SequentialMultiInstanceBehavior createSequentialMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
+
+  public abstract ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
+
+  public abstract SubProcessActivityBehavior createSubprocActivityBehavior(SubProcess subProcess);
+
+  public abstract CallActivityBehavior createCallActivityBehavior(CallActivity callActivity);
+
+  public abstract TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction);
+
+  public abstract IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent);
+
+  public abstract IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent);
+
+  public abstract IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent, Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration);
+
+  public abstract IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent, CompensateEventDefinition compensateEventDefinition);
+
+ ...........
+
+}
+</code></pre>
+</div>
+
+<p>默认的实现是：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="n">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="n">ActivityBehaviorFactory</span> <span class="o">{</span>
+
+  <span class="c1">// Start event</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">EXCEPTION_MAP_FIELD</span> <span class="o">=</span> <span class="s">"mapExceptions"</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="n">NoneStartEventActivityBehavior</span> <span class="nf">createNoneStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">NoneStartEventActivityBehavior</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="n">EventSubProcessStartEventActivityBehavior</span> <span class="nf">createEventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">,</span> <span class="n">String</span> <span class="n">activityId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">EventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">activityId</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// Task</span>
+
+  <span class="kd">public</span> <span class="n">TaskActivityBehavior</span> <span class="nf">createTaskActivityBehavior</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">TaskActivityBehavior</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">...........</span>
+<span class="o">}</span>
+</code></pre>
+</div>
 
 
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
                     
+                    <li class="previous">
+                        <a href="/activiti-desigen-pattern/2017/08/13/activiti7/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(7)">
+                        Previous<br>
+                        <span>activiti和设计模式(7)</span>
+                        </a>
+                    </li>
+                    
                     
                     <li class="next">
-                        <a href="/activiti-desigen-pattern/2017/08/02/activit1/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(1)">
+                        <a href="/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/" data-toggle="tooltip" data-placement="top" title="复习算法和数据结构（1）">
                         Next<br>
-                        <span>activiti和设计模式(1)</span>
+                        <span>复习算法和数据结构（1）</span>
                         </a>
                     </li>
                     
@@ -330,8 +427,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine";
-    var disqus_url = "http://localhost:4000/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/";
+    var disqus_identifier = "/activiti-desigen-pattern/2017/08/13/activiti8";
+    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

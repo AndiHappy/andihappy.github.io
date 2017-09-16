@@ -1,7 +1,7 @@
 ---    
 layout: post  
 title: "JDK并发框架的描述（一）"  
-subtitle: "重入锁，读写锁，还有一些扩展的锁的实现的基础（一）"  
+subtitle: "JDK中可重入锁，以及CountDownLatch等锁的实现的基础架构说明（一）"  
 date: 2017-08-26 09:00:00  
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
@@ -20,9 +20,9 @@ java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现�
 因为在java.util.concurrent包下面的JDK的锁的实现方式中，主要的设计模式就是模板方法。因为一个锁的基本行为是可以预期的：        
 
 > 1. 分为了两个方法：抢锁，释放锁
-> 
+>
 > 2. 抢到了锁，则可以返回true，抢不到锁则要等待。具体的怎么才能抢到锁的行为针对不同的锁，有不同的说法，但是针对大体的行为还是有规范的，就是抢不到锁要等待，一直等到锁再次可以抢了，就是一个循环了。
-> 
+>
 > 3. 释放锁，如果释放成功，必须通知其他等待的线程，这个锁已经释放了，直接的返回true。如果失败，则会返回失败。
 
 所以有了AbstractQueuedSynchronizer 定义模板方法，而不同的锁，只需要定义抽象出来的方法即可。        
@@ -36,7 +36,7 @@ java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现�
             selfInterrupt();
     }
 ~~~    
-   
+
 
 这里面有一个 int值，非常的重要的一个参数，或者说，整个锁的关键点就在于这个int值的理解。       
 
@@ -102,7 +102,7 @@ public final boolean release(int arg) {
 >2. 同一个线程，可以重复的进入，这个需要记录进入的次数，以便于在释放锁的时候，可以对应的出来几次才能够释放成功。
 
 对应的代码是：    
-         
+
 ~~~java     
 abstract static class Sync extends AbstractQueuedSynchronizer {
         abstract void lock();
@@ -124,8 +124,8 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
             }
             return false;
         }
-        
-        
+
+
         static final class NonfairSync extends Sync {
         final void lock() {
             if (compareAndSetState(0, 1))
@@ -140,8 +140,8 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
     }
 
 ~~~     
-  
-  
+
+
 可以说实现的方式，大大出乎了我们的意料，仔细的观察代码，会发现我们想法的简陋，在代码的实现上面JDK的精致，优雅。虽然主题的意思也是按照我们所设想的那么个意思，但是代码的实现确实不愧为大师级别的代码:          
 
 > 1. 首先是通过**静态内部类的方式来实现的**，为以后的可能的扩展，或者修改ReentrantLock的实现方法，打下了良好的基础。如果操作系统突然实现了一种新的控制锁状态的方法，替换模板方法的实现，丝毫不会影响ReentrantLock 对外提供的方法：lock（）
@@ -150,7 +150,7 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
 > 4. 在nonfairTryAcquire（1），我们找到了可重入的实现逻辑，如果当前的线程Thread.currentThread()是getExclusiveOwnerThread线程，那么锁的状态：    
 > nextc = c + acquires;    
 > 加一。
-> 
+>
 > 5. 如果加锁不成功，就会触发模板方法中的： selfInterrupt()，所以lock才会是void的方法，需要在try-catch中调用
 
 
@@ -175,7 +175,7 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
 你会发现 释放锁的逻辑，没有了公平和非公平一说，只有抢锁的时候才会出现。再一次感觉JDK代码的优雅。    
 
 同样的首先是调用unlock逻辑，直接的调到：Sync的释放锁的方法。    
-      
+
 ~~~java
 public void unlock() {
         sync.release(1);
@@ -207,7 +207,7 @@ public final void acquireSharedInterruptibly(int arg)
         if (tryAcquireShared(arg) < 0)
             doAcquireSharedInterruptibly(arg);
     }
-    
+
 public final boolean releaseShared(int arg) {
         if (tryReleaseShared(arg)) {
             doReleaseShared();
@@ -223,7 +223,7 @@ public final boolean releaseShared(int arg) {
 就针对一个文件来说，拿到线程状态的读进程，可以有很多个，但是写进程就会被阻塞掉。
 
 我们再来分析一下共享锁的模板方法：  
- 
+
 > 1. 加锁的过程，tryAcquireShared(arg)，还是有扩展的子类进行定义，如果拿到了锁，或者说tryAcquireShared(arg)> 0 说明拿到了共享锁，直接的返回，进入临界区的代码，执行。如果没有，即是：tryAcquireShared(arg) < 0,则会进入等待的队列    
 > 2. 解锁的过程，基本是一样的，如果解锁成功，那么就要通知等待的队列再次的开始抢锁，如果解锁失败，直接的返回失败。
 
@@ -234,7 +234,7 @@ public final boolean releaseShared(int arg) {
     public void countDown() {
         sync.releaseShared(1);
     }
-    
+
     public void await() throws InterruptedException {
         sync.acquireSharedInterruptibly(1);
     }
@@ -247,7 +247,7 @@ public final boolean releaseShared(int arg) {
         if (count < 0) throw new IllegalArgumentException("count < 0");
         this.sync = new Sync(count);
     }
-    
+
 private static final class Sync extends AbstractQueuedSynchronizer {
         Sync(int count) {
             setState(count);
@@ -273,19 +273,13 @@ private static final class Sync extends AbstractQueuedSynchronizer {
             }
         }
     }
-    
+
 ~~~
 
 实现的说明：
 > 1. 还是静态的内部类，基本其他的锁也是都是这种形式
 > 2. 开始的时候，就制定了“线程的状态” count ==》 setState(count),为后面的状态的加锁和释放锁做好了准备。
-> 
+>
 > 3. 加锁的调用的是：sync.acquireSharedInterruptibly(1);不是模板方法acquire，不过该方法和acquire的逻辑比较的像，最终都会调用tryAcquireShared方法，如果不能成功，则会进入阻塞的等待队列。 CountDownLatch定义的tryAcquireShared，只有当状态为0的时候，才会返回1，所以在刚开始的时候count值大于1，直接的进入等待的队列。
-> 
+>
 > 4. countDown，调用释放锁的逻辑，首先会进入模板方法：releaseShared，然后会调用CountDownLatch定义的tryReleaseShared，如果count不等于0，直接的返回是false，继续的执行相对应的代码，只有等到执行到最后一个时候，count为0的情况下，才会返回true，然后通知被阻塞的进程，激活调用await的线程。
-
-
-
-
-
-

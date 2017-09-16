@@ -189,7 +189,7 @@
                     <h1>JDK并发框架的描述（一）</h1>
                     
                     
-                    <h2 class="subheading">重入锁，读写锁，还有一些扩展的锁的实现的基础（一）</h2>
+                    <h2 class="subheading">JDK中可重入锁，以及CountDownLatch等锁的实现的基础架构说明（一）</h2>
                     
                     <span class="meta">Posted by zhailzh on August 26, 2017</span>
                 </div>
@@ -339,8 +339,8 @@
             <span class="o">}</span>
             <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
         <span class="o">}</span>
-        
-        
+
+
         <span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">NonfairSync</span> <span class="kd">extends</span> <span class="n">Sync</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="kt">void</span> <span class="nf">lock</span><span class="o">()</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">compareAndSetState</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
@@ -422,7 +422,7 @@ nextc = c + acquires;  <br />
         <span class="k">if</span> <span class="o">(</span><span class="n">tryAcquireShared</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
             <span class="n">doAcquireSharedInterruptibly</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
     <span class="o">}</span>
-    
+
 <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">releaseShared</span><span class="o">(</span><span class="kt">int</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">tryReleaseShared</span><span class="o">(</span><span class="n">arg</span><span class="o">))</span> <span class="o">{</span>
             <span class="n">doReleaseShared</span><span class="o">();</span>
@@ -452,7 +452,7 @@ nextc = c + acquires;  <br />
 <div class="language-java highlighter-rouge"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">countDown</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">sync</span><span class="o">.</span><span class="na">releaseShared</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
     <span class="o">}</span>
-    
+
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">await</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
         <span class="n">sync</span><span class="o">.</span><span class="na">acquireSharedInterruptibly</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
     <span class="o">}</span>
@@ -465,7 +465,7 @@ nextc = c + acquires;  <br />
         <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"count &lt; 0"</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">sync</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Sync</span><span class="o">(</span><span class="n">count</span><span class="o">);</span>
     <span class="o">}</span>
-    
+
 <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Sync</span> <span class="kd">extends</span> <span class="n">AbstractQueuedSynchronizer</span> <span class="o">{</span>
         <span class="n">Sync</span><span class="o">(</span><span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">setState</span><span class="o">(</span><span class="n">count</span><span class="o">);</span>
@@ -491,7 +491,7 @@ nextc = c + acquires;  <br />
             <span class="o">}</span>
         <span class="o">}</span>
     <span class="o">}</span>
-    
+
 </code></pre>
 </div>
 
@@ -510,7 +510,6 @@ nextc = c + acquires;  <br />
 </blockquote>
 
 
-
                 <hr style="visibility: hidden;">
 
                 <ul class="pager">
@@ -524,9 +523,9 @@ nextc = c + acquires;  <br />
                     
                     
                     <li class="next">
-                        <a href="/performance/2017/09/12/javaPerformance/" data-toggle="tooltip" data-placement="top" title="JAVA性能优化（一）">
+                        <a href="/concurrent/2017/08/26/concurrent1/" data-toggle="tooltip" data-placement="top" title="JDK并发框架的描述（二）">
                         Next<br>
-                        <span>JAVA性能优化（一）</span>
+                        <span>JDK并发框架的描述（二）</span>
                         </a>
                     </li>
                     
@@ -580,7 +579,7 @@ nextc = c + acquires;  <br />
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="11">
+                				<a href="/tags/#学习" title="学习" rel="13">
                                     学习
                                 </a>
                             

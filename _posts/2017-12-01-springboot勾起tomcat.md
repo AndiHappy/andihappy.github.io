@@ -307,3 +307,22 @@ B:  找到具体的main方法所在的类，然后就是run方法了：
 		}
 	}
 ~~~
+
+this.tomcat.start() 这个算是将tomcat启动：     
+~~~
+2018-01-02 19:06:05.426 [main] INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat initialized with port(s): 20011 (http)
+2018-01-02 19:06:07.534 [main] INFO  org.apache.catalina.core.StandardService - Starting service Tomcat
+2018-01-02 19:06:07.542 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet Engine: Apache Tomcat/8.0.32
+2018-01-02 19:06:07.721 [localhost-startStop-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2018-01-02 19:06:07.722 [localhost-startStop-1] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 11890 ms
+2018-01-02 19:06:07.982 [localhost-startStop-1] INFO  o.s.boot.context.embedded.ServletRegistrationBean - Mapping servlet: 'dispatcherServlet' to [/]
+2018-01-02 19:06:07.987 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'requestContextFilter' to: [/*]
+
+~~~  
+
+总结来说：springboot在运行的过程中，确定是web体系，找到main类的run方法，执行的过程中
+确定了：org.springframework.boot.context.embedded.EmbeddedWebApplicationContext
+上下文环境，在创建Servlet容器的时候，新建Tomcat对象，初始化的时候，直接启动tomcat。

@@ -5,9 +5,820 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 08 Dec 2017 17:13:38 +0800</pubDate>
-    <lastBuildDate>Fri, 08 Dec 2017 17:13:38 +0800</lastBuildDate>
+    <pubDate>Thu, 11 Jan 2018 16:57:17 +0800</pubDate>
+    <lastBuildDate>Thu, 11 Jan 2018 16:57:17 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>netty in action 精简3</title>
+        <description>&lt;p&gt;这章主要的是介绍netty的架构，主要的模块。&lt;/p&gt;
+
+&lt;p&gt;In this chapter we’ll show you how to build a Netty-based client and server。    &lt;br /&gt;
+the exercise is important for two reasons.    &lt;br /&gt;
+First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.    &lt;br /&gt;
+Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.    &lt;br /&gt;
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;From a high-level perspective, Netty addresses two corresponding areas of concern, which we might label broadly as technical and architectural. First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum application performance and scalability under heavy load. Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplify ing development while maximizing the testability, modularity, and reusability of code.&lt;/p&gt;
+
+&lt;p&gt;netty的两个方面，技术层次的异步和事件处理机制，架构层面的很多的设计模式。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;**The following sections will add detail to our discussion of the Channel, EventLoop, and ChannelFuture classes which, taken together, can be thought of as representing Netty’s networking abstraction: **&lt;/em&gt;    &lt;br /&gt;
+■ Channel—Sockets
+■ EventLoop—Control flow, multithreading, concurrency  &lt;br /&gt;
+■ ChannelFuture—Asynchronous notification&lt;/p&gt;
+
+&lt;p&gt;netty的框架抽象的内容：Channel，socket连接的抽象，EventLoop，并发，多线程事件控制流。ChannelFuture，异步的通知。&lt;/p&gt;
+
+&lt;p&gt;Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations 。 example：
+NioSocketChannel&lt;/p&gt;
+
+&lt;p&gt;netty针对socket操作的抽象出来的是Channel，具体的集成关系：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DefaultAttributeMap&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractNioChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractChannel&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractNioByteChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractNioChannel&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SocketChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NioSocketChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractNioByteChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;netty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SocketChannel&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The EventLoop defines Netty’s core abstraction for handling events that occur during the lifetime of a connection。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/26aa162535f06260ad225a84bf19f3a8.png&quot; alt=&quot;Channel，EventLoop之间的关系&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the application developer’s standpoint, the primary component of Netty is the ChannelHandler, which serves as the container for all application logic that applies to handling inbound and outbound data. This is possible because ChannelHandler methods are triggered by network events (where the term “event” is used very broadly). In fact, a ChannelHandler can be dedicated to almost any kind of action, such as converting data from one format to another or handling exceptions thrown during processing.&lt;/p&gt;
+
+&lt;p&gt;对开发者具体使用来说，netty最主要就是ChannelHandler了，可以专业处理各种各样的Event事件。&lt;/p&gt;
+
+&lt;p&gt;A ChannelPipeline provides a container for a chain of ChannelHandlers and defines an API for propagating the flow of inbound and outbound events along the chain. When a Channel is created, it is automatically assigned its own ChannelPipeline.    &lt;br /&gt;
+ChannelHandlers are installed in the ChannelPipeline as follows:     &lt;br /&gt;
+■ A ChannelInitializer implementation is registered with a ServerBootstrap.  &lt;br /&gt;
+■ When ChannelInitializer.initChannel() is called, the ChannelInitializer installs a custom set of ChannelHandlers in the pipeline.   &lt;br /&gt;
+■ The ChannelInitializer removes itself from the ChannelPipeline.&lt;/p&gt;
+
+&lt;p&gt;ChannelPipeline 可以说是包含了ChannelHandler的容器，一个container。&lt;/p&gt;
+
+&lt;p&gt;The movement of an event through the pipeline is the work of the ChannelHandlers that have been installed during the initialization, or bootstrapping phase of the application. These objects receive events, execute the processing logic for which they have been implemented, and pass the data to the next handler in the chain. The order in which they are executed is determined by the order in which they were added. &lt;strong&gt;For all practical purposes, it’s this ordered arrangement of ChannelHandlers that we refer to as the ChannelPipeline.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;ChannelHandler 处理事件，然后把处理事件后数据传给下一个ChannelHandler，安排这个顺序就是ChannelPipeline。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/5983e2d96f71af4c1ffa9050f46e533a.png&quot; alt=&quot;pipeline和handler&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Figure 3.3 also shows that &lt;strong&gt;both inbound and outbound handlers can be installed in the same pipeline.&lt;/strong&gt;  If a message or any other inbound event is read, it will start from the head of the pipeline and be passed to the first ChannelInboundHandler. This handler may or may not actually modify the data, depending on its specific function, after which the data will be passed to the next ChannelInboundHandler in the chain. Finally, the data will reach the tail of the pipeline, at which point all processing is terminated.&lt;/p&gt;
+
+&lt;p&gt;一个Pipeline中如果有 inbound 和 outbound 的handler，一个事件的处理顺序？？   &lt;br /&gt;
+按照inbound的顺序，是按照pipeline中增加的顺序，然后在最后一个的inbound的handler中调用 ctx.write(object) 就会再次的调用outbound的handler去处理了。   &lt;br /&gt;
+When a ChannelHandler is added to a ChannelPipeline, it’s assigned a Channel- HandlerContext, which represents the binding between a ChannelHandler and the ChannelPipeline. Although this object can be used to obtain the underlying Channel, it’s mostly utilized to write outbound data.&lt;/p&gt;
+
+&lt;p&gt;ChannelHandler都会绑定一个 ChannelHandlerContext，这个上下文比较的有用。&lt;/p&gt;
+
+&lt;p&gt;Netty provides a number of default handler implementations in the form of adapter classes, which are intended to simplify the development of an application’s processing logic. You’ve seen that each ChannelHandler in a pipeline is responsible for forwarding events to the next handler in the chain. These adapter classes (and their subclasses) do this automatically, so you can override only the methods and events you want to specialize.&lt;/p&gt;
+
+&lt;p&gt;netty 提供的默认的handler：&lt;/p&gt;
+
+&lt;p&gt;ByteToMessageDecoder    &lt;br /&gt;
+MessageToByteEncoder&lt;/p&gt;
+
+&lt;p&gt;字节到特殊类型的JAVA对象和JAVA对应到自己的转换的对象。
+The pattern for outbound messages is the reverse: an encoder converts the mes- sage to bytes and &lt;strong&gt;forwards them to the next ChannelOutboundHandler.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;SimpleChannelInboundHandler&lt;T&gt;   
+ a handler that receives a decoded mes- sage and applies business logic to the data.where T is the Java type of the message you want to process.&lt;/T&gt;&lt;/p&gt;
+
+&lt;p&gt;Please keep in mind that strictly speak- ing the term “connection” applies only to connection-oriented protocols such as TCP, which guarantee ordered delivery of messages between the connected endpoints.&lt;/p&gt;
+
+&lt;p&gt;connection 应该对应的是 “链接”&lt;/p&gt;
+
+&lt;p&gt;Netty的启动类区分了Client和Server，分别是bootStrap 和 ServerBootStrap，其中ServerBootStrap绑定到本地的一个端口上，因为server需要监听这个端口上面的数据，BootStrap却是可以连接到一个remote peer。&lt;/p&gt;
+
+&lt;p&gt;第二种不同的点，就是BootStrap只需要一个EventLoopGroup，但是ServerBootStrap 需要两个。&lt;/p&gt;
+
+&lt;p&gt;A server needs two distinct sets of Channels. The first set will contain a single ServerChannel representing the server’s own listening socket, bound to a local port. The second set will contain all of the Channels that have been created to handle incom- ing client connections—one for each connection the server has accepted. Figure 3.4 illustrates this model, and shows why two distinct EventLoopGroups are required.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/c4c708ecd1b21e36cc553764267db07c.png&quot; alt=&quot;server的EventLoopCroup&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;server端的两个EventLoopGroup，一个是处理Connection接入，监听接口数据的，一个是处理接入以后的业务逻辑的。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 02 Dec 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>读书笔记</category>
+        
+      </item>
+    
+      <item>
+        <title>netty in action 精简2</title>
+        <description>&lt;p&gt;这章主要的是介绍netty的基本的概念。&lt;/p&gt;
+
+&lt;p&gt;In this chapter we’ll show you how to build a Netty-based client and server。    &lt;br /&gt;
+the exercise is important for two reasons.    &lt;br /&gt;
+First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.    &lt;br /&gt;
+Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.    &lt;br /&gt;
+&lt;!--more--&gt;
+We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.&lt;/p&gt;
+
+&lt;p&gt;Although we’ve spoken of the client, the figure shows multiple clients connected simultaneously to the server. The number of clients that can be supported is limited, in theory, only by the system resources available (and any constraints that might be imposed by the JDK version in use).&lt;/p&gt;
+
+&lt;p&gt;客户端的连接数，和服务端的资源有关系，一般和文件打开数有关联。&lt;/p&gt;
+
+&lt;p&gt;All Netty servers require the following:
+■ At least one ChannelHandler—This component implements the server’s processing of data received from the client—its business logic.&lt;/p&gt;
+
+&lt;p&gt;ChannelHandler 一个很重要的功能就是，处理客户端的发送的数据&lt;/p&gt;
+
+&lt;p&gt;■ Bootstrapping—This is the startup code that configures the server. At a minimum, it binds the server to the port on which it will listen for connection requests.&lt;/p&gt;
+
+&lt;p&gt;Bootstrap 和 ServerBootstrap 就是启动netty的辅助类&lt;/p&gt;
+
+&lt;p&gt;ChannelInboundHandlerAdapter has a straightforward（简单易懂的） API, and each of its methods can be overridden to hook into the event lifecycle at the appropriate point. &lt;strong&gt;Because you need to handle all received data, you override channelRead().&lt;/strong&gt; In this server you simply echo the data to the remote peer.
+Overriding exceptionCaught() allows you to react to any Throwable subtypes— here you log the exception and close the connection. &lt;strong&gt;A more elaborate（复杂，精心制作的） application might try to recover from the exception,&lt;/strong&gt; but in this case simply closing the connection signals to the remote peer that an error has occurred.&lt;/p&gt;
+
+&lt;p&gt;ChannelInboundHandlerAdapter 一般Handler需要继承的类，主要override的方法是：    &lt;br /&gt;
+&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/1ab0e3db6783f4ca1cfc126d679065d8.png&quot; alt=&quot;ChannelInBoundHandlerAdapter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;override channelActive(), invoked when a connection has been established. This ensures that something is written to the server as soon as possible, which in this case is a byte buffer that encodes the string “Netty rocks!”.&lt;/p&gt;
+
+&lt;p&gt;这个方法可以用来做登录或者token的验证的逻辑！！&lt;/p&gt;
+
+&lt;p&gt;What happens if an exception isn’t caught?&lt;/p&gt;
+
+&lt;p&gt;Every Channel has an associated ChannelPipeline, which holds a chain of Channel- Handler instances. By default, a handler will forward the invocation of a handler method to the next one in the chain. Therefore, if exceptionCaught()is not imple- mented somewhere along the chain, exceptions received will travel to the end of the ChannelPipeline and will be logged. For this reason, your application should supply at least one ChannelHandler that implements exceptionCaught().&lt;/p&gt;
+
+&lt;p&gt;每一个Handler属于一个 handler链中，每一个handler链绑在一个ChannelPipel中。如果Handler中对产生的异常没有处理，将会沿着handler链中传入到下一个handler，一直到最后一个。&lt;/p&gt;
+
+&lt;p&gt;针对Handler的总结：
+ChannelHandlers are invoked for different types of events.
+■ Applications implement or extend ChannelHandlers to hook into the event lifecycle and provide custom application logic.&lt;/p&gt;
+
+&lt;p&gt;■ Architecturally, ChannelHandlers help to keep your business logic decoupled from networking code. This simplifies development as the code evolves in response to changing requirements.&lt;/p&gt;
+
+&lt;p&gt;ChannelHandlers处理的是不同类型的Event，与网路通信解耦。&lt;/p&gt;
+
+&lt;p&gt;In this section you’ll encounter the term transport. In the standard, multilayered view of networking protocols, the transport layer is the one that provides services for end- to-end or host-to-host communications.   &lt;br /&gt;
+传输层，四层网路模型中第二层，具体的是tcp udp等协议层。&lt;/p&gt;
+
+&lt;p&gt;Internet communications are based on the TCP transport. NIO transport refers to a transport that’s mostly identical to TCP except for server-side performance enhance- ments provided by the Java NIO implementation。&lt;/p&gt;
+
+&lt;p&gt;和TCP协议非常的像，只是增加了服务端性能的提升。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt; b.childHandler(new ChannelInitializer&amp;lt;SocketChannel&amp;gt;() { // 7
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+              ch.pipeline().addLast(new EchoServerHandler());
+            }
+          });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;you make use of a special class, ChannelInitializer. This is key. &lt;strong&gt;When a new connection is accepted, a new child Channel will be created, and the Channel Initializer will add an instance of your EchoServerHandler to the Channel’s ChannelPipeline.&lt;/strong&gt; As we explained earlier, this handler will receive notifications about inbound messages.&lt;/p&gt;
+
+&lt;p&gt;每一次新的连接的到来，就会创建一个新的Channel。&lt;/p&gt;
+
+&lt;p&gt;NIO is used in this example because it’s currently the most widely used transport, thanks to its scalability and thoroughgoing asynchrony. But a different transport implementation could be used as well. If you wished to use the OIO transport in your server, you’d specify OioServerSocketChannel and OioEventLoopGroup.&lt;/p&gt;
+
+&lt;p&gt;OIO的协议是什么？？&lt;/p&gt;
+
+&lt;p&gt;In the following chapters, you’ll see many more examples of how Netty simplifies scalability and concurrency.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 02 Dec 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>读书笔记</category>
+        
+      </item>
+    
+      <item>
+        <title>netty in action 精简</title>
+        <description>&lt;p&gt;netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
+&lt;!--more--&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;the system must scale up to 150,000 concurrent users with no loss of performance。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;scale up 负载&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;If you can say with confidence, “Sure, no problem,” then hats off to you。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;hats off to you&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;next steps were probably to browse the site, download the code, peruse the Javadocs and a few blogs, and start hacking. If you already had solid network programming experience, you probably made good progress；&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;High-performance systems like the one in our example require more than first-class coding skills; they demand expertise in several complex areas: networking, multithreading, and concurrency.&lt;/p&gt;
+
+&lt;p&gt;Java开始提供的Socket连接，只支持阻塞形式的IO。&lt;/p&gt;
+
+&lt;p&gt;Socket server = new ServerSocket(8080).accept();&lt;/p&gt;
+
+&lt;p&gt;accept的APIDOC中有一句：The method blocks until a connection is made.
+accept() blocks until a connection is established on the ServerSocket b, then returns a new Socket for communication between the client and the server. The ServerSocket then resumes（重新恢复） listening for incoming connections.&lt;/p&gt;
+
+&lt;p&gt;这种方式的利弊：      &lt;br /&gt;
+First, at any point many threads could be dormant（休眠）, just waiting for input or output data to appear on the line.      &lt;br /&gt;
+因为 new BufferedReader(new InputStreamReader(this.socket.getInputStream())).readerLine() 没有数据的时候，会被阻塞的&lt;/p&gt;
+
+&lt;p&gt;Second,each thread requires an allocation of stack memory whose default size ranges from 64 KB to 1 MB, depending on the OS.           &lt;br /&gt;
+如果每一个Client的连接是新建一个socket连接的话，那么需要给这个socket分配64kb到1MB的内存&lt;/p&gt;
+
+&lt;p&gt;Third, even if a Java virtual machine (JVM) can physically support a very large number of threads, the overhead of context-switching will begin to be troublesome long before that limit is reached, say by the time you reach 10,000 connections.        &lt;br /&gt;
+JVM线程数的限制以及多开的线程造成的线程切换造成的花销。      &lt;br /&gt;
+在这种通信的模型下面，基本上保持着每一个client对应一个线程，所以对大规模的同时连接，JVM的线程数是一种限制&lt;/p&gt;
+
+&lt;p&gt;第二种的变形，只是在服务端提供线程池的方式来处理客户端的接入，这样的话，对JVM的线程限制数就有了一种解决方案。          &lt;br /&gt;
+这种情况下，如果某些线程处理数据比较的慢，那么这些线程会夯在线程池中，可能就会影响其他客户端的接入和其他线程数据的处理&lt;/p&gt;
+
+&lt;p&gt;JDK1.4 2002发布，支持NIO模型。         &lt;br /&gt;
+Java support for non-blocking I/O was introduced in 2002, with the JDK 1.4 package java.nio，which provide considerably more control over the utilization of network resources.&lt;/p&gt;
+
+&lt;p&gt;The class java.nio.channels.Selector is the linchpin（关键） of Java’s non-blocking I/O implementation.          &lt;br /&gt;
+It uses the event notification API to indicate which, among a set of non-blocking sockets, are ready for I/O.&lt;/p&gt;
+
+&lt;p&gt;利弊：
+■ Many connections can be handled with fewer threads, and thus with far less overhead due to memory management and context-switching.          &lt;br /&gt;
+较少的线程就能够处理接入和数据处理，然后线程切换和内存管理变得比较的简单      &lt;br /&gt;
+■ Threads can be retargeted to other tasks when there is no I/O to handle.  &lt;br /&gt;
+没有IO线程进行处理的时候，线程能够重定向处理其他的任务。&lt;/p&gt;
+
+&lt;p&gt;这种通信模型下，主要的是基于：Selector，SocketChannel，Buffer     &lt;br /&gt;
+这种通信模型，已经能够基本支持网络通信的需要，但是IO通信过程中可靠，重连，断网重链等问题仍需要自己进行开发。&lt;/p&gt;
+
+&lt;p&gt;JDK1.7 升级了NIO，变为了NIO2，提供了异步io的通道         &lt;br /&gt;
+NIO2.0 的异步套接字通道是真正的异步非阻塞I/O,它对应UNIX 网络编程中的事件驱动I/O (AIO)，它不需要通过多路复用器(Selector) 对注册的通道进行轮询操作即可实现异步读写，从而简化了NIO 的编程模型。&lt;/p&gt;
+
+&lt;p&gt;In particular, processing and dispatching I/O reliably and efficiently under heavy load is a cumbersome（笨重的） and error-prone task best left to a high-performance networking expert—Netty&lt;/p&gt;
+
+&lt;p&gt;We’ve learned from long and painful experience that the direct use of low-level APIs exposes complexity and introduces a critical dependency on skills that tend to be in short supply.Hence, a fundamental concept of object orientation: hide the complexity of underlying imple- mentations behind simpler abstractions.
+This principle has stimulated the development of numerous frameworks that encapsulate solutions to common programming tasks, many of them germane to distributed systems development. It’s probably safe to assert that all professional Java developers are familiar with at least one of these.&lt;/p&gt;
+
+&lt;p&gt;对于框架的封装，对于我们Developer，不知道是一件好事还是坏事？&lt;/p&gt;
+
+&lt;p&gt;In essence, a system that is both asynchronous and event-driven exhibits a particular and, to us, extremely valuable kind of behavior: it can respond to events occurring at any time and in any order.        &lt;br /&gt;
+异步的事件处理系统         &lt;br /&gt;
+This capability is critical for achieving the highest levels of scalability&lt;/p&gt;
+
+&lt;p&gt;Non-blocking network calls free us from having to wait for the completion of an operation.         &lt;br /&gt;
+Fully asynchronous I/O builds on this feature and carries it a step further: an asynchronous method returns immediately and notifies the user when it is complete, directly or at a later time.&lt;/p&gt;
+
+&lt;p&gt;Selectors allow us to monitor many connections for events with many fewer threads.&lt;/p&gt;
+
+&lt;p&gt;Putting these elements together, with non-blocking I/O we can handle very large numbers of events much more rapidly and economically than would be possible with blocking I/O. From the point of view of networking, this is key to the kind of systems we want to build,and as you’ll see, it is also key to Netty’s design from the ground up.&lt;/p&gt;
+
+&lt;p&gt;netty设计的关键在于非阻塞的网络通信和Selector感知连接等不同的事件&lt;/p&gt;
+
+&lt;p&gt;netty的主要的模块：           &lt;br /&gt;
+■ Channels：管道           &lt;br /&gt;
+■ Callbacks：A callback is simply a method, a reference to which has been provided to another method.           &lt;br /&gt;
+■ Futures:A Future provides another way to notify an application when an operation has com- pleted. This object acts as a placeholder for the result of an asynchronous operation; it will complete at some point in the future and provide access to the result.           &lt;br /&gt;
+■ Events and handlers&lt;/p&gt;
+
+&lt;p&gt;Channels：For now, think of a Channel as a vehicle for incoming (inbound) and outgoing (out- bound) data. As such, it can be open or closed, connected or disconnected.           &lt;br /&gt;
+管道           &lt;br /&gt;
+Callbacks are used in a broad range of programming situations and represent one of the most common ways to notify an interested party that an operation has completed.   &lt;br /&gt;
+回调   &lt;br /&gt;
+In fact, callbacks and Futures are complementary mecha- nisms; in combination they make up one of the key building blocks of Netty itself       &lt;br /&gt;
+Future这个可以翻译为未来值？&lt;/p&gt;
+
+&lt;p&gt;Netty is a networking framework,so events are categorized by their relevance to inbound or outbound data flow.  &lt;br /&gt;
+Events that may be triggered by inbound data or an associated change of state include  &lt;br /&gt;
+■ Active or inactive connections   &lt;br /&gt;
+■ Data reads  &lt;br /&gt;
+■ User events &lt;br /&gt;
+■ Error events &lt;br /&gt;
+An outbound event is the result of an operation that will trigger an action in the future, which may be  &lt;br /&gt;
+■ Opening or closing a connection to a remote peer  &lt;br /&gt;
+■ Writing or flushing data to a socket&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/82d4921691f30a71bea6f4b204353f8b.png&quot; alt=&quot;envent&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Netty’s asynchronous programming model is built on the concepts of Futures and callbacks, with the dispatching of events to handler methods happening at a deeper level. Taken together, these elements provide a processing environment that allows the logic of your application to evolve independently of any concerns with network operations. This is a key goal of Netty’s design approach&lt;/p&gt;
+
+&lt;p&gt;netty 是建立在 Future和Callback，以及把各种类型的事件交由Handler处理的基础上的。这种机制保证了应用与网路通信模块之间的相对的独立，这也是netty设计过程中一个比较重要的点。&lt;/p&gt;
+
+&lt;p&gt;Netty abstracts the Selector away from the application by firing events, eliminating all the handwritten dispatch code that would otherwise be required. Under the covers, an EventLoop is assigned to each Channel to handle all of the events, including    &lt;br /&gt;
+■ Registration of interesting events    &lt;br /&gt;
+■ Dispatching events to ChannelHandlers    &lt;br /&gt;
+■ Scheduling further actions&lt;/p&gt;
+
+&lt;p&gt;Netty抽闲Selector的作用，消除了分发代码的编写，这里的分发代码指的是：Selector在接到Socket的事件的时候，需要触发相对应的逻辑，例如：connect事件对应的连接逻辑，读事件对应的数据请求逻辑等等。&lt;/p&gt;
+
+&lt;p&gt;抽象成了一个对象：EventLoop，这个EventLoop还是比较的重要的一个抽象类。&lt;/p&gt;
+
+&lt;p&gt;The EventLoop itself is driven by only one thread that handles all of the I/O events for one Channel and does not change during the lifetime of the EventLoop. This simple and powerful design eliminates any concern you might have about synchronization in your ChannelHandlers, so you can focus on providing the right logic to be executed when there is interesting data to process. As we’ll see when we explore Netty’s thread- ing model in detail, the API is simple and compact.&lt;/p&gt;
+
+&lt;p&gt;EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁&lt;/p&gt;
+</description>
+        <pubDate>Sat, 02 Dec 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction0/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction0/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>读书笔记</category>
+        
+      </item>
+    
+      <item>
+        <title>定时任务的说明</title>
+        <description>&lt;p&gt;定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。 &lt;br /&gt;
+&lt;!--more--&gt;&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/**
+ * 任务的执行，依赖于Timer，可以特定的时间执行或者按照某种规律循环的执行
+ * A facility for threads to schedule tasks for future execution in a background thread.
+ * Tasks may be scheduled for one-time execution, or for repeated execution at regular intervals.
+ *
+ * 弊端：
+ * 1. 不能针对某一个定时任务进行取消
+ * 2. Timer 的设计核心是一个 TaskList 和一个 TaskThread。Timer 将接收到的任务丢到自己的 TaskList 中，
+ * TaskList 按照 Task 的最初执行时间进行排序。TimerThread 在创建 Timer 时会启动成为一个守护线程。
+ * 这个线程会轮询所有任务，找到一个最近要执行的任务，然后休眠，当到达最近要执行任务的开始时间点，TimerThread 被唤醒并执行该任务。
+ * 之后 TimerThread 更新最近一个要执行的任务，继续休眠。但由于所有任务都是由同一个线程来调度，因此所有任务都是串行执行的，
+ * 同一时间只能有一个任务在执行，前一个任务的延迟或异常都将会影响到之后的任务。
+ * */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TimerTest&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimerTask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jobName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TimerTest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jobName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jobName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jobName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;//如果一个线程执行的过程中休眠会影响其他的线程的执行&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;// TODO Auto-generated catch block&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;execute &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jobName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;Timer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;timer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Timer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delay1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;period1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;// 从现在开始 1 秒钟之后，每隔 1 秒钟执行一次 job1&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;timer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimerTest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;job1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delay1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;period1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+		&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delay2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;period2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;// 从现在开始 2 秒钟之后，每隔 2 秒钟执行一次 job2&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;timer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimerTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+			&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+			&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;第二个线程的执行完毕！&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delay2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;period2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;//取消任务,则会取消全部的任务&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//		timer.cancel();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;进化版：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScheduledExecutorUtil&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtil&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(){&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtilHoler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScheduledExecutorUtilHoler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtil&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtil&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledThreadPoolExecutor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scheduExec&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ScheduledThreadPoolExecutor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Executors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newScheduledThreadPool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);;&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConcurrentHashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConcurrentHashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&amp;gt;();&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;putScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;timeunit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scheduExec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;timeunit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ScheduledExecutorUtil&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(){&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//定时清理result中已经执行完毕的定时任务&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;scheduExec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scheduleAtFixedRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+			&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+					&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;taskname&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;keySet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+						&lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+						&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isCancelled&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isDone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()){&lt;/span&gt;
+							&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+						&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+					&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+				&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;MINUTES&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cancelScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)){&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isCancelled&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()){&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isDone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()){&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;IllegalArgumentException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; have been cancelled !&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCancel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;cancel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isCancel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCancel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;shutDownScheduedTaskPool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(){&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;scheduExec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;shutdown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;currentTimeMillis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtil&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledExecutorUtil&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;timerOne,the time:&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;currentTimeMillis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+					&lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+				&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+					&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+				&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;MILLISECONDS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;cancelScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;timerTwo,the time:&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;currentTimeMillis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;MILLISECONDS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test2&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;cancelScheduledTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Fri, 01 Dec 2017 21:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/2017/12/01/TimerTask/</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/2017/12/01/TimerTask/</guid>
+        
+        <category>定时任务</category>
+        
+        
+        <category>工作总结</category>
+        
+      </item>
+    
+      <item>
+        <title>springboot启动的时候，怎么勾起tomcat启动？</title>
+        <description>&lt;p&gt;springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;spring的启动是从一个java类的main函数开始的，这个应该没有异议：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;application&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;App&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A: 首先是初始化&lt;/p&gt;
+
+&lt;p&gt;启动新建的类&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LinkedHashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;@SuppressWarnings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;unchecked&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;rawtypes&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//推断是否是WEB环境&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;webEnvironment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deduceWebEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//应用上下文初始化实例 的加载&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;setInitializers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getSpringFactoriesInstances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ApplicationContextInitializer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//监听器&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;setListeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getSpringFactoriesInstances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ApplicationListener&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//推断出启动类&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mainApplicationClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deduceMainApplicationClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;推断是否是WEB环境的判断就是，看看能否加出来：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WEB_ENVIRONMENT_CLASSES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;javax.servlet.Servlet&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+			&lt;span class=&quot;s&quot;&gt;&quot;org.springframework.web.context.ConfigurableWebApplicationContext&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这里的类。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/2e31619ab5e4cafb5f5bffe2f73af536.png&quot; alt=&quot;推测是否是web环境&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后就是初始化监听器和初始化工厂，这部分不关心。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;4 &lt;strong&gt;**&lt;/strong&gt;&lt;strong&gt;**&lt;/strong&gt;&lt;strong&gt;**&lt;/strong&gt;&lt;strong&gt;** 非常精彩的代码&lt;/strong&gt;&lt;strong&gt;**&lt;/strong&gt;&lt;strong&gt;**&lt;/strong&gt;&lt;strong&gt;**&lt;/strong&gt;***&lt;/p&gt;
+
+&lt;p&gt;根据运行的堆栈，查找到启动的类！&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;deduceMainApplicationClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;StackTraceElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stackTrace&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StackTraceElement&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stackTraceElement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stackTraceElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMethodName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+					&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stackTraceElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+				&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassNotFoundException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;// Swallow and continue&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;hr /&gt;
+&lt;p&gt;B:  找到具体的main方法所在的类，然后就是run方法了：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;cm&quot;&gt;/**
+	 * Run the Spring application, creating and refreshing a new
+	 * {@link ApplicationContext}.
+	 * @param args the application arguments (usually passed from a Java main method)
+	 * @return a running {@link ApplicationContext}
+	 */&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;StopWatch&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;configureHeadlessProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;// listeners 发不的是application启动的event&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;SpringApplicationRunListeners&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getRunListeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;started&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;ApplicationArguments&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DefaultApplicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+					&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// 创建执行的上下文环境&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createAndRefreshContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;afterRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;finished&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logStartupInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StartupInfoLogger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mainApplicationClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+						&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logStarted&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getApplicationLog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;handleRunFailure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;IllegalStateException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;————————————————————————————————————&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;创建并且刷新配置上下文：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createAndRefreshContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;SpringApplicationRunListeners&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;ApplicationArguments&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;// Create and configure the environment&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ConfigurableEnvironment&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getOrCreateEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;configureEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSourceArgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;environmentPrepared&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isWebEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;webEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;convertToStandardEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;//打印Spring boot的流程&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;bannerMode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Banner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;OFF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;printBanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;// Create, load, refresh and run the ApplicationContext&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;postProcessApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;applyInitializers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contextPrepared&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logStartupInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;logStartupInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getParent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;logStartupProfileInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;// Add boot specific singleton beans&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;registerSingleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;springApplicationArguments&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;// Load the sources&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getSources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;Assert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;notEmpty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sources must not be empty&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()]));&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contextLoaded&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;// Refresh the context&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;registerShutdownHook&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;registerShutdownHook&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AccessControlException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;c1&quot;&gt;// Not allowed in some environments.&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;2.3  // refresh(context);&lt;/p&gt;
+
+&lt;p&gt;最主要的调用的方法&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ApplicationContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;Assert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isInstanceOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AbstractApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AbstractApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/e986d3f51188c1b5a9215b5213e1c436.png&quot; alt=&quot;refresh调用的过程&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BeansException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalStateException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startupShutdownMonitor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;err&quot;&gt;。。。。。。。。。。&lt;/span&gt;
+
+			&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;err&quot;&gt;。。。。。。。。。。。。。。。&lt;/span&gt;
+
+				&lt;span class=&quot;c1&quot;&gt;// Initialize other special beans in specific context subclasses.&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;onRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//启动tomcat开始&lt;/span&gt;
+
+				&lt;span class=&quot;err&quot;&gt;。。。。。。。。。。。。。&lt;/span&gt;
+
+				&lt;span class=&quot;c1&quot;&gt;// Last step: publish corresponding event.&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;finishRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+			&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BeansException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;err&quot;&gt;。。。。。。。。。。。。&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;c1&quot;&gt;// Reset common introspection caches in Spring's core, since we&lt;/span&gt;
+				&lt;span class=&quot;c1&quot;&gt;// might not ever need metadata for singleton beans anymore...&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;resetCommonCaches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;创建servlet容器的过程：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;createEmbeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//创建servlet的容器&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ApplicationContextException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Unable to start embedded container&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+					&lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// 创建servlet的容器&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createEmbeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;EmbeddedServletContainer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;localContainer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;embeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//servlet的容器的具有的特征：start，stop，getport&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;ServletContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;localServletContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getServletContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localContainer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;localServletContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;EmbeddedServletContainerFactory&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;containerFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getEmbeddedServletContainerFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;embeddedServletContainer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;containerFactory&lt;/span&gt;
+					&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getEmbeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getSelfInitializer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localServletContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;getSelfInitializer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onStartup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localServletContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServletException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ApplicationContextException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Cannot initialize servlet context&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+						&lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;initPropertySources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;具体运行的过程中的servlet的容器建造类：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/7e1567b22c50eff83c80d5116ca9fd8f.png&quot; alt=&quot;servlet容器建造者&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/a6a29422767dde565dc398ea71048dbd.png&quot; alt=&quot;构建tomcat对象&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;新建tomcat servlet 容器的时候，直接的把tomcat启动！！&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TomcatEmbeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tomcat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tomcat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;autoStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;Assert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;notNull&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tomcat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Tomcat Server must not be null&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;tomcat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tomcat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;autoStart&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;autoStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EmbeddedServletContainerException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;TomcatEmbeddedServletContainer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logger&lt;/span&gt;
+				&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tomcat initialized with port(s): &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getPortsDescription&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;addInstanceIdToEngineName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// Remove service connectors to that protocol binding doesn't happen yet&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;removeServiceConnectors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// Start the server to trigger initialization listeners&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;tomcat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// We can re-throw failure exception directly in the main thread&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;rethrowDeferredStartupExceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// Unlike Jetty, all Tomcat threads are daemon threads. We create a&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;// blocking non-daemon to stop immediate shutdown&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;startDaemonAwaitThread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EmbeddedServletContainerException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Unable to start embedded Tomcat&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+					&lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;this.tomcat.start() 这个算是将tomcat启动：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2018-01-02 19:06:05.426 [main] INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat initialized with port(s): 20011 (http)
+2018-01-02 19:06:07.534 [main] INFO  org.apache.catalina.core.StandardService - Starting service Tomcat
+2018-01-02 19:06:07.542 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet Engine: Apache Tomcat/8.0.32
+2018-01-02 19:06:07.721 [localhost-startStop-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2018-01-02 19:06:07.722 [localhost-startStop-1] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 11890 ms
+2018-01-02 19:06:07.982 [localhost-startStop-1] INFO  o.s.boot.context.embedded.ServletRegistrationBean - Mapping servlet: 'dispatcherServlet' to [/]
+2018-01-02 19:06:07.987 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'requestContextFilter' to: [/*]
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;总结来说：springboot在运行的过程中，确定是web体系，找到main类的run方法，执行的过程中
+确定了：org.springframework.boot.context.embedded.EmbeddedWebApplicationContext
+上下文环境，在创建Servlet容器的时候，新建Tomcat对象，初始化的时候，直接启动tomcat。&lt;/p&gt;
+</description>
+        <pubDate>Fri, 01 Dec 2017 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/question/2017/12/01/springboot%E5%8B%BE%E8%B5%B7tomcat/</link>
+        <guid isPermaLink="true">http://localhost:4000/question/2017/12/01/springboot%E5%8B%BE%E8%B5%B7tomcat/</guid>
+        
+        <category>学习</category>
+        
+        
+        <category>question</category>
+        
+      </item>
     
       <item>
         <title>问题总结（一）</title>
@@ -730,1033 +1541,6 @@ nextc = c + acquires;  &lt;br /&gt;
         
         
         <category>concurrent</category>
-        
-      </item>
-    
-      <item>
-        <title>复习算法和数据结构（1）</title>
-        <description>
-</description>
-        <pubDate>Fri, 18 Aug 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/</guid>
-        
-        <category>温故而知新</category>
-        
-        
-        <category>算法和数据结构</category>
-        
-      </item>
-    
-      <item>
-        <title>activiti和设计模式(8)</title>
-        <description>&lt;p&gt;BPMN中不仅规定了每一个图标代表的意义，例如：    &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png&quot; alt=&quot;exclusivegateway的示意图&quot; /&gt;  &lt;br /&gt;
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  &lt;br /&gt;
-&lt;!--more--&gt;
-首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivityBehaviorFactory {
-
-  public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
-
-  public abstract EventSubProcessStartEventActivityBehavior createEventSubProcessStartEventActivityBehavior(StartEvent startEvent, String activityId);
-
-  public abstract TaskActivityBehavior createTaskActivityBehavior(Task task);
-
-  public abstract ManualTaskActivityBehavior createManualTaskActivityBehavior(ManualTask manualTask);
-
-  public abstract ReceiveTaskActivityBehavior createReceiveTaskActivityBehavior(ReceiveTask receiveTask);
-
-  public abstract UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask, TaskDefinition taskDefinition);
-
-  public abstract ClassDelegate createClassDelegateServiceTask(ServiceTask serviceTask);
-
-  public abstract ServiceTaskDelegateExpressionActivityBehavior createServiceTaskDelegateExpressionActivityBehavior(ServiceTask serviceTask);
-
-  public abstract ServiceTaskExpressionActivityBehavior createServiceTaskExpressionActivityBehavior(ServiceTask serviceTask);
-
-  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask);
-
-  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(SendTask sendTask);
-
-  // We do not want a hard dependency on the Mule module, hence we return ActivityBehavior and instantiate
-  // the delegate instance using a string instead of the Class itself.
-  public abstract ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createMuleActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createCamelActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
-
-  public abstract ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask);
-
-  public abstract ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask);
-
-  public abstract ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask);
-
-  public abstract ExclusiveGatewayActivityBehavior createExclusiveGatewayActivityBehavior(ExclusiveGateway exclusiveGateway);
-
-  public abstract ParallelGatewayActivityBehavior createParallelGatewayActivityBehavior(ParallelGateway parallelGateway);
-
-  public abstract InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway);
-
-  public abstract EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway);
-
-  public abstract SequentialMultiInstanceBehavior createSequentialMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
-
-  public abstract ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
-
-  public abstract SubProcessActivityBehavior createSubprocActivityBehavior(SubProcess subProcess);
-
-  public abstract CallActivityBehavior createCallActivityBehavior(CallActivity callActivity);
-
-  public abstract TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction);
-
-  public abstract IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent);
-
-  public abstract IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent);
-
-  public abstract IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent, Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration);
-
-  public abstract IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent, CompensateEventDefinition compensateEventDefinition);
-
- ...........
-
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;默认的实现是：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DefaultActivityBehaviorFactory&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractBehaviorFactory&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ActivityBehaviorFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-  &lt;span class=&quot;c1&quot;&gt;// Start event&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EXCEPTION_MAP_FIELD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;mapExceptions&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoneStartEventActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createNoneStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartEvent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startEvent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;NoneStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EventSubProcessStartEventActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createEventSubProcessStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartEvent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startEvent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;activityId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EventSubProcessStartEventActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activityId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;c1&quot;&gt;// Task&lt;/span&gt;
-
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TaskActivityBehavior&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createTaskActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TaskActivityBehavior&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;...........&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;我们在&lt;strong&gt;「activiti和设计模式(7)」&lt;/strong&gt; 中定义的usertask是多实例的，所以对应的Behavior是：&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>activiti-desigen-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>activiti和设计模式(7)</title>
-        <description>&lt;p&gt;一个具体的流程启动以后，具体流程示意图：   &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png&quot; alt=&quot;简单会签流程示意图&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;追踪流程的运转的情况，找到好玩的代码。  &lt;br /&gt;
-&lt;!--more--&gt;
-根据状态机的跳转的动作：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
-||
-PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-||
-ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;我们看到第一个的开始节点的执行：      &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/ed93f1f1941a9f0feba1f9c1b123b15b.png&quot; alt=&quot;开始节点的执行&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class NoneStartEventActivityBehavior extends FlowNodeActivityBehavior {
-
-  // Nothing to see here.
-  // The default behaviour of the BpmnActivity is exactly what
-  // a none start event should be doing.
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;实现的在FlowNodeActivityBehavior中&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
-
- /**
-  * Default behaviour: just leave the activity with no extra functionality.
-  */
- public void execute(ActivityExecution execution) throws Exception {
-   leave(execution);
- }
-
- /**
-  * Default way of leaving a BPMN 2.0 activity: evaluate the conditions on the
-  * outgoing sequence flow and take those that evaluate to true.
-  */
- protected void leave(ActivityExecution execution) {
-   bpmnActivityBehavior.performDefaultOutgoingBehavior(execution);
- }
-
- protected void leaveIgnoreConditions(ActivityExecution activityContext) {
-   bpmnActivityBehavior.performIgnoreConditionsOutgoingBehavior(activityContext);
- }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;默认的bpmnActivityBehavior沿着默认的线达到下一个节点，是吗？&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void performOutgoingBehavior(ActivityExecution execution,
-         boolean checkConditions, boolean throwExceptionIfExecutionStuck, List&amp;lt;ActivityExecution&amp;gt; reusableExecutions) {
-
-   if (log.isDebugEnabled()) {
-     log.debug(&quot;Leaving activity '{}'&quot;, execution.getActivity().getId());
-   }
-
-   String defaultSequenceFlow = (String) execution.getActivity().getProperty(&quot;default&quot;);//说明①
-   List&amp;lt;PvmTransition&amp;gt; transitionsToTake = new ArrayList&amp;lt;PvmTransition&amp;gt;();
-
-   List&amp;lt;PvmTransition&amp;gt; outgoingTransitions = execution.getActivity().getOutgoingTransitions();
-   for (PvmTransition outgoingTransition : outgoingTransitions) {
-     Expression skipExpression = outgoingTransition.getSkipExpression();
-    //如果不是蹦跳的skipExpression
-     if (!SkipExpressionUtil.isSkipExpressionEnabled(execution, skipExpression)) {
-       // 没有默认线或者出去的线不是默认线
-       if (defaultSequenceFlow == null || !outgoingTransition.getId().equals(defaultSequenceFlow)) {
-         Condition condition = (Condition) outgoingTransition.getProperty(BpmnParse.PROPERTYNAME_CONDITION);
-         //线上没有条件或者，限定了不检查线上条件，或者线上条件符合要求
-         if (condition == null || !checkConditions || condition.evaluate(outgoingTransition.getId(), execution)) {
-           transitionsToTake.add(outgoingTransition);
-         }
-       }
-
-     } else if (SkipExpressionUtil.shouldSkipFlowElement(execution, skipExpression)){
-       transitionsToTake.add(outgoingTransition);
-     }
-   }
-   //说明②
-   if (transitionsToTake.size() == 1) {
-     //只有一条线的时候，直接的走take逻辑
-     execution.take(transitionsToTake.get(0));
-   } else if (transitionsToTake.size() &amp;gt;= 1) {
-     //有多条线的时候
-     execution.inactivate();
-     if (reusableExecutions == null || reusableExecutions.isEmpty()) {
-       execution.takeAll(transitionsToTake, Arrays.asList(execution));
-     } else {
-       execution.takeAll(transitionsToTake, reusableExecutions);
-     }
-
-   } else {
-    //没有满足条件出去的线，如果有默认的线
-     if (defaultSequenceFlow != null) {
-       PvmTransition defaultTransition = execution.getActivity().findOutgoingTransition(defaultSequenceFlow);
-       if (defaultTransition != null) {
-         execution.take(defaultTransition);
-       } else {
-         throw new ActivitiException(&quot;Default sequence flow '&quot; + defaultSequenceFlow + &quot;' could not be not found&quot;);
-       }
-     } else {
-       //如果有补偿事件
-       Object isForCompensation = execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_IS_FOR_COMPENSATION);
-       if(isForCompensation != null &amp;amp;&amp;amp; (Boolean) isForCompensation) {
-         if (execution instanceof ExecutionEntity) {
-           Context.getCommandContext().getHistoryManager().recordActivityEnd((ExecutionEntity) execution);
-         }
-         InterpretableExecution parentExecution = (InterpretableExecution) execution.getParent();
-         ((InterpretableExecution)execution).remove();
-         parentExecution.signal(&quot;compensationDone&quot;, null);
-
-       } else {
-         //暂停了，抛出错误
-         if (log.isDebugEnabled()) {
-           log.debug(&quot;No outgoing sequence flow found for {}. Ending execution.&quot;, execution.getActivity().getId());
-         }
-         execution.end();
-
-         if (throwExceptionIfExecutionStuck) {
-           throw new ActivitiException(&quot;No outgoing sequence flow of the inclusive gateway '&quot; + execution.getActivity().getId()
-                 + &quot;' could be selected for continuing the process&quot;);
-         }
-       }
-
-     }
-   }
- }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;流程定义节点之间的转移，是先找到满足条件的离开的线：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void take(PvmTransition transition) {
-  	take(transition, true);
-  }
-
-  public void take(PvmTransition transition, boolean fireActivityCompletionEvent) {
-
-  	if (fireActivityCompletionEvent) {
-	  	fireActivityCompletedEvent();
-  	}
-
-    if (this.transition!=null) {
-      throw new PvmException(&quot;already taking a transition&quot;);
-    }
-    if (transition==null) {
-      throw new PvmException(&quot;transition is null&quot;);
-    }
-    setActivity((ActivityImpl)transition.getSource());
-    setTransition((TransitionImpl) transition);
-    performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_END);
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;说的转移，只是同一个ExecutionEntity里面的 Activity修改了，Transition修改了，然后开始执行：TRANSITION_NOTIFY_LISTENER_END.  但是和我们想象的不一样，这里设置的Activiti是Transition的Source，也就是“刚刚执行结束”的活动定义：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/ea742aca518a53df8dbeb1f64c8c42c6.png&quot; alt=&quot;Execution设置activity&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
-||
-PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-||
-ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
-||
-TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;执行的过程：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public void execute(InterpretableExecution execution) {
-    ScopeImpl scope = getScope(execution);
-    List&amp;lt;ExecutionListener&amp;gt; exectionListeners = scope.getExecutionListeners(getEventName());
-    int executionListenerIndex = execution.getExecutionListenerIndex();
-    
-    if (exectionListeners.size()&amp;gt;executionListenerIndex) {
-      execution.setEventName(getEventName());
-      execution.setEventSource(scope);
-      ExecutionListener listener = exectionListeners.get(executionListenerIndex);
-      try {
-        listener.notify(execution);
-      } catch (RuntimeException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new PvmException(&quot;couldn't execute event listener : &quot;+e.getMessage(), e);
-      }
-      execution.setExecutionListenerIndex(executionListenerIndex+1);
-      execution.performOperation(this);//说明①
-
-    } else {
-      execution.setExecutionListenerIndex(0);
-      execution.setEventName(null);
-      execution.setEventSource(null);
-      eventNotificationsCompleted(execution);
-    }
-  }
-  
-  @Override
-  protected void eventNotificationsCompleted(InterpretableExecution execution) {
-    execution.performOperation(TRANSITION_DESTROY_SCOPE);
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;说明①: 这个是一个循环调用的，为了循环的发送监听事件
-现在运行到了：TRANSITION_DESTROY_SCOPE&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;||
-TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
-public class AtomicOperationTransitionDestroyScope implements AtomicOperation
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;说明：TRANSITION_DESTROY_SCOPE直接实现了接口，没有像TRANSITION_NOTIFY_LISTENER_END一样，在抽象类的基础方面实现。这可能也是为什么有了接口，还有抽象类的原因？&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void execute(InterpretableExecution execution) {
-    InterpretableExecution propagatingExecution = null;
-
-    ActivityImpl activity = (ActivityImpl) execution.getActivity();
-    // if this transition is crossing a scope boundary
-    if (activity.isScope()) {//当前的任务是否是一个包含的活动节点
-      
-      InterpretableExecution parentScopeInstance = null;
-      // if this is a concurrent execution crossing a scope boundary
-      if (execution.isConcurrent() &amp;amp;&amp;amp; !execution.isScope()) {
-        // first remove the execution from the current root
-        InterpretableExecution concurrentRoot = (InterpretableExecution) execution.getParent();
-        parentScopeInstance = (InterpretableExecution) execution.getParent().getParent();
-
-        log.debug(&quot;moving concurrent {} one scope up under {}&quot;, execution, parentScopeInstance);
-        List&amp;lt;InterpretableExecution&amp;gt; parentScopeInstanceExecutions = (List&amp;lt;InterpretableExecution&amp;gt;) parentScopeInstance.getExecutions();
-        List&amp;lt;InterpretableExecution&amp;gt; concurrentRootExecutions = (List&amp;lt;InterpretableExecution&amp;gt;) concurrentRoot.getExecutions();
-        // if the parent scope had only one single scope child
-        if (parentScopeInstanceExecutions.size()==1) {
-          // it now becomes a concurrent execution
-          parentScopeInstanceExecutions.get(0).setConcurrent(true);
-        }
-        
-        concurrentRootExecutions.remove(execution);
-        parentScopeInstanceExecutions.add(execution);
-        execution.setParent(parentScopeInstance);
-        execution.setActivity(activity);
-        propagatingExecution = execution;
-        
-        // if there is only a single concurrent execution left
-        // in the concurrent root, auto-prune it.  meaning, the 
-        // last concurrent child execution data should be cloned into
-        // the concurrent root.   
-        if (concurrentRootExecutions.size()==1) {
-          InterpretableExecution lastConcurrent = concurrentRootExecutions.get(0);
-          if (lastConcurrent.isScope()) {
-            lastConcurrent.setConcurrent(false);
-            
-          } else {
-            log.debug(&quot;merging last concurrent {} into concurrent root {}&quot;, lastConcurrent, concurrentRoot);
-            
-            // We can't just merge the data of the lastConcurrent into the concurrentRoot.
-            // This is because the concurrent root might be in a takeAll-loop.  So the 
-            // concurrent execution is the one that will be receiving the take
-            concurrentRoot.setActivity((ActivityImpl) lastConcurrent.getActivity());
-            concurrentRoot.setActive(lastConcurrent.isActive());
-            lastConcurrent.setReplacedBy(concurrentRoot);
-            lastConcurrent.remove();
-          }
-        }
-
-      } else if (execution.isConcurrent() &amp;amp;&amp;amp; execution.isScope()) {
-        log.debug(&quot;scoped concurrent {} becomes concurrent and remains under {}&quot;, execution, execution.getParent());
-
-        // TODO!
-        execution.destroy();
-        propagatingExecution = execution;
-        
-      } else {
-        propagatingExecution = (InterpretableExecution) execution.getParent();
-        propagatingExecution.setActivity((ActivityImpl) execution.getActivity());
-        propagatingExecution.setTransition(execution.getTransition());
-        propagatingExecution.setActive(true);
-        log.debug(&quot;destroy scope: scoped {} continues as parent scope {}&quot;, execution, propagatingExecution);
-        execution.destroy();
-        execution.remove();
-      }
-      
-    } else {
-      propagatingExecution = execution;
-    }
-    
-    // if there is another scope element that is ended
-    // 父级别的元素，普通元素的父元素是流程定义ProcessDefinition
-    ScopeImpl nextOuterScopeElement = activity.getParent();
-    TransitionImpl transition = propagatingExecution.getTransition();
-    // 目标节点
-    ActivityImpl destination = transition.getDestination();
-    //判断目标节点是否在父节点中，如果不在（考虑到子流程结束后的下一个元素是子流程以外的元素了）
-    if (transitionLeavesNextOuterScope(nextOuterScopeElement, destination)) {
-      propagatingExecution.setActivity((ActivityImpl) nextOuterScopeElement);
-      //再次进入：TRANSITION_NOTIFY_LISTENER_END
-      propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_END);
-    } else {
-    //进入：TRANSITION_NOTIFY_LISTENER_TAKE
-      propagatingExecution.performOperation(TRANSITION_NOTIFY_LISTENER_TAKE);
-    }
-  }
-
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;从最后的逻辑，我们可以看到一个循环：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
-||
-PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-||
-ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
-||
-TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
-||
-TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
-||
-TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情况就是再次的循环一次）
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;TRANSITION_NOTIFY_LISTENER_TAKE 这个就是对应线的逻辑了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;执行逻辑：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-  public void execute(InterpretableExecution execution) {
-    TransitionImpl transition = execution.getTransition();
-    
-    List&amp;lt;ExecutionListener&amp;gt; executionListeners = transition.getExecutionListeners();
-    int executionListenerIndex = execution.getExecutionListenerIndex();
-    
-    if (executionListeners.size()&amp;gt;executionListenerIndex) {
-      execution.setEventName(org.activiti.engine.impl.pvm.PvmEvent.EVENTNAME_TAKE);
-      execution.setEventSource(transition);
-      ExecutionListener listener = executionListeners.get(executionListenerIndex);
-      try {
-        listener.notify(execution);
-      } catch (RuntimeException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new PvmException(&quot;couldn't execute event listener : &quot;+e.getMessage(), e);
-      }
-      execution.setExecutionListenerIndex(executionListenerIndex+1);
-      execution.performOperation(this);
-      //上面的这部分逻辑和抽象类里面的逻辑基本的一样
-    } else {
-    	if (log.isDebugEnabled()) {
-    		log.debug(&quot;{} takes transition {}&quot;, execution, transition);
-    	}
-      execution.setExecutionListenerIndex(0);
-      execution.setEventName(null);
-      execution.setEventSource(null);
-
-      ActivityImpl activity = (ActivityImpl) execution.getActivity();
-      ActivityImpl nextScope = findNextScope(activity.getParent(), transition.getDestination());
-      execution.setActivity(nextScope);//到这里ExecutionEntity的activity才再次的修改，但是Transition并没有修改
-      
-      // Firing event that transition is being taken     	。。。。。。。。      
-      execution.performOperation(TRANSITION_CREATE_SCOPE);
-    }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;然后就到了：TRANSITION_CREATE_SCOPE&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;执行逻辑：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void execute(InterpretableExecution execution) {
-    InterpretableExecution propagatingExecution = null;
-    ActivityImpl activity = (ActivityImpl) execution.getActivity();
-    if (activity.isScope()) {//activity扩展自Scope
-      // 重新创建了一个Execution，称之为： propagatingExecution
-      // 该propagatingExecution的Transition仍然是：(startevent1)--flow1--&amp;gt;(usertask1)
-      //并不是Null
-      propagatingExecution = (InterpretableExecution) execution.createExecution();
-      propagatingExecution.setActivity(activity);
-      propagatingExecution.setTransition(execution.getTransition());
-      
-      execution.setTransition(null);
-      execution.setActivity(null);
-      execution.setActive(false);
-      // Execution的activity，Transition全部都是null
-      log.debug(&quot;create scope: parent {} continues as execution {}&quot;, execution, propagatingExecution);
-      propagatingExecution.initialize();
-
-    } else {
-      propagatingExecution = execution;
-    }
-   propagatingExecution.performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_START);
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;到了：AtomicOperation.TRANSITION_NOTIFY_LISTENER_START       &lt;br /&gt;
-public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventAtomicOperation   &lt;br /&gt;
-扩展自抽象类：AbstractEventAtomicOperation    具体的执行的过程是：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  @Override
-  protected void eventNotificationsCompleted(InterpretableExecution execution) {
-    TransitionImpl transition = execution.getTransition();
-    ActivityImpl destination = null;
-    if(transition == null) { // this is null after async cont. -&amp;gt; transition is not stored in execution
-      destination = (ActivityImpl) execution.getActivity();
-    } else {
-      destination = transition.getDestination();
-    }    
-    ActivityImpl activity = (ActivityImpl) execution.getActivity();
-    if (activity!=destination) {
-      ActivityImpl nextScope = AtomicOperationTransitionNotifyListenerTake.findNextScope(activity, destination);
-      execution.setActivity(nextScope);
-      //进入了scope，创建scope
-      execution.performOperation(TRANSITION_CREATE_SCOPE);
-    } else {
-      //在这个地方设置了Transition为null
-      execution.setTransition(null);
-      //终于设置了目标activity
-      execution.setActivity(destination);
-      execution.performOperation(ACTIVITY_EXECUTE);
-    }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;所以总体的循环就是：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PROCESS_START = new AtomicOperationProcessStart
-||
-PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-||
-ACTIVITY_EXECUTE（执行） = new AtomicOperationActivityExecute();
-||
-TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
-||
-TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
-||
-TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情况就是再次的循环一次）
-||
-TRANSITION_CREATE_SCOPE（创建） = new AtomicOperationTransitionCreateScope();
-||
-TRANSITION_NOTIFY_LISTENER_START = new AtomicOperationTransitionNotifyListenerStart();
-||
-TRANSITION_CREATE_SCOPE（再次创建），ACTIVITY_EXECUTE（再次进入）
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这个就是节点转移的全过程：&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;转移的过程主要的逻辑点：
-1.拿到目标节点（dedestination），Scope就是包含活动节点之类的元素（子流程）开始和结束的时候的处理。&lt;/strong&gt;       &lt;br /&gt;
-&lt;strong&gt;2.转移过程中监听事件的发送。&lt;/strong&gt;          &lt;br /&gt;
-&lt;strong&gt;3.节点的执行，根据各个节点的Behavior运行。&lt;/strong&gt;
-选择那条线，以及流程定义中不同节点的判断全部的放在了Behavior中了&lt;/p&gt;
-&lt;/blockquote&gt;
-
-</description>
-        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti7/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti7/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>activiti-desigen-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>activiti和设计模式(6)</title>
-        <description>&lt;p&gt;流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？&lt;/p&gt;
-
-&lt;!--more--&gt;
-&lt;p&gt;state Pattern：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. With the state pattern, a state machine is implemented by implementing each individual state as a derived class of the state pattern interface, and implementing state transitions by invoking methods defined by the pattern’s superclass.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The state pattern can be interpreted as a strategy pattern which is able to switch the current strategy through invocations of methods defined in the pattern’s interface.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;状态模型和策略模型可以相互的转化&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;This pattern is used in computer programming to encapsulate varying behavior for the same object based on its internal state. This can be a cleaner way for an object to change its behavior at runtime without resorting to large monolithic conditional statements[1]:395 and thus improve maintainability.[2]&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;启动的开始：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;processInstance.start();
-//这里的ProcessInstance的类型是ExecutionEntity，不管是流程定义对应的流程实例，还是活动定义对应的活动实例，都是ExecutionEntity，仔细查看会发现，流程实例的ExecutionEntity和活动实例非常的相似
-
-//流程实例启动
-public void start() {
-    if(startingExecution == null &amp;amp;&amp;amp; isProcessInstanceType()) {
-      startingExecution = new StartingExecution(processDefinition.getInitial());
-    }
-    performOperation(AtomicOperation.PROCESS_START);
-  }
-
-  //活动实例启动
-  performOperation(AtomicOperation.ACTIVITY_START);
-
-  //最终都是
-  public void performOperation(AtomicOperation executionOperation) {
-    if (executionOperation.isAsync(this)) {
-      scheduleAtomicOperationAsync(executionOperation);
-    } else {
-      performOperationSync(executionOperation);
-    }    
-  }
-
-  protected void performOperationSync(AtomicOperation executionOperation) {
-    Context
-      .getCommandContext()
-      .performOperation(executionOperation, this);
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;AtomicOperation相当于定义了流程流转的动作，所有的流程的动作都在这个接口中定义&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface AtomicOperation {
-  AtomicOperation PROCESS_START = new AtomicOperationProcessStart();
-  AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-  AtomicOperation PROCESS_END = new AtomicOperationProcessEnd();
-  AtomicOperation ACTIVITY_START = new AtomicOperationActivityStart();
-  AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
-  AtomicOperation ACTIVITY_END = new AtomicOperationActivityEnd();
-  AtomicOperation TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
-  AtomicOperation TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
-  AtomicOperation TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
-  AtomicOperation TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
-  AtomicOperation TRANSITION_NOTIFY_LISTENER_START = new AtomicOperationTransitionNotifyListenerStart();
-  AtomicOperation DELETE_CASCADE = new AtomicOperationDeleteCascade();
-  AtomicOperation DELETE_CASCADE_FIRE_ACTIVITY_END = new AtomicOperationDeleteCascadeFireActivityEnd();
-  void execute(InterpretableExecution execution);
-  boolean isAsync(InterpretableExecution execution);
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;具体动作的跳转见下图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/f35c3abf0ee213b3aaff97904c008db5.png&quot; alt=&quot;流程运转&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;就拿流程实例启动来说：AtomicOperationProcessStart来说，首先是抽象类里面的，
-void execute(InterpretableExecution execution);&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public void execute(InterpretableExecution execution) {
- //首先是判断监听的逻辑
-    ScopeImpl scope = getScope(execution);
-    List&amp;lt;ExecutionListener&amp;gt; exectionListeners = scope.getExecutionListeners(getEventName());
-    int executionListenerIndex = execution.getExecutionListenerIndex();
-    if (exectionListeners.size()&amp;gt;executionListenerIndex) {
-      execution.setEventName(getEventName());
-      execution.setEventSource(scope);
-      ExecutionListener listener = exectionListeners.get(executionListenerIndex);
-      try {
-        listener.notify(execution);
-      } catch (RuntimeException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new PvmException(&quot;couldn't execute event listener : &quot;+e.getMessage(), e);
-      }
-      execution.setExecutionListenerIndex(executionListenerIndex+1);
-      execution.performOperation(this);
-
-    } else {
-      execution.setExecutionListenerIndex(0);
-      execution.setEventName(null);
-      execution.setEventSource(null);
-      eventNotificationsCompleted(execution);
-    }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;然后就是自己实现的eventNotificationsCompleted(execution);&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; @Override
-  protected void eventNotificationsCompleted(InterpretableExecution execution) {
-  //首先还是事件通知
-  	if (Context.getProcessEngineConfiguration() != null &amp;amp;&amp;amp; Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-  	  Map&amp;lt;String, Object&amp;gt; variablesMap = null;
-  	  try {
-  	    variablesMap = execution.getVariables();
-  	  } catch (Throwable t) {
-  	    // In some rare cases getting the execution variables can fail (JPA entity load failure for example)
-  	    // We ignore the exception here, because it's only meant to include variables in the initialized event.
-  	  }
-    	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-    			ActivitiEventBuilder.createEntityWithVariablesEvent(ActivitiEventType.ENTITY_INITIALIZED,
-    			    execution, variablesMap, false));
-      Context.getProcessEngineConfiguration().getEventDispatcher()
-              .dispatchEvent(ActivitiEventBuilder.createProcessStartedEvent(execution, variablesMap, false));
-    }
-  	//找到开始节点，直接的跳转到PROCESS_START_INITIAL
-    ProcessDefinitionImpl processDefinition = execution.getProcessDefinition();
-    StartingExecution startingExecution = execution.getStartingExecution();
-    List&amp;lt;ActivityImpl&amp;gt; initialActivityStack = processDefinition.getInitialActivityStack(startingExecution.getInitial());  
-    execution.setActivity(initialActivityStack.get(0));
-    execution.performOperation(PROCESS_START_INITIAL);//说明①
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;说明①：流程实例启动后，直接的跳转到：PROCESS_START_INITIAL，即：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;执行的过程是,首先是：      &lt;code class=&quot;highlighter-rouge&quot;&gt;org.activiti.engine.impl.pvm.runtime.AbstractEventAtomicOperation.execute(InterpretableExecution)&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;然后才是正式的逻辑：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  @Override
-  protected void eventNotificationsCompleted(InterpretableExecution execution) {
-    ActivityImpl activity = (ActivityImpl) execution.getActivity();
-
-    ProcessDefinitionImpl processDefinition = execution.getProcessDefinition();
-
-    StartingExecution startingExecution = execution.getStartingExecution();
-    //如果开始节点是起始节点
-    if (activity==startingExecution.getInitial()) {
-      execution.disposeStartingExecution();
-      //转移到ACTIVITY_EXECUTE，执行activity对应的逻辑
-      execution.performOperation(ACTIVITY_EXECUTE);
-
-    } else {
-    //如果不是开始节点，循环的找到开始节点
-      List&amp;lt;ActivityImpl&amp;gt; initialActivityStack = processDefinition.getInitialActivityStack(startingExecution.getInitial());
-      int index = initialActivityStack.indexOf(activity);
-      activity = initialActivityStack.get(index+1);
-
-      InterpretableExecution executionToUse = null;
-      if (activity.isScope()) {
-        executionToUse = (InterpretableExecution) execution.getExecutions().get(0);
-      } else {
-        executionToUse = execution;
-      }
-      executionToUse.setActivity(activity);
-      executionToUse.performOperation(PROCESS_START_INITIAL);
-    }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;然后就到了activity的执行的逻辑：&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;具体的执行的逻辑是：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void execute(InterpretableExecution execution) {
-    ActivityImpl activity = (ActivityImpl) execution.getActivity();
-
-    ActivityBehavior activityBehavior = activity.getActivityBehavior();
-    if (activityBehavior==null) {
-      throw new PvmException(&quot;no behavior specified in &quot;+activity);
-    }
-
-    log.debug(&quot;{} executes {}: {}&quot;, execution, activity, activityBehavior.getClass().getName());
-
-    try {
-    	if(Context.getProcessEngineConfiguration() != null &amp;amp;&amp;amp; Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-      	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-      			ActivitiEventBuilder.createActivityEvent(ActivitiEventType.ACTIVITY_STARTED,
-      					execution.getActivity().getId(),
-      					(String) execution.getActivity().getProperty(&quot;name&quot;),
-      					execution.getId(),
-      					execution.getProcessInstanceId(),
-      					execution.getProcessDefinitionId(),
-      					(String) activity.getProperties().get(&quot;type&quot;),
-      					activity.getActivityBehavior().getClass().getCanonicalName()));
-      }
-
-      activityBehavior.execute(execution);
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      LogMDC.putMDCExecution(execution);
-      throw new PvmException(&quot;couldn't execute activity &amp;lt;&quot;+activity.getProperty(&quot;type&quot;)+&quot; id=\&quot;&quot;+activity.getId()+&quot;\&quot; ...&amp;gt;: &quot;+e.getMessage(), e);
-    }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;activity的行为活动就非常的多了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivityBehavior extends Serializable {
-  void execute(ActivityExecution execution) throws Exception;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;比较熟悉activitybehavior：
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/8045d4e96f4f675834525a7127f6bb58.png&quot; alt=&quot;熟悉的activitybehavior&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti6/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti6/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>activiti-desigen-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>activiti和设计模式(5)</title>
-        <description>&lt;p&gt;此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;首先我们还是看代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-           ActivitiEventBuilder.createEntityEvent(
-           ActivitiEventType.ENTITY_CREATED, processInstance
-           ));
-    }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;在看一下观察者模式说明：&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;The observer pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;subject,observers 这是观察者和被观察者两个角色，构成这个模式的主题&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;It is mainly used to implement distributed event handling systems, in “event driven” software. Most modern languages such as Java and C# have built in “event” constructs which implement the observer pattern components, for easy programming and short code.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The observer pattern is also a key part in the familiar model–view–controller (MVC) architectural pattern.[1] The observer pattern is implemented in numerous programming libraries and systems, including almost all GUI toolkits.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这个设计模式很通用，从JDK里面支持的Event构造就知道了。&lt;/p&gt;
-
-&lt;p&gt;我们看一下主要的支持的框架的Interface：  &lt;br /&gt;
-主题的框架，实现增加（删除）观察者，通知观察者等。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivitiEventDispatcher {
-   void addEventListener(ActivitiEventListener listenerToAdd);
-   void addEventListener(ActivitiEventListener listenerToAdd, ActivitiEventType... types);
-   void removeEventListener(ActivitiEventListener listenerToRemove);
-   void dispatchEvent(ActivitiEvent event);
-   void setEnabled(boolean enabled);
-   boolean isEnabled();
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这个会在引擎初始化的时候，初始化该接口对应的实现类：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void initEventDispatcher() {
-  	if(this.eventDispatcher == null) {
-  		this.eventDispatcher = new ActivitiEventDispatcherImpl();
-  	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这个实现类中也有一个比较有意思的点：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher
-   //该类的成员变量
-	protected ActivitiEventSupport eventSupport;
-	protected boolean enabled = true;
-
-public class ActivitiEventSupport
-  //该类的成员变量，以及构造函数
-	protected List&amp;lt;ActivitiEventListener&amp;gt; eventListeners;
-	protected Map&amp;lt;ActivitiEventType, List&amp;lt;ActivitiEventListener&amp;gt;&amp;gt; typedListeners;
-	public ActivitiEventSupport() {
-		eventListeners = new CopyOnWriteArrayList&amp;lt;ActivitiEventListener&amp;gt;();//有意思的点①
-		typedListeners = new HashMap&amp;lt;ActivitiEventType, List&amp;lt;ActivitiEventListener&amp;gt;&amp;gt;();
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;说明有意思的点①：为什么是CopyOnWriteArrayList？&lt;/p&gt;
-
-&lt;p&gt;CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。&lt;/p&gt;
-
-&lt;p&gt;　在使用CopyOnWriteArrayList之前，我们先阅读其源码了解下它是如何实现的。以下代码是向CopyOnWriteArrayList中add方法的实现（向CopyOnWriteArrayList里添加元素），可以发现在添加的时候是需要加锁的，否则多线程写的时候会Copy出N个副本出来。
-　
-　&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; /**
-     * Appends the specified element to the end of this list.
-     *
-     * @param e element to be appended to this list
-     * @return {@code true} (as specified by {@link Collection#add})
-     */
-    public boolean add(E e) {
-        final ReentrantLock lock = this.lock;
-        lock.lock();
-        try {
-            Object[] elements = getArray();
-            int len = elements.length;
-            Object[] newElements = Arrays.copyOf(elements, len + 1);
-            newElements[len] = e;
-            setArray(newElements);
-            return true;
-        } finally {
-            lock.unlock();
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;但是CopyOnWriteArrayList 在读的时候是不加锁的：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E get(int index) {
-        return get(getArray(), index);
-    }
-    private E get(Object[] a, int index) {
-        return (E) a[index];
-    }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这也就导致了CopyOnWriteArrayList的APIDOC所说的那样：This is ordinarily too costly, but may be more efficient than alternatives when traversal operations vastly outnumber mutations, and is useful when you cannot or don’t want to synchronize traversals, yet need to preclude interference among concurrent threads.&lt;/p&gt;
-
-&lt;p&gt;所以：CopyOnWrite并发容器用于读多写少的并发场景。比如白名单，黑名单，商品类目的访问和更新场景。
-在Activiti引擎中的场景可谓是恰到好处，因为在引擎中的CopyOnWrite的存储的内容是：ActivitiEventListener，都是需要事先定义好的，比如：流程启动的时候需要做哪些事情，流程结束的时候需要做哪些事情，这些需要自定义扩展逻辑的时候，都应该在引擎加载的时候完成ActivitiEventListener的定义，所以使用CopyOnWrite恰恰好！&lt;/p&gt;
-
-&lt;p&gt;观察者模式中的观察者接口：需要监听的事件，以及监听消息的后续逻辑失败了，是否返回异常的接口&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface ActivitiEventListener {
-
-	/**
-	 * Called when an event has been fired
-	 * @param event the event
-	 */
-	void onEvent(ActivitiEvent event);
-
-	/**
-	 * @return whether or not the current operation should fail when this listeners execution
-	 * throws an exception.
-	 */
-	boolean isFailOnException();
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;具体的调用逻辑在ActivitiEventSupport中：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected void dispatchEvent(ActivitiEvent event, ActivitiEventListener listener) {
-		try {
-			listener.onEvent(event);
-		} catch (Throwable t) {
-			if (listener.isFailOnException()) {
-				throw new ActivitiException(&quot;Exception while executing event-listener&quot;, t);
-			} else {
-				// Ignore the exception and continue notifying remaining listeners. The
-				// listener
-				// explicitly states that the exception should not bubble up
-				LOG.warn(&quot;Exception while executing event-listener, which was ignored&quot;, t);
-			}
-		}
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;具体的事件的封装，也没有使用JDK的event支持类，activiti自己封装的ActivitiEventImpl&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ActivitiEventImpl implements ActivitiEvent
-	protected ActivitiEventType type;
-	protected String executionId;
-	protected String processInstanceId;
-	protected String processDefinitionId;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;感谢：http://ifeve.com/java-copy-on-write/&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Aug 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/activiti-desigen-pattern/2017/08/13/activit5/</link>
-        <guid isPermaLink="true">http://localhost:4000/activiti-desigen-pattern/2017/08/13/activit5/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>activiti-desigen-pattern</category>
         
       </item>
     

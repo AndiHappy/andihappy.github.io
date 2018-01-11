@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>JDK并发框架的描述（二） - 飞翔的面包 | FlyBread Blog</title>
+    <title>netty in action 精简2 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/concurrent/2017/08/28/concurrent2/">
+    <link rel="canonical" href="http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>JDK并发框架的描述（二）</h1>
+                    <h1>netty in action 精简2</h1>
                     
                     
-                    <h2 class="subheading">锁的Condition，CyclicBarrier以及实现的说明</h2>
+                    <h2 class="subheading">netty in action的读书笔记+复习英语单词</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 28, 2017</span>
+                    <span class="meta">Posted by zhailzh on December 2, 2017</span>
                 </div>
             </div>
         </div>
@@ -209,13 +209,75 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>线程之间的通信，在java中有两种：      <br />
-  一种是synchronized对应的wait，和notify；    <br />
-  另外一种，就是Lock中对应的Condition中的await和signal</p>
+				<p>这章主要的是介绍netty的基本的概念。</p>
 
+<p>In this chapter we’ll show you how to build a Netty-based client and server。    <br />
+the exercise is important for two reasons.    <br />
+First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.    <br />
+Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.    <br />
 <!--more-->
+We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.</p>
 
-<p>待续。。。。。。。。。</p>
+<p>Although we’ve spoken of the client, the figure shows multiple clients connected simultaneously to the server. The number of clients that can be supported is limited, in theory, only by the system resources available (and any constraints that might be imposed by the JDK version in use).</p>
+
+<p>客户端的连接数，和服务端的资源有关系，一般和文件打开数有关联。</p>
+
+<p>All Netty servers require the following:
+■ At least one ChannelHandler—This component implements the server’s processing of data received from the client—its business logic.</p>
+
+<p>ChannelHandler 一个很重要的功能就是，处理客户端的发送的数据</p>
+
+<p>■ Bootstrapping—This is the startup code that configures the server. At a minimum, it binds the server to the port on which it will listen for connection requests.</p>
+
+<p>Bootstrap 和 ServerBootstrap 就是启动netty的辅助类</p>
+
+<p>ChannelInboundHandlerAdapter has a straightforward（简单易懂的） API, and each of its methods can be overridden to hook into the event lifecycle at the appropriate point. <strong>Because you need to handle all received data, you override channelRead().</strong> In this server you simply echo the data to the remote peer.
+Overriding exceptionCaught() allows you to react to any Throwable subtypes— here you log the exception and close the connection. <strong>A more elaborate（复杂，精心制作的） application might try to recover from the exception,</strong> but in this case simply closing the connection signals to the remote peer that an error has occurred.</p>
+
+<p>ChannelInboundHandlerAdapter 一般Handler需要继承的类，主要override的方法是：    <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/1ab0e3db6783f4ca1cfc126d679065d8.png" alt="ChannelInBoundHandlerAdapter" /></p>
+
+<p>override channelActive(), invoked when a connection has been established. This ensures that something is written to the server as soon as possible, which in this case is a byte buffer that encodes the string “Netty rocks!”.</p>
+
+<p>这个方法可以用来做登录或者token的验证的逻辑！！</p>
+
+<p>What happens if an exception isn’t caught?</p>
+
+<p>Every Channel has an associated ChannelPipeline, which holds a chain of Channel- Handler instances. By default, a handler will forward the invocation of a handler method to the next one in the chain. Therefore, if exceptionCaught()is not imple- mented somewhere along the chain, exceptions received will travel to the end of the ChannelPipeline and will be logged. For this reason, your application should supply at least one ChannelHandler that implements exceptionCaught().</p>
+
+<p>每一个Handler属于一个 handler链中，每一个handler链绑在一个ChannelPipel中。如果Handler中对产生的异常没有处理，将会沿着handler链中传入到下一个handler，一直到最后一个。</p>
+
+<p>针对Handler的总结：
+ChannelHandlers are invoked for different types of events.
+■ Applications implement or extend ChannelHandlers to hook into the event lifecycle and provide custom application logic.</p>
+
+<p>■ Architecturally, ChannelHandlers help to keep your business logic decoupled from networking code. This simplifies development as the code evolves in response to changing requirements.</p>
+
+<p>ChannelHandlers处理的是不同类型的Event，与网路通信解耦。</p>
+
+<p>In this section you’ll encounter the term transport. In the standard, multilayered view of networking protocols, the transport layer is the one that provides services for end- to-end or host-to-host communications.   <br />
+传输层，四层网路模型中第二层，具体的是tcp udp等协议层。</p>
+
+<p>Internet communications are based on the TCP transport. NIO transport refers to a transport that’s mostly identical to TCP except for server-side performance enhance- ments provided by the Java NIO implementation。</p>
+
+<p>和TCP协议非常的像，只是增加了服务端性能的提升。</p>
+
+<pre><code class="language-Java"> b.childHandler(new ChannelInitializer&lt;SocketChannel&gt;() { // 7
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+              ch.pipeline().addLast(new EchoServerHandler());
+            }
+          });
+</code></pre>
+<p>you make use of a special class, ChannelInitializer. This is key. <strong>When a new connection is accepted, a new child Channel will be created, and the Channel Initializer will add an instance of your EchoServerHandler to the Channel’s ChannelPipeline.</strong> As we explained earlier, this handler will receive notifications about inbound messages.</p>
+
+<p>每一次新的连接的到来，就会创建一个新的Channel。</p>
+
+<p>NIO is used in this example because it’s currently the most widely used transport, thanks to its scalability and thoroughgoing asynchrony. But a different transport implementation could be used as well. If you wished to use the OIO transport in your server, you’d specify OioServerSocketChannel and OioEventLoopGroup.</p>
+
+<p>OIO的协议是什么？？</p>
+
+<p>In the following chapters, you’ll see many more examples of how Netty simplifies scalability and concurrency.</p>
 
 
                 <hr style="visibility: hidden;">
@@ -223,17 +285,17 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/concurrent/2017/08/27/concurrent1/" data-toggle="tooltip" data-placement="top" title="JDK并发框架的描述（二）">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction0/" data-toggle="tooltip" data-placement="top" title="netty in action 精简">
                         Previous<br>
-                        <span>JDK并发框架的描述（二）</span>
+                        <span>netty in action 精简</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/performance/2017/09/12/javaPerformance/" data-toggle="tooltip" data-placement="top" title="JAVA性能优化（一）">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/" data-toggle="tooltip" data-placement="top" title="netty in action 精简3">
                         Next<br>
-                        <span>JAVA性能优化（一）</span>
+                        <span>netty in action 精简3</span>
                         </a>
                     </li>
                     
@@ -330,8 +392,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/concurrent/2017/08/28/concurrent2";
-    var disqus_url = "http://localhost:4000/concurrent/2017/08/28/concurrent2/";
+    var disqus_identifier = "/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1";
+    var disqus_url = "http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

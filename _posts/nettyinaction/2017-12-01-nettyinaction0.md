@@ -2,7 +2,7 @@
 layout: post  
 title: "netty in action 精简"  
 subtitle: "netty in action的读书笔记+复习英语单词"  
-date: 2017-12-01 09:00:00  
+date: 2017-12-02 09:00:00  
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true  
@@ -11,7 +11,7 @@ tags:
 categories:  
 - 读书笔记
 ---  
-netty 异步事件驱动型IO框架，值得学习
+netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
 <!--more-->
 1. the system must scale up to 150,000 concurrent users with no loss of performance。      
 
@@ -114,3 +114,18 @@ An outbound event is the result of an operation that will trigger an action in t
 ![envent](http://7xtrwx.com1.z0.glb.clouddn.com/82d4921691f30a71bea6f4b204353f8b.png)    
 
 Netty’s asynchronous programming model is built on the concepts of Futures and callbacks, with the dispatching of events to handler methods happening at a deeper level. Taken together, these elements provide a processing environment that allows the logic of your application to evolve independently of any concerns with network operations. This is a key goal of Netty’s design approach   
+
+netty 是建立在 Future和Callback，以及把各种类型的事件交由Handler处理的基础上的。这种机制保证了应用与网路通信模块之间的相对的独立，这也是netty设计过程中一个比较重要的点。      
+
+Netty abstracts the Selector away from the application by firing events, eliminating all the handwritten dispatch code that would otherwise be required. Under the covers, an EventLoop is assigned to each Channel to handle all of the events, including      
+■ Registration of interesting events      
+■ Dispatching events to ChannelHandlers      
+■ Scheduling further actions      
+
+Netty抽闲Selector的作用，消除了分发代码的编写，这里的分发代码指的是：Selector在接到Socket的事件的时候，需要触发相对应的逻辑，例如：connect事件对应的连接逻辑，读事件对应的数据请求逻辑等等。      
+
+抽象成了一个对象：EventLoop，这个EventLoop还是比较的重要的一个抽象类。      
+
+The EventLoop itself is driven by only one thread that handles all of the I/O events for one Channel and does not change during the lifetime of the EventLoop. This simple and powerful design eliminates any concern you might have about synchronization in your ChannelHandlers, so you can focus on providing the right logic to be executed when there is interesting data to process. As we’ll see when we explore Netty’s thread- ing model in detail, the API is simple and compact.
+
+EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁

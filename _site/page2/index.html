@@ -193,6 +193,165 @@
             ">
     			
 <div class="post-preview">
+    <a href="/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/">
+        <h2 class="post-title">
+            复习算法和数据结构（1）
+        </h2>
+        
+        <h3 class="post-subtitle">
+            整理自己的笔记，回顾自己以前记录的算法和数据结构，争取做到温故而知新。
+        </h3>
+        
+        <div class="post-content-preview">
+        
+
+        </div>
+        <!-- <div class="post-content-preview">
+            
+
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 18, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti8/">
+        <h2 class="post-title">
+            activiti和设计模式(8)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中流程各个节点的行为数据
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            BPMN中不仅规定了每一个图标代表的意义，例如：    
+  
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  
+
+首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：
+
+public interface ActivityBehav...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti7/">
+        <h2 class="post-title">
+            activiti和设计模式(7)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中流程定义中节点的跳转
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>一个具体的流程启动以后，具体流程示意图：   <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png" alt="简单会签流程示意图" /></p>
+
+<p>追踪流程的运转的情况，找到好玩的代码。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            一个具体的流程启动以后，具体流程示意图：   
+
+
+追踪流程的运转的情况，找到好玩的代码。  
+
+根据状态机的跳转的动作：
+PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUT...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti6/">
+        <h2 class="post-title">
+            activiti和设计模式(6)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中状态机模式，不仅仅是状态机模式
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？
+
+
+state Pattern：
+
+
+  The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. Wit...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activit5/">
+        <h2 class="post-title">
+            activiti和设计模式(5)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中事件通知
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。
+
+
+
+首先我们还是看代码：
+
+Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+           ActivitiEventBuilder.createEn...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/activiti-desigen-pattern/2017/08/10/activit4/">
         <h2 class="post-title">
             activiti和设计模式(4)
@@ -365,42 +524,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/">
-        <h2 class="post-title">
-            再次出发
-        </h2>
-        
-        <h3 class="post-subtitle">
-            每一次的出发都是信心满满，就是不知道能坚持多久
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>终于再次的出发，想今后写点东西。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            终于再次的出发，想今后写点东西。
-
-
-
-正文
-
-这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   
-自己有时间了，在慢慢的修改，变为自己喜欢的。
-
-每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。		...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on July 26, 2017
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -410,6 +533,10 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
         <a href="/">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page3">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -437,7 +564,7 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                         
                             
-                                <a href="/tags/#学习" title="学习" rel="14">
+                                <a href="/tags/#学习" title="学习" rel="18">
                                     学习
                                 </a>
                             
@@ -445,6 +572,12 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                                 <a href="/tags/#温故而知新" title="温故而知新" rel="1">
                                     温故而知新
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#定时任务" title="定时任务" rel="1">
+                                    定时任务
                                 </a>
                             
                          -->

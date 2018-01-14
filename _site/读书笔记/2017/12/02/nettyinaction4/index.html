@@ -189,7 +189,7 @@
                     <h1>netty in action 读书笔记</h1>
                     
                     
-                    <h2 class="subheading">netty in action的第四章，</h2>
+                    <h2 class="subheading">netty in action的第四,五章</h2>
                     
                     <span class="meta">Posted by zhailzh on December 2, 2017</span>
                 </div>
@@ -209,18 +209,20 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>explain the transport implementations that come bundled with Netty and the use cases appropriate to each. With this informa- tion in hand, you should find it straightforward to choose the best option for your application.  <br />
-<!--more--></p>
+				<p>explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     <br />
+the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuffer.</p>
+
+<!--more-->
 
 <p>a Channel has a ChannelPipeline and a ChannelConfig assigned to it. The ChannelConfig holds all of the configuration settings for the Channel and supports hot changes.</p>
 
 <p>The ChannelPipeline holds all of the ChannelHandler instances that will be applied to inbound and outbound data and events.</p>
 
-<p>Typical uses for ChannelHandlers include:
-■ Transforming data from one format to another
-■ Providing notification of exceptions
-■ Providing notification of a Channel becoming active or inactive
-■ Providing notification when a Channel is registered with or deregistered from an EventLoop
+<p>Typical uses for ChannelHandlers include:   <br />
+■ Transforming data from one format to another   <br />
+■ Providing notification of exceptions   <br />
+■ Providing notification of a Channel becoming active or inactive  <br />
+■ Providing notification when a Channel is registered with or deregistered from an EventLoop   <br />
 ■ Providing notification about user-defined events</p>
 
 <p>The ChannelPipeline implements a common design pattern, Intercepting Filter. UNIX pipes are another familiar example: com- mands are chained together, with the output of one command connecting to the input of the next in line.</p>
@@ -268,6 +270,38 @@ After the application reacts to the change of state, the selector is reset and t
 <p>Zero-copy is a feature currently available only with NIO and Epoll transport. It allows you to quickly and efficiently move data from a file system to the network without copying from kernel space to user space, which can significantly improve perfor- mance in protocols such as FTP or HTTP. <strong>This feature is not supported by all OSes. Specifically it is not usable with file systems that implement data encryption or compression—only the raw content of a file can be transferred.</strong> Conversely, transferring files that have already been encrypted isn’t a problem.</p>
 
 <p>零拷贝技术，是的netty的效率比较的高效。不支持文件系统中数据的压缩和解压缩。但是传输压缩的数据是没有问题的。</p>
+
+<p><strong>Netty’s NIO transport is based on the common abstraction for asynchronous/non-blocking networking provided by Java.</strong> Although this ensures that Netty’s non-blocking API will be usable on any platform, it also entails limitations, because the JDK has to make compromises in order to deliver the same capabilities on all systems.</p>
+
+<p>netty基于JDK提动的网路通信功能，保证了平台的普适性。但是也正因为是JDK为了平台的普适性，做出了妥协。</p>
+
+<p>Given this, you may wonder how Netty can support NIO with the same API used for asynchronous transports. The answer is that Netty makes use of the SO_TIMEOUT Socket flag, which specifies the maximum number of milliseconds to wait for an I/O opera- tion to complete. If the operation fails to complete within the specified interval, a SocketTimeoutException is thrown. Netty catches this exception and continues the processing loop. On the next EventLoop run, it will try again. This is the only way an asynchronous framework like Netty can support OIO</p>
+
+<p>OIO和NIO实现的差别。</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/e5bb374823d0ad784f28e27327ac0a19.png" alt="channel的选择" /></p>
+
+<p>Netty’s API for data handling is exposed through two components—abstract class ByteBuf and interface ByteBufHolder.     <br />
+These are some of the advantages of the ByteBuf API:
+■ It’s extensible to userdefined buffer types.  <br />
+■ Transparent zero-copy is achieved by a built-in composite buffer type.  <br />
+■ Capacity is expanded on demand (as with the JDK StringBuilder).   <br />
+■ Switching between reader and writer modes doesn’t require calling ByteBuffer’s flip() method.  <br />
+■ Reading and writing employ distinct indices.  <br />
+■ Method chaining is supported.  <br />
+■ Reference counting is supported.   <br />
+■ Pooling is supported.</p>
+
+<p>netty中使用bytebuffer的原因：
+1.易于扩展用户自定义的数据类型  <br />
+2.新建类型的时候可以确定是否是Zero-Copy类型  <br />
+3.自动需求自动扩展容量  <br />
+4.读写之间的切换不用调用flip   <br />
+5.读写标志位的分离，方法链，引用计算以及池化的支持</p>
+
+<p>Because all network communications involve the movement of sequences of bytes, <strong>an efficient and easy-to-use data structure is an obvious necessity.</strong> Netty’s ByteBuf imple- mentation meets and exceeds these requirements.</p>
+
+<p>To understand the relationship between these indices, consider what would hap- pen if you were to read bytes until the readerIndex reached the same value as the writerIndex. At that point, you would have reached the end of readable data. Attempt- ing to read beyond that point would trigger an IndexOutOfBoundsException, just as when you attempt to access data beyond the end of an array.</p>
 
 
                 <hr style="visibility: hidden;">

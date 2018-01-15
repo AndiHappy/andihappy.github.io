@@ -1,8 +1,8 @@
 ---    
 layout: post  
-title: "netty in action 精简"  
+title: "netty in action 读书笔记"  
 subtitle: "netty in action的读书笔记+复习英语单词"  
-date: 2017-12-02 09:00:00  
+date: 2017-12-01 09:00:00  
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true  
@@ -128,4 +128,4 @@ Netty抽闲Selector的作用，消除了分发代码的编写，这里的分发�
 
 The EventLoop itself is driven by only one thread that handles all of the I/O events for one Channel and does not change during the lifetime of the EventLoop. This simple and powerful design eliminates any concern you might have about synchronization in your ChannelHandlers, so you can focus on providing the right logic to be executed when there is interesting data to process. As we’ll see when we explore Netty’s thread- ing model in detail, the API is simple and compact.
 
-EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁
+EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁     

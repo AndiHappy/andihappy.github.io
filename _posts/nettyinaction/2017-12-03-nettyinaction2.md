@@ -1,8 +1,8 @@
 ---    
 layout: post  
-title: "netty in action 精简3"  
+title: "netty in action 读书笔记"  
 subtitle: "netty in action的读书笔记+复习英语单词"  
-date: 2017-12-02 09:00:00  
+date: 2017-12-03 09:00:00  
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true  
@@ -12,12 +12,10 @@ categories:
 - 读书笔记
 ---    
 
-这章主要的是介绍netty的架构，主要的模块。
+这章主要的是介绍netty的架构，主要的模块。       
+verifying your development tools and environment,     
+ building application logic with ChannelHandlers.      
 
-In this chapter we’ll show you how to build a Netty-based client and server。      
-the exercise is important for two reasons.      
-First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.      
-Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.      
 <!--more-->
 
 From a high-level perspective, Netty addresses two corresponding areas of concern, which we might label broadly as technical and architectural. First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum application performance and scalability under heavy load. Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplify ing development while maximizing the testability, modularity, and reusability of code.     
@@ -25,14 +23,14 @@ From a high-level perspective, Netty addresses two corresponding areas of concer
 netty的两个方面，技术层次的异步和事件处理机制，架构层面的很多的设计模式。     
 
 ***The following sections will add detail to our discussion of the Channel, EventLoop, and ChannelFuture classes which, taken together, can be thought of as representing Netty’s networking abstraction: ***      
-■ Channel—Sockets
+■ Channel—Sockets      
 ■ EventLoop—Control flow, multithreading, concurrency    
 ■ ChannelFuture—Asynchronous notification     
 
 netty的框架抽象的内容：Channel，socket连接的抽象，EventLoop，并发，多线程事件控制流。ChannelFuture，异步的通知。      
 
-Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations 。 example：
-NioSocketChannel
+Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations。example：
+NioSocketChannel     
 
 netty针对socket操作的抽象出来的是Channel，具体的集成关系：      
 
@@ -42,7 +40,7 @@ public abstract class AbstractNioChannel extends AbstractChannel
 public abstract class AbstractNioByteChannel extends AbstractNioChannel
 public interface SocketChannel extends Channel
 public class NioSocketChannel extends AbstractNioByteChannel implements io.netty.channel.socket.SocketChannel
-~~~
+~~~       
 
 The EventLoop defines Netty’s core abstraction for handling events that occur during the lifetime of a connection。    
 

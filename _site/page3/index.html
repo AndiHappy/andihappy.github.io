@@ -193,6 +193,104 @@
             ">
     			
 <div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/10/activit3/">
+        <h2 class="post-title">
+            activiti和设计模式(3)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中核心业务的组织，主要是组合和继承关系的使用。
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
+中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
+中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。
+
+
+
+首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？      
+
+~~~
+...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 10, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/10/activit20/">
+        <h2 class="post-title">
+            activiti和设计模式(2.1)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti的每一个Command执行过程中的设计模式
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：<strong>Interpreter pattern</strong>.</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：**Interpreter pattern**.
+
+
+首先是启动的代码：       
+~~~java
+//调用方：
+ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variab...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 10, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/08/activit2/">
+        <h2 class="post-title">
+            activiti和设计模式(2)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中server的实现包含的设计模式
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。
+
+
+
+ activity服务的实现，很有自己的特色，show code:
+
+~~~java
+public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
+  public Pro...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 8, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/activiti-desigen-pattern/2017/08/02/activit1/">
         <h2 class="post-title">
             activiti和设计模式(1)
@@ -218,15 +316,13 @@
 
         </div>
         <!-- <div class="post-content-preview">
-            
-  activiti的源码的主要的架构
-  activiti前两层包含的设计模式
+            1. activiti的源码的主要的架构
+2. activiti前两层包含的设计模式
 
+从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。     
+一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！        
 
-从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！
-
-另外的一个原因，在于activi...
+另外的一个原...
         </div> -->
     </a>
     <p class="post-meta">
@@ -251,18 +347,19 @@
 
         </div>
         <!-- <div class="post-content-preview">
-            终于再次的出发，想今后写点东西。
+            终于再次的出发，想今后写点东西。   
 
 
 
-正文
 
-这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   
-自己有时间了，在慢慢的修改，变为自己喜欢的。
+## 正文     
 
+这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。     
+自己有时间了，在慢慢的修改，变为自己喜欢的。		
+ 
 每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
 一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。		...
+常立志，不如立长志。文正公曾言：天...
         </div> -->
     </a>
     <p class="post-meta">
@@ -299,7 +396,7 @@
                     <hr class="hidden-sm hidden-xs">
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-                        <!-- 
+                         
                             
                                 <a href="/tags/#记录" title="记录" rel="1">
                                     记录
@@ -307,7 +404,7 @@
                             
                         
                             
-                                <a href="/tags/#学习" title="学习" rel="19">
+                                <a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             
@@ -323,7 +420,7 @@
                                     定时任务
                                 </a>
                             
-                         -->
+                        
                     </div>
                 </section>
                 

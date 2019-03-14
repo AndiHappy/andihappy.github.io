@@ -215,7 +215,7 @@
 
 <p>activity服务的实现，很有自己的特色，show code:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
   <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
 
@@ -234,8 +234,7 @@
   <span class="o">}</span>
 
 <span class="err">……………</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这里面有两个很引人注意的地方：</p>
 
@@ -279,16 +278,15 @@
 
 <p>我们来看一下，RunTimeService的实现：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="n">ServiceImpl</span> <span class="kd">implements</span> <span class="n">RuntimeService</span> <span class="o">{</span>
 
   <span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
   <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceImpl</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceImpl</span> <span class="o">{</span>
 
     <span class="kd">protected</span> <span class="n">ProcessEngineConfigurationImpl</span> <span class="n">processEngineConfiguration</span><span class="o">;</span>
 
@@ -309,8 +307,7 @@
     <span class="k">this</span><span class="o">.</span><span class="na">commandExecutor</span> <span class="o">=</span> <span class="n">commandExecutor</span><span class="o">;</span>
   <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>我们可以分析命令行模式的四个角色：</p>
 
@@ -318,17 +315,16 @@
   <li>客户端，Client ，即RuntimeServiceImpl，包含了命令行，接收方。确定了调用的入口：</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>  @Autowired
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Autowired
   public RuntimeService runtimeService;
   ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variablesObject);
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <ol>
   <li>命令行，这个比较的明显,StartProcessInstanceCmd类，就像上面所说的：<strong>Values for parameters of the receiver method are stored in the command</strong> 代码：</li>
 </ol>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;,</span> <span class="n">Serializable</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;,</span> <span class="n">Serializable</span> <span class="o">{</span>
 
   <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
   <span class="kd">protected</span> <span class="n">String</span> <span class="n">processDefinitionKey</span><span class="o">;</span>
@@ -345,21 +341,18 @@
   <span class="k">this</span><span class="o">.</span><span class="na">businessKey</span> <span class="o">=</span> <span class="n">businessKey</span><span class="o">;</span>
   <span class="k">this</span><span class="o">.</span><span class="na">variables</span> <span class="o">=</span> <span class="n">variables</span><span class="o">;</span>
   <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>实现的是命令行接口：Command<T></T></p>
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
   <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">);</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>剩下两个是：Invoker，和receiver 不是很好的区分，但是我们从RuntimeServiceImpl里面的类名称，可以探究一二：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected CommandExecutor commandExecutor;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected CommandExecutor commandExecutor;
+</code></pre></div></div>
 
 <p>可以看出来：ComandExecutor 是执行者，另外我们从receiver的定义中：</p>
 
@@ -373,7 +366,7 @@
   <li>准备工作：receiver已经在引擎中配置完毕了:</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>  // 初始化引擎的时候，初始化了CommandContextFactory工厂类
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // 初始化引擎的时候，初始化了CommandContextFactory工厂类
   protected void initCommandContextFactory() {
   if (commandContextFactory==null) {
    commandContextFactory = new CommandContextFactory();
@@ -384,12 +377,11 @@
   public CommandContext createCommandContext(Command&lt;?&gt; cmd) {
   return new CommandContext(cmd, processEngineConfiguration);
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>0.1 执行者也是在命令行初始化之前完成的：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>/** this will be initialized during the configurationComplete() */
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** this will be initialized during the configurationComplete() */
  protected CommandExecutor commandExecutor;
 
  // 执行者的设计，就是一个链式拦截器
@@ -399,13 +391,11 @@
       commandExecutor = new CommandExecutorImpl(getDefaultCommandConfig(), first);
     }
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>所以现在只剩下，建立命令行了：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>new StartProcessInstanceCmd&lt;ProcessInstance&gt;(processDefinitionKey, null, null, null)
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>new StartProcessInstanceCmd&lt;ProcessInstance&gt;(processDefinitionKey, null, null, null)
+</code></pre></div></div>
 
 <p>具体的执行的过程是： 一个命令是怎么在 client,receiver,invoker 之间运转的，明天分析</p>
 
@@ -479,7 +469,7 @@
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

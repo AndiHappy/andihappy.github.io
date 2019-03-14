@@ -216,10 +216,9 @@
   <li>首先是找到流程的定义：</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
 workFlowId).processDefinitionTenantId(orgId).singleResult();
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>有一个需要注意的问题，这种情况下查找的流程定义，ProcessDefinition没有进行解析彻底，只是数据库字段的映射。</p>
 
@@ -229,14 +228,13 @@ workFlowId).processDefinitionTenantId(orgId).singleResult();
   <li>启动流程实例：</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> ProcessInstance ins = runtimeService
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ProcessInstance ins = runtimeService
  .startProcessInstanceById(workFlowId, formId,variablesObject);
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>进入命令行：StartProcessInstanceCmd<ProcessInstance>，返回的是一个ProcessInstance,具体的代码是：</ProcessInstance></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public ProcessInstance execute(CommandContext commandContext) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessInstance execute(CommandContext commandContext) {
 // 找到部署管理器DeploymentManager
   DeploymentManager deploymentManager = commandContext
     .getProcessEngineConfiguration()//说明①
@@ -273,25 +271,22 @@ workFlowId).processDefinitionTenantId(orgId).singleResult();
   return processInstance;
 }
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>说明①：CommandContext,以及processEngineConfiguration 都是单例的模式，只不过从代码上面看，和一般的单例模式不太一样，找不到private的构造方法。</p>
 
 <p>说明②: 通过部署管理器寻找流程定义的过程：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>org.activiti.engine.impl.persistence.deploy.DeploymentManager.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>org.activiti.engine.impl.persistence.deploy.DeploymentManager.
 findDeployedProcessDefinitionById(String)
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>首先是到缓存中查找，如果缓存中没有，再到数据库中查找，这个缓存的大小，可以在引擎的配置文件中配置：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>&lt;property name="processDefinitionCacheLimit" value="10" /&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;property name="processDefinitionCacheLimit" value="10" /&gt;
+</code></pre></div></div>
 <p>通过数据库查找的流程定义依然是没有完全解析的，具体的全部的解析的过程在什么地方呢？</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
     String processDefinitionId = processDefinition.getId();
     String deploymentId = processDefinition.getDeploymentId();
     processDefinition = processDefinitionCache.get(processDefinitionId);
@@ -310,14 +305,13 @@ findDeployedProcessDefinitionById(String)
     }
     return processDefinition;
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>说明③：activiti中没有ProcessInstanceEntity，有的只是ExecutionEntity。创建ExecutionEntity的时候，把历史数据全部的创建，并且插入了数据库中。</p>
 
 <p>另外还有流程实例创建的事件广播出去，这个使用的是观察者模式，这个模式在activiti中可谓是到处都是，主要用于事件的通知，订阅之类的。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>// 实例数据创建
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 实例数据创建
  Context.getCommandContext().getHistoryManager()
       .recordProcessInstanceStart(processInstance);
 
@@ -326,8 +320,7 @@ findDeployedProcessDefinitionById(String)
         Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
                 ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processInstance));
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。</p>
 
 <p>说明⑤：进入状态机的设计模式</p>
@@ -402,7 +395,7 @@ findDeployedProcessDefinitionById(String)
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

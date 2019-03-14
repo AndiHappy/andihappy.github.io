@@ -213,7 +213,7 @@
 <!--more--></p>
 
 <p>首先是启动的代码：</p>
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//调用方：</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//调用方：</span>
 <span class="n">ProcessInstance</span> <span class="n">ins</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceById</span><span class="o">(</span><span class="n">workFlowId</span><span class="o">,</span> <span class="n">formId</span><span class="o">,</span><span class="n">variablesObject</span><span class="o">);</span>      
 
 <span class="c1">//调用的入口：</span>
@@ -222,14 +222,13 @@
     <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="kc">null</span><span class="o">,</span>
         <span class="n">processDefinitionId</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
   <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/fab71e2707099d49e0c04456244c7258.png" alt="debug页面" /></p>
 
 <p>从图中可以看出：CommandExecutor 已经包含了执行所需要的全部的内容，我们看一下执行的代码:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>@Override
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
  public &lt;T&gt; T execute(Command&lt;T&gt; command) {
    return execute(defaultConfig, command);
  }
@@ -239,8 +238,7 @@
     return first.execute(config, command);
   }
   //这里我们可以看到，执行的过程进入了某一个链中。
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这个链总共有三个类构成：    <br />
 org.activiti.engine.impl.interceptor.LogInterceptor     <br />
@@ -248,18 +246,17 @@ org.activiti.engine.impl.interceptor.CommandContextInterceptor     <br />
 org.activiti.engine.impl.interceptor.CommandInvoker</p>
 
 <p>这三个类全部实现了接口：CommandInterceptor</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface CommandInterceptor {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface CommandInterceptor {
 
   &lt;T&gt; T execute(CommandConfig config, Command&lt;T&gt; command);
   CommandInterceptor getNext();
   void setNext(CommandInterceptor next);
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>通过这个代码的 setNext方法，这三个类构成了一个执行链，在引擎初始化的时候，能够发现这个执行链构造和初始化的代码：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected void initCommandInvoker() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void initCommandInvoker() {
   if (commandInvoker==null) {
     commandInvoker = new CommandInvoker();//③
   }
@@ -311,11 +308,10 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
      }
    }
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这个三个拦截链都做了什么呢？第一个就是日志记录，虽然个人感觉比较的无聊，但是也可能是一个扩展的示例：LogInterceptor</p>
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(!</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
       <span class="c1">// do nothing here if we cannot log</span>
       <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
@@ -331,12 +327,11 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
       <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>第二个链：CommandContextInterceptor 主要是构建命令运行的执行的环境：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
    <span class="n">CommandContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">();</span>  
    <span class="kt">boolean</span> <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
    <span class="c1">// We need to check the exception, because the transaction can be in a rollback state,</span>
@@ -369,8 +364,7 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
    <span class="o">}</span>
    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
  <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>从这个环境构造，可以看出来两个问题：</p>
 <ol>
@@ -379,16 +373,15 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
 </ol>
 
 <p>第三个链：CommandInvoker 命令行的执行：</p>
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
   <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">());</span>
   <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>可以看到最终执行的过程，还是到了每一个的command类中，这也是符合预期的。此例中最终进入StartProcessInstanceCmd类中，执行代码:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">DeploymentManager</span> <span class="n">deploymentManager</span> <span class="o">=</span> <span class="n">commandContext</span>
       <span class="o">.</span><span class="na">getProcessEngineConfiguration</span><span class="o">()</span>
       <span class="o">.</span><span class="na">getDeploymentManager</span><span class="o">();</span>
@@ -406,8 +399,7 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
 
     <span class="k">return</span> <span class="n">processInstance</span><span class="o">;</span>
   <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>可以看出来这个是 Interpreter pattern 和 Command Pattern 联合使用的一种情况，就目的而言，试分析一二：     <br />
 总结来自：</p>
@@ -488,7 +480,7 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

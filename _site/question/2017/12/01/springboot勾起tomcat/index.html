@@ -214,18 +214,17 @@
 
 <p>spring的启动是从一个java类的main函数开始的，这个应该没有异议：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">SpringApplication</span> <span class="n">application</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SpringApplication</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 		<span class="n">application</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>A: 首先是初始化</p>
 
 <p>启动新建的类</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">Object</span><span class="o">...</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">Object</span><span class="o">...</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">initialize</span><span class="o">(</span><span class="n">sources</span><span class="o">);</span>
 	<span class="o">}</span>
 
@@ -244,15 +243,13 @@
 		<span class="c1">//推断出启动类</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="n">deduceMainApplicationClass</span><span class="o">();</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>推断是否是WEB环境的判断就是，看看能否加出来：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">WEB_ENVIRONMENT_CLASSES</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"javax.servlet.Servlet"</span><span class="o">,</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">WEB_ENVIRONMENT_CLASSES</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"javax.servlet.Servlet"</span><span class="o">,</span>
 			<span class="s">"org.springframework.web.context.ConfigurableWebApplicationContext"</span> <span class="o">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这里的类。</p>
 
@@ -266,7 +263,7 @@
 
 <p>根据运行的堆栈，查找到启动的类！</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 	<span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">deduceMainApplicationClass</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">try</span> <span class="o">{</span>
 			<span class="n">StackTraceElement</span><span class="o">[]</span> <span class="n">stackTrace</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">().</span><span class="na">getStackTrace</span><span class="o">();</span>
@@ -282,12 +279,11 @@
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 <hr />
 <p>B:  找到具体的main方法所在的类，然后就是run方法了：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="cm">/**
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
@@ -321,15 +317,14 @@
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>————————————————————————————————————</p>
 <ol>
   <li>创建并且刷新配置上下文：</li>
 </ol>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>	<span class="kd">private</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">createAndRefreshContext</span><span class="o">(</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">private</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">createAndRefreshContext</span><span class="o">(</span>
 			<span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span><span class="o">,</span>
 			<span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">ConfigurableApplicationContext</span> <span class="n">context</span><span class="o">;</span>
@@ -379,23 +374,21 @@
 		<span class="o">}</span>
 		<span class="k">return</span> <span class="n">context</span><span class="o">;</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>2.3  // refresh(context);</p>
 
 <p>最主要的调用的方法</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">(</span><span class="n">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">(</span><span class="n">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">Assert</span><span class="o">.</span><span class="na">isInstanceOf</span><span class="o">(</span><span class="n">AbstractApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">applicationContext</span><span class="o">);</span>
 		<span class="o">((</span><span class="n">AbstractApplicationContext</span><span class="o">)</span> <span class="n">applicationContext</span><span class="o">).</span><span class="na">refresh</span><span class="o">();</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/e986d3f51188c1b5a9215b5213e1c436.png" alt="refresh调用的过程" /></p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="nd">@Override</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">,</span> <span class="n">IllegalStateException</span> <span class="o">{</span>
 		<span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">startupShutdownMonitor</span><span class="o">)</span> <span class="o">{</span>
@@ -423,12 +416,11 @@
 		<span class="o">}</span>
 	<span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>创建servlet容器的过程：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
 	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onRefresh</span><span class="o">()</span> <span class="o">{</span>
 		<span class="kd">super</span><span class="o">.</span><span class="na">onRefresh</span><span class="o">();</span>
 		<span class="k">try</span> <span class="o">{</span>
@@ -460,8 +452,7 @@
 		<span class="o">}</span>
 		<span class="n">initPropertySources</span><span class="o">();</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>具体运行的过程中的servlet的容器建造类：</p>
 
@@ -471,7 +462,7 @@
 
 <p>新建tomcat servlet 容器的时候，直接的把tomcat启动！！</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">TomcatEmbeddedServletContainer</span><span class="o">(</span><span class="n">Tomcat</span> <span class="n">tomcat</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">autoStart</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">TomcatEmbeddedServletContainer</span><span class="o">(</span><span class="n">Tomcat</span> <span class="n">tomcat</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">autoStart</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">tomcat</span><span class="o">,</span> <span class="s">"Tomcat Server must not be null"</span><span class="o">);</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">tomcat</span> <span class="o">=</span> <span class="n">tomcat</span><span class="o">;</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">autoStart</span> <span class="o">=</span> <span class="n">autoStart</span><span class="o">;</span>
@@ -502,11 +493,10 @@
 					<span class="n">ex</span><span class="o">);</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>this.tomcat.start() 这个算是将tomcat启动：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>2018-01-02 19:06:05.426 [main] INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat initialized with port(s): 20011 (http)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2018-01-02 19:06:05.426 [main] INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat initialized with port(s): 20011 (http)
 2018-01-02 19:06:07.534 [main] INFO  org.apache.catalina.core.StandardService - Starting service Tomcat
 2018-01-02 19:06:07.542 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet Engine: Apache Tomcat/8.0.32
 2018-01-02 19:06:07.721 [localhost-startStop-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
@@ -517,8 +507,7 @@
 2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'httpPutFormContentFilter' to: [/*]
 2018-01-02 19:06:07.988 [localhost-startStop-1] INFO  o.s.boot.context.embedded.FilterRegistrationBean - Mapping filter: 'requestContextFilter' to: [/*]
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>总结来说：springboot在运行的过程中，确定是web体系，找到main类的run方法，执行的过程中
 确定了：org.springframework.boot.context.embedded.EmbeddedWebApplicationContext
@@ -538,9 +527,9 @@
                     
                     
                     <li class="next">
-                        <a href="/%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/2017/12/01/TimerTask/" data-toggle="tooltip" data-placement="top" title="定时任务的说明">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/01/nettyinaction0/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Next<br>
-                        <span>定时任务的说明</span>
+                        <span>netty in action 读书笔记</span>
                         </a>
                     </li>
                     
@@ -594,7 +583,7 @@
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

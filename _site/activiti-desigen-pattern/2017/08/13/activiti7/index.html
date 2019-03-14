@@ -215,28 +215,26 @@
 <p>追踪流程的运转的情况，找到好玩的代码。  <br />
 <!--more-->
 根据状态机的跳转的动作：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
 ||
 PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
 ||
 ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>我们看到第一个的开始节点的执行：      <br />
 <img src="http://7xtrwx.com1.z0.glb.clouddn.com/ed93f1f1941a9f0feba1f9c1b123b15b.png" alt="开始节点的执行" /></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public class NoneStartEventActivityBehavior extends FlowNodeActivityBehavior {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class NoneStartEventActivityBehavior extends FlowNodeActivityBehavior {
 
   // Nothing to see here.
   // The default behaviour of the BpmnActivity is exactly what
   // a none start event should be doing.
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>实现的在FlowNodeActivityBehavior中</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
 
  /**
   * Default behaviour: just leave the activity with no extra functionality.
@@ -256,12 +254,11 @@ ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
  protected void leaveIgnoreConditions(ActivityExecution activityContext) {
    bpmnActivityBehavior.performIgnoreConditionsOutgoingBehavior(activityContext);
  }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>默认的bpmnActivityBehavior沿着默认的线达到下一个节点，是吗？</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected void performOutgoingBehavior(ActivityExecution execution,
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void performOutgoingBehavior(ActivityExecution execution,
          boolean checkConditions, boolean throwExceptionIfExecutionStuck, List&lt;ActivityExecution&gt; reusableExecutions) {
 
    if (log.isDebugEnabled()) {
@@ -338,11 +335,10 @@ ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
      }
    }
  }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>流程定义节点之间的转移，是先找到满足条件的离开的线：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public void take(PvmTransition transition) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void take(PvmTransition transition) {
   	take(transition, true);
   }
 
@@ -362,25 +358,23 @@ ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
     setTransition((TransitionImpl) transition);
     performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_END);
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>说的转移，只是同一个ExecutionEntity里面的 Activity修改了，Transition修改了，然后开始执行：TRANSITION_NOTIFY_LISTENER_END.  但是和我们想象的不一样，这里设置的Activiti是Transition的Source，也就是“刚刚执行结束”的活动定义：</p>
 
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/ea742aca518a53df8dbeb1f64c8c42c6.png" alt="Execution设置activity" /></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
 ||
 PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
 ||
 ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
 ||
 TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>执行的过程：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> public void execute(InterpretableExecution execution) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public void execute(InterpretableExecution execution) {
     ScopeImpl scope = getScope(execution);
     List&lt;ExecutionListener&gt; exectionListeners = scope.getExecutionListeners(getEventName());
     int executionListenerIndex = execution.getExecutionListenerIndex();
@@ -411,21 +405,19 @@ TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd(
   protected void eventNotificationsCompleted(InterpretableExecution execution) {
     execution.performOperation(TRANSITION_DESTROY_SCOPE);
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>说明①: 这个是一个循环调用的，为了循环的发送监听事件
 现在运行到了：TRANSITION_DESTROY_SCOPE</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>||
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>||
 TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
 public class AtomicOperationTransitionDestroyScope implements AtomicOperation
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>说明：TRANSITION_DESTROY_SCOPE直接实现了接口，没有像TRANSITION_NOTIFY_LISTENER_END一样，在抽象类的基础方面实现。这可能也是为什么有了接口，还有抽象类的原因？</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
     InterpretableExecution propagatingExecution = null;
 
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
@@ -514,12 +506,11 @@ public class AtomicOperationTransitionDestroyScope implements AtomicOperation
     }
   }
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>从最后的逻辑，我们可以看到一个循环：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
 ||
 PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
 ||
@@ -530,18 +521,16 @@ TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd(
 TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
 ||
 TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情况就是再次的循环一次）
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>TRANSITION_NOTIFY_LISTENER_TAKE 这个就是对应线的逻辑了：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
+</code></pre></div></div>
 
 <p>执行逻辑：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
   public void execute(InterpretableExecution execution) {
     TransitionImpl transition = execution.getTransition();
     
@@ -578,17 +567,15 @@ TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情�
       execution.performOperation(TRANSITION_CREATE_SCOPE);
     }
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>然后就到了：TRANSITION_CREATE_SCOPE</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
+</code></pre></div></div>
 <p>执行逻辑：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
     InterpretableExecution propagatingExecution = null;
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
     if (activity.isScope()) {//activity扩展自Scope
@@ -611,14 +598,13 @@ TRANSITION_NOTIFY_LISTENER_TAKE，TRANSITION_NOTIFY_LISTENER_END（第二种情�
     }
    propagatingExecution.performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_START);
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>到了：AtomicOperation.TRANSITION_NOTIFY_LISTENER_START       <br />
 public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventAtomicOperation   <br />
 扩展自抽象类：AbstractEventAtomicOperation    具体的执行的过程是：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>  @Override
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
   protected void eventNotificationsCompleted(InterpretableExecution execution) {
     TransitionImpl transition = execution.getTransition();
     ActivityImpl destination = null;
@@ -641,11 +627,10 @@ public class AtomicOperationTransitionNotifyListenerStart extends AbstractEventA
       execution.performOperation(ACTIVITY_EXECUTE);
     }
   }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>所以总体的循环就是：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PROCESS_START = new AtomicOperationProcessStart
 ||
 PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
 ||
@@ -662,8 +647,7 @@ TRANSITION_CREATE_SCOPE（创建） = new AtomicOperationTransitionCreateScope()
 TRANSITION_NOTIFY_LISTENER_START = new AtomicOperationTransitionNotifyListenerStart();
 ||
 TRANSITION_CREATE_SCOPE（再次创建），ACTIVITY_EXECUTE（再次进入）
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这个就是节点转移的全过程：</p>
 <blockquote>
@@ -745,7 +729,7 @@ TRANSITION_CREATE_SCOPE（再次创建），ACTIVITY_EXECUTE（再次进入）
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

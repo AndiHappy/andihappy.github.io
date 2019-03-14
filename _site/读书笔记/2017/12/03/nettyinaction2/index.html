@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>netty in action 精简3 - 飞翔的面包 | FlyBread Blog</title>
+    <title>netty in action 读书笔记 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/">
+    <link rel="canonical" href="http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>netty in action 精简3</h1>
+                    <h1>netty in action 读书笔记</h1>
                     
                     
                     <h2 class="subheading">netty in action的读书笔记+复习英语单词</h2>
                     
-                    <span class="meta">Posted by zhailzh on December 2, 2017</span>
+                    <span class="meta">Posted by zhailzh on December 3, 2017</span>
                 </div>
             </div>
         </div>
@@ -209,37 +209,34 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这章主要的是介绍netty的架构，主要的模块。</p>
+				<p>这章主要的是介绍netty的架构，主要的模块。     <br />
+verifying your development tools and environment,   <br />
+ building application logic with ChannelHandlers.</p>
 
-<p>In this chapter we’ll show you how to build a Netty-based client and server。    <br />
-the exercise is important for two reasons.    <br />
-First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.    <br />
-Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.    <br />
-<!--more--></p>
+<!--more-->
 
 <p>From a high-level perspective, Netty addresses two corresponding areas of concern, which we might label broadly as technical and architectural. First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum application performance and scalability under heavy load. Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplify ing development while maximizing the testability, modularity, and reusability of code.</p>
 
 <p>netty的两个方面，技术层次的异步和事件处理机制，架构层面的很多的设计模式。</p>
 
 <p><em>**The following sections will add detail to our discussion of the Channel, EventLoop, and ChannelFuture classes which, taken together, can be thought of as representing Netty’s networking abstraction: **</em>    <br />
-■ Channel—Sockets
+■ Channel—Sockets    <br />
 ■ EventLoop—Control flow, multithreading, concurrency  <br />
 ■ ChannelFuture—Asynchronous notification</p>
 
 <p>netty的框架抽象的内容：Channel，socket连接的抽象，EventLoop，并发，多线程事件控制流。ChannelFuture，异步的通知。</p>
 
-<p>Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations 。 example：
+<p>Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations。example：
 NioSocketChannel</p>
 
 <p>netty针对socket操作的抽象出来的是Channel，具体的集成关系：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractChannel</span> <span class="kd">extends</span> <span class="n">DefaultAttributeMap</span> <span class="kd">implements</span> <span class="n">Channel</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractChannel</span> <span class="kd">extends</span> <span class="n">DefaultAttributeMap</span> <span class="kd">implements</span> <span class="n">Channel</span>
 <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioChannel</span> <span class="kd">extends</span> <span class="n">AbstractChannel</span>
 <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioByteChannel</span> <span class="kd">extends</span> <span class="n">AbstractNioChannel</span>
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SocketChannel</span> <span class="kd">extends</span> <span class="n">Channel</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioSocketChannel</span> <span class="kd">extends</span> <span class="n">AbstractNioByteChannel</span> <span class="kd">implements</span> <span class="n">io</span><span class="o">.</span><span class="na">netty</span><span class="o">.</span><span class="na">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">.</span><span class="na">SocketChannel</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The EventLoop defines Netty’s core abstraction for handling events that occur during the lifetime of a connection。</p>
 
@@ -304,15 +301,15 @@ The pattern for outbound messages is the reverse: an encoder converts the mes- s
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/" data-toggle="tooltip" data-placement="top" title="netty in action 精简2">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Previous<br>
-                        <span>netty in action 精简2</span>
+                        <span>netty in action 读书笔记</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction4/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Next<br>
                         <span>netty in action 读书笔记</span>
                         </a>
@@ -368,7 +365,7 @@ The pattern for outbound messages is the reverse: an encoder converts the mes- s
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             
@@ -411,8 +408,8 @@ The pattern for outbound messages is the reverse: an encoder converts the mes- s
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2";
-    var disqus_url = "http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/";
+    var disqus_identifier = "/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2";
+    var disqus_url = "http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

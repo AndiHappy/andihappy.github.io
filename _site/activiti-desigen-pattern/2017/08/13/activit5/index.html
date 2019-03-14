@@ -215,13 +215,12 @@
 
 <p>首先我们还是看代码：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
            ActivitiEventBuilder.createEntityEvent(
            ActivitiEventType.ENTITY_CREATED, processInstance
            ));
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>在看一下观察者模式说明：</p>
 <blockquote>
   <p>The observer pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.</p>
@@ -242,7 +241,7 @@
 <p>我们看一下主要的支持的框架的Interface：  <br />
 主题的框架，实现增加（删除）观察者，通知观察者等。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface ActivitiEventDispatcher {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivitiEventDispatcher {
    void addEventListener(ActivitiEventListener listenerToAdd);
    void addEventListener(ActivitiEventListener listenerToAdd, ActivitiEventType... types);
    void removeEventListener(ActivitiEventListener listenerToRemove);
@@ -250,19 +249,17 @@
    void setEnabled(boolean enabled);
    boolean isEnabled();
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>这个会在引擎初始化的时候，初始化该接口对应的实现类：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected void initEventDispatcher() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void initEventDispatcher() {
   	if(this.eventDispatcher == null) {
   		this.eventDispatcher = new ActivitiEventDispatcherImpl();
   	}
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>这个实现类中也有一个比较有意思的点：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher
    //该类的成员变量
 	protected ActivitiEventSupport eventSupport;
 	protected boolean enabled = true;
@@ -275,8 +272,7 @@ public class ActivitiEventSupport
 		eventListeners = new CopyOnWriteArrayList&lt;ActivitiEventListener&gt;();//有意思的点①
 		typedListeners = new HashMap&lt;ActivitiEventType, List&lt;ActivitiEventListener&gt;&gt;();
 	}
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>说明有意思的点①：为什么是CopyOnWriteArrayList？</p>
 
@@ -285,7 +281,7 @@ public class ActivitiEventSupport
 <p>　在使用CopyOnWriteArrayList之前，我们先阅读其源码了解下它是如何实现的。以下代码是向CopyOnWriteArrayList中add方法的实现（向CopyOnWriteArrayList里添加元素），可以发现在添加的时候是需要加锁的，否则多线程写的时候会Copy出N个副本出来。
 　
 　</p>
-<div class="highlighter-rouge"><pre class="highlight"><code> /**
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> /**
      * Appends the specified element to the end of this list.
      *
      * @param e element to be appended to this list
@@ -305,18 +301,16 @@ public class ActivitiEventSupport
             lock.unlock();
         }
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>但是CopyOnWriteArrayList 在读的时候是不加锁的：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>    public E get(int index) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E get(int index) {
         return get(getArray(), index);
     }
     private E get(Object[] a, int index) {
         return (E) a[index];
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>这也就导致了CopyOnWriteArrayList的APIDOC所说的那样：This is ordinarily too costly, but may be more efficient than alternatives when traversal operations vastly outnumber mutations, and is useful when you cannot or don’t want to synchronize traversals, yet need to preclude interference among concurrent threads.</p>
 
 <p>所以：CopyOnWrite并发容器用于读多写少的并发场景。比如白名单，黑名单，商品类目的访问和更新场景。
@@ -324,7 +318,7 @@ public class ActivitiEventSupport
 
 <p>观察者模式中的观察者接口：需要监听的事件，以及监听消息的后续逻辑失败了，是否返回异常的接口</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface ActivitiEventListener {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivitiEventListener {
 
 	/**
 	 * Called when an event has been fired
@@ -338,11 +332,10 @@ public class ActivitiEventSupport
 	 */
 	boolean isFailOnException();
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>具体的调用逻辑在ActivitiEventSupport中：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>protected void dispatchEvent(ActivitiEvent event, ActivitiEventListener listener) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void dispatchEvent(ActivitiEvent event, ActivitiEventListener listener) {
 		try {
 			listener.onEvent(event);
 		} catch (Throwable t) {
@@ -356,18 +349,16 @@ public class ActivitiEventSupport
 			}
 		}
 	}
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>具体的事件的封装，也没有使用JDK的event支持类，activiti自己封装的ActivitiEventImpl</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public class ActivitiEventImpl implements ActivitiEvent
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ActivitiEventImpl implements ActivitiEvent
 	protected ActivitiEventType type;
 	protected String executionId;
 	protected String processInstanceId;
 	protected String processDefinitionId;
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>感谢：http://ifeve.com/java-copy-on-write/</p>
 
@@ -441,7 +432,7 @@ public class ActivitiEventSupport
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

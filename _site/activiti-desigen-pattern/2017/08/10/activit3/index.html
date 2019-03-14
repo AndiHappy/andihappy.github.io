@@ -216,7 +216,7 @@
 
 <p>首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>BpmnXMLConverter converter = new BpmnXMLConverter();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BpmnXMLConverter converter = new BpmnXMLConverter();
 
 bpmnModel = converter.convertToBpmnModel(streamSource, validateSchema, enableSafeBpmnXml, encoding);
 //使用fasterxml 来解析xml
@@ -251,11 +251,10 @@ protected ProcessParser processParser = new ProcessParser();
 protected ResourceParser resourceParser = new ResourceParser();
 protected SignalParser signalParser = new SignalParser();
 protected SubProcessParser subProcessParser = new SubProcessParser();
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>我们最后看一下，BpmnModel的组成：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>	protected Map&lt;String, List&lt;ExtensionAttribute&gt;&gt; definitionsAttributes =
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	protected Map&lt;String, List&lt;ExtensionAttribute&gt;&gt; definitionsAttributes =
 new LinkedHashMap\&lt;String, List&lt;ExtensionAttribute&gt;\&gt;();
 	protected List&lt;Process&gt; processes = new ArrayList&lt;Process&gt;();
 	protected Map&lt;String, GraphicInfo&gt; locationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
@@ -277,11 +276,10 @@ new LinkedHashMap\&lt;String, List&lt;ExtensionAttribute&gt;\&gt;();
 	protected List&lt;String&gt; userTaskFormTypes;
 	protected List&lt;String&gt; startEventFormTypes;
 	protected int nextFlowIdCounter = 1;
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>你会发现，在调试的时候老出现的Activity之类的并没有出现，那么BpmnModel和ProcessDefinitionImpl是怎么关联起来的呢？同样是在BpmnParse中，可以发现：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public BpmnParse execute() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public BpmnParse execute() {
   。。。。。。
 // Validation successfull (or no validation)
 createImports();
@@ -291,11 +289,10 @@ createOperations();
 transformProcessDefinitions();
   。。。。。。
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>具体的操作是在：org.activiti.engine.impl.bpmn.parser.BpmnParse.processDI()中，主要的代码是：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>  // Parse diagram interchange information
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // Parse diagram interchange information
         ProcessDefinitionEntity processDefinition = getProcessDefinition(process.getId());
         if (processDefinition != null) {
           processDefinition.setGraphicalNotationDefined(true);
@@ -310,8 +307,7 @@ transformProcessDefinitions();
               createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId));
             }
           }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>从这里我们可以看出来：BpmnModel只要支持的Bpmn的规范，支持的是xml中定义的各个图形的对象，以及对象的属性。ProcessDefinitionEntity主要的是流程运转的过程中的对象，这点从类的命名上面也可以看出来。</p>
 
@@ -319,7 +315,7 @@ transformProcessDefinitions();
 
 <p>组合模式：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>首先是每一个元素都会含有实行，在activiti中属性抽象为一个接口，
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>首先是每一个元素都会含有实行，在activiti中属性抽象为一个接口，
 所有的基础元素都会实现该接口：			
 org.activiti.bpmn.model.HasExtensionAttribute     
 
@@ -331,8 +327,7 @@ BaseElement 被设计为抽象的类型，这个感觉基础元素，不会出�
 BaseElement的继承的体系，如附件所示：
 
 其中我们比较属性的Usertask，Process的集成体系也如附件中体现：
-</code></pre>
-</div>
+</code></pre></div></div>
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/51a6be4efb9206b6a0326456e01e1a7f.png" alt="baseElement的集成体系" />
 <img src="http://7xtrwx.com1.z0.glb.clouddn.com/9eed650ff7bdedacf4170f0d064bff0c.png" alt="flowElement继承体系" /></p>
 
@@ -343,39 +338,35 @@ BaseElement的继承的体系，如附件所示：
 
 <p>上面的BpmnModel就是典型的组合模式，但是在继承体系中，也是含有组合的，最容易理解的莫过于子流程的定义了，即：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public class SubProcess extends Activity implements FlowElementsContainer {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class SubProcess extends Activity implements FlowElementsContainer {
   protected List&lt;FlowElement&gt; flowElementList = new ArrayList&lt;FlowElement&gt;();
   protected List&lt;Artifact&gt; artifactList = new ArrayList&lt;Artifact&gt;();
   protected List&lt;ValuedDataObject&gt; dataObjects = new ArrayList&lt;ValuedDataObject&gt;();
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在BPMN的解析的过程中，使用到了抽象工厂的类：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface BpmnParseFactory {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface BpmnParseFactory {
   BpmnParse createBpmnParse(BpmnParser bpmnParser);
 }   
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>默认的工程类：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public class DefaultBpmnParseFactory implements BpmnParseFactory {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DefaultBpmnParseFactory implements BpmnParseFactory {
 
   public BpmnParse createBpmnParse(BpmnParser bpmnParser) {
     return new BpmnParse(bpmnParser);
   }
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>使用的情况：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>if (bpmnParseFactory == null) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (bpmnParseFactory == null) {
       bpmnParseFactory = new DefaultBpmnParseFactory();
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>个人感觉有点过度设计的感觉，但是为了扩展，也是无可厚非。</p>
 
@@ -450,7 +441,7 @@ BaseElement的继承的体系，如附件所示：
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction4/">
+    <link rel="canonical" href="http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -191,7 +191,7 @@
                     
                     <h2 class="subheading">netty in action的第四,五章</h2>
                     
-                    <span class="meta">Posted by zhailzh on December 2, 2017</span>
+                    <span class="meta">Posted by zhailzh on December 4, 2017</span>
                 </div>
             </div>
         </div>
@@ -239,7 +239,7 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
 
 <p>Channel是线程安全的。</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">final</span> <span class="n">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="n">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
 <span class="kd">final</span> <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"your data"</span><span class="o">,</span>
     <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">).</span><span class="na">retain</span><span class="o">();</span>
 <span class="c1">//新建的线程可以随便的调用</span>
@@ -248,8 +248,7 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">.</span><span class="na">duplicate</span><span class="o">());</span>
     <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/5940f5d7453b6ab69893d714abefa445.png" alt="transport" /> <br />
 netty支持的协议。</p>
@@ -301,7 +300,124 @@ These are some of the advantages of the ByteBuf API:
 
 <p>Because all network communications involve the movement of sequences of bytes, <strong>an efficient and easy-to-use data structure is an obvious necessity.</strong> Netty’s ByteBuf imple- mentation meets and exceeds these requirements.</p>
 
-<p>To understand the relationship between these indices, consider what would hap- pen if you were to read bytes until the readerIndex reached the same value as the writerIndex. At that point, you would have reached the end of readable data. Attempt- ing to read beyond that point would trigger an IndexOutOfBoundsException, just as when you attempt to access data beyond the end of an array.</p>
+<p>netty不用JDK自带的ByteBuffer，而是自行扩展了ByteBuf的原因。</p>
+
+<p>To understand the relationship between these indices, consider what would happen if you were to read bytes until the readerIndex reached the same value as the writerIndex. At that point, you would have reached the end of readable data. Attempting to read beyond that point would trigger an IndexOutOfBoundsException, just as when you attempt to access data beyond the end of an array.</p>
+
+<p>ByteBuf使用了两个index，readerIndex和writerIndex，为了操作的方便。netty封装的ByteBuf的实质：an array of bytes with distinct indices to control read and write access。</p>
+
+<p>另外ByteBuf提供的方法中，只有以read或者writer开头的方法名称，才会改变readindex或者writeindex的位置。</p>
+
+<p>The most frequently used ByteBuf pattern stores the data in the heap space of the JVM. Referred to as a backing array, this pattern provides fast allocation and dealloca- tion in situations where pooling isn’t in use.</p>
+
+<p>最常用的ByteBuf模式将数据存储在JVM的堆空间中。这一模式被称为backing array，在不使用池的情况下，该模式提供了快速分配和回收。这种分配的方式称为：heapBuffer</p>
+
+<p>NOTE Attempting to access a backing array when hasArray() returns false will trigger an UnsupportedOperation-  Exception. This pattern is similar to uses of the JDK’s ByteBuffer.</p>
+
+<p>Direct buffer is another ByteBuf pattern. We expect that memory allocated for object creation will always come from the heap, but it doesn’t have to—<strong>the ByteBuffer class that was introduced in JDK 1.4 with NIO allows a JVM implementation to allocate memory via native calls.</strong> This aims to avoid copying the buffer’s contents to (or from) an intermediate buffer before (or after) each invocation of a native I/O operation.The Javadoc for ByteBuffer states explicitly,<strong>“The contents of direct buffers will reside outside of the normal garbage-collected heap.”</strong></p>
+
+<p>还有一种Buffer 称之为Direct buffer，这也是零拷贝的一个方面。</p>
+
+<p>The primary disadvantage of direct buffers is that they’re somewhat more expensive to allocate and release than are heap-based buffers. You may also encounter another drawback if you’re working with legacy code: because the data isn’t on the heap, you may have to make a copy, as shown next.</p>
+
+<p>direct buffers 分配和释放都比heap buffers 花费比较的高。并且direct buffers不能够make a copy。</p>
+
+<p>The third and final pattern uses a composite buffer, which presents an aggregated view of multiple ByteBufs. Here you can add and delete ByteBuf instances as needed, a fea- ture entirely absent from the JDK’s ByteBuffer      implementation.</p>
+
+<p>Netty implements this pattern with a subclass of ByteBuf, CompositeByteBuf, which provides a virtual representation of multiple buffers as a single, merged buffer</p>
+
+<p>第三中的类型是混合类型，实现的类型是：CompositeByteBuf。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">ByteBuf</span> <span class="n">heapBuf</span> <span class="o">=</span> <span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>    
+
+		<span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>   
+
+		<span class="n">CompositeByteBuf</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
+		<span class="n">heapBuf</span> <span class="o">=</span> <span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>
+		<span class="n">bytes</span> <span class="o">=</span> <span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">()</span> <span class="o">;</span>
+		<span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
+</code></pre></div></div>
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/c1598edefd37939bcb469ccac6bf11cc.png" alt="CompositeByteBuf" /></p>
+
+<p>CompositeByteBuf may not allow access to a backing array, so accessing the data in a CompositeByteBuf resembles the direct buffer pattern, as shown next.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CompositeByteBuf</span> <span class="n">compBuf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
+<span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">compBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">();</span>
+<span class="kt">byte</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+<span class="n">compBuf</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="n">compBuf</span><span class="o">.</span><span class="na">readerIndex</span><span class="o">(),</span> <span class="n">array</span><span class="o">);</span>
+<span class="n">handleArray</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Note that Netty optimizes socket I/O operations that employ CompositeByteBuf, elim- inating whenever possible the performance and memory usage penalties that are incurred with the JDK’s buffer implementation.2 This optimization takes place in Netty’s core code and is therefore not exposed, but you should be aware of its impact.</p>
+
+<p>Netty在Socket通信的时候，使用了已经优化的CompositeByteBuf，消除了使用JDK自带的Buffer，可能产生的性能和内存上的问题。</p>
+
+<p>While you may be tempted to call discardReadBytes() frequently to maximize the writable segment, please be aware that this will most likely cause memory copying because the readable bytes (marked CONTENT in the figures) have to be moved to the start of the buffer. We advise doing this only when it’s really needed; for example, when memory is at a premium.</p>
+
+<p>readindex之前的部分，就是已读的部分，已经没有什么用处了，调用discardReadBytes，可以提高buffer的利用率，但是可能会引发内存拷贝的发生，所以谨慎使用。</p>
+
+<p>The method writableBytes() is used here to determine whether there is sufficient space in the buffer.</p>
+
+<p>writableBytes 取得剩余的可写的字节。</p>
+
+<p>The JDK’s InputStream defines the methods mark(int readlimit) and reset(). These are used to mark the current position in the stream to a specified value and to reset the stream to that position, respectively.</p>
+
+<p>mark和reset的作用，标记和恢复。</p>
+
+<p>Similarly, you can set and reposition the ByteBuf readerIndex and writerIndex by calling markReaderIndex(), markWriterIndex(), resetReaderIndex(), and reset- WriterIndex(). These are similar to the InputStream calls, except that there’s no readlimit parameter to specify when the mark becomes invalid.    <br />
+对应的ByteBuf中也有标记和恢复。</p>
+
+<p>You can also move the indices to specified positions by calling readerIndex(int) or writerIndex(int). Attempting to set either index to an invalid position will cause an IndexOutOfBoundsException.</p>
+
+<p>对特定的标识进行标记</p>
+
+<p>You can set both readerIndex and writerIndex to 0 by calling clear(). Note that this doesn’t clear the contents of memory.</p>
+
+<p>clear 不清理内存的内容。</p>
+
+<p>Calling clear() is much less expensive than discardReadBytes() because it resets the indices without copying any memory.</p>
+
+<p>能使用clear不使用discardReadbytes。</p>
+
+<p>■ duplicate()    <br />
+■ slice()  <br />
+■ slice(int, int)  <br />
+■ Unpooled.unmodifiableBuffer(…)  <br />
+■ order(ByteOrder)  <br />
+■ readSlice(int)  <br />
+ This makes a derived buffer inexpensive to create, but it also means that if you modify its contents you are modifying the source instance as well, so beware.</p>
+
+<p>使用上面的方法，能够得到一个副本的buf，但是需要注意，操作的时候是同一个buf。</p>
+
+<p>If you need a true copy of an existing buffer, use copy() or copy(int,int). Unlike a derived buffer, the ByteBuf returned by this call has an independent copy of the data.</p>
+
+<p>如果不想要副本，可以直接的调用copy，直接弄一个新的。</p>
+
+<p>To reduce the overhead of allocating and deallocating memory, Netty implements pooling with the interface ByteBufAllocator, which can be used to allocate instances of any of the ByteBuf varieties we’ve described.    <br />
+You can obtain a reference to a ByteBufAllocator either from a Channel (each of which can have a distinct instance) or through the ChannelHandlerContext that is bound to a ChannelHandler.    <br />
+使用ByteBufAllocator分配ByteBuf,ByteBufAllocator的引用可以通过Channel来进行获得。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+<span class="n">ByteBufAllocator</span> <span class="n">allocator2</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>Netty provides two implementations of ByteBufAllocator: PooledByteBufAllocator and UnpooledByteBufAllocator. The former pools ByteBuf instances to improve per- formance and minimize memory fragmentation. This implementation uses an effi- cient approach to memory allocation known as jemalloc4 that has been adopted by a number of modern OSes. The latter implementation doesn’t pool ByteBuf instances and returns a new instance every time it’s called.</p>
+
+<p>PooledByteBufAllocator和UnpooledByteBufAllocator，亦如类名所示。</p>
+
+<p>There may be situations where you don’t have a reference to a ByteBufAllocator. For this case, Netty provides a utility class called Unpooled, which provides static helper methods to create unpooled ByteBuf instances.  <br />
+Unpooled 工具类。</p>
+
+<p>Reference counting is a technique for optimizing memory use and performance by releasing the resources held by an object when it is no longer referenced by other objects.    <br />
+引用计算</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+<span class="o">....</span>
+<span class="n">ByteBuf</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">allocator</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
+<span class="k">assert</span> <span class="n">buffer</span><span class="o">.</span><span class="na">refCnt</span><span class="o">()</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
+<span class="o">...</span>
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -309,12 +425,19 @@ These are some of the advantages of the ByteBuf API:
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/" data-toggle="tooltip" data-placement="top" title="netty in action 精简3">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Previous<br>
-                        <span>netty in action 精简3</span>
+                        <span>netty in action 读书笔记</span>
                         </a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/05/nettyinaction5/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
+                        Next<br>
+                        <span>netty in action 读书笔记</span>
+                        </a>
+                    </li>
                     
                 </ul>
 
@@ -366,7 +489,7 @@ These are some of the advantages of the ByteBuf API:
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             
@@ -409,8 +532,8 @@ These are some of the advantages of the ByteBuf API:
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction4";
-    var disqus_url = "http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction4/";
+    var disqus_identifier = "/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4";
+    var disqus_url = "http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

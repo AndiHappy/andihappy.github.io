@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>netty in action 精简2 - 飞翔的面包 | FlyBread Blog</title>
+    <title>netty in action 读书笔记 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -186,7 +186,7 @@
                         <a class="tag" href="/tags/#学习" title="学习">学习</a>
                         
                     </div>
-                    <h1>netty in action 精简2</h1>
+                    <h1>netty in action 读书笔记</h1>
                     
                     
                     <h2 class="subheading">netty in action的读书笔记+复习英语单词</h2>
@@ -209,12 +209,7 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这章主要的是介绍netty的基本的概念。</p>
-
-<p>In this chapter we’ll show you how to build a Netty-based client and server。    <br />
-the exercise is important for two reasons.    <br />
-First, it will provide a test bed for setting up（设置） and verifying your development tools and environment, which is essential if you plan to work with the book’s sam- ple code in preparation for your own development efforts.    <br />
-Second, you’ll acquire hands-on experience with a key aspect of Netty, touched on in the previous chapter: building application logic with ChannelHandlers.    <br />
+				<p>这章主要的是介绍netty的基本的概念。    <br />
 <!--more-->
 We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.</p>
 
@@ -231,8 +226,9 @@ We’ll also assume that you’re going to want to tinker（修改） with the e
 
 <p>Bootstrap 和 ServerBootstrap 就是启动netty的辅助类</p>
 
-<p>ChannelInboundHandlerAdapter has a straightforward（简单易懂的） API, and each of its methods can be overridden to hook into the event lifecycle at the appropriate point. <strong>Because you need to handle all received data, you override channelRead().</strong> In this server you simply echo the data to the remote peer.
-Overriding exceptionCaught() allows you to react to any Throwable subtypes— here you log the exception and close the connection. <strong>A more elaborate（复杂，精心制作的） application might try to recover from the exception,</strong> but in this case simply closing the connection signals to the remote peer that an error has occurred.</p>
+<p>ChannelInboundHandlerAdapter has a straightforward（简单易懂的） API, and each of its methods can be overridden to hook into the event lifecycle at the appropriate point. <strong>Because you need to handle all received data, you override channelRead().</strong> In this server you simply echo the data to the remote peer.</p>
+
+<p>Overriding exceptionCaught() allows you to react to any Throwable subtypes— here you log the exception and close the connection. <strong>A more elaborate（复杂，精心制作的） application might try to recover from the exception,</strong> but in this case simply closing the connection signals to the remote peer that an error has occurred.</p>
 
 <p>ChannelInboundHandlerAdapter 一般Handler需要继承的类，主要override的方法是：    <br />
 <img src="http://7xtrwx.com1.z0.glb.clouddn.com/1ab0e3db6783f4ca1cfc126d679065d8.png" alt="ChannelInBoundHandlerAdapter" /></p>
@@ -269,13 +265,14 @@ ChannelHandlers are invoked for different types of events.
             }
           });
 </code></pre>
+
 <p>you make use of a special class, ChannelInitializer. This is key. <strong>When a new connection is accepted, a new child Channel will be created, and the Channel Initializer will add an instance of your EchoServerHandler to the Channel’s ChannelPipeline.</strong> As we explained earlier, this handler will receive notifications about inbound messages.</p>
 
 <p>每一次新的连接的到来，就会创建一个新的Channel。</p>
 
 <p>NIO is used in this example because it’s currently the most widely used transport, thanks to its scalability and thoroughgoing asynchrony. But a different transport implementation could be used as well. If you wished to use the OIO transport in your server, you’d specify OioServerSocketChannel and OioEventLoopGroup.</p>
 
-<p>OIO的协议是什么？？</p>
+<p>OIO的协议是</p>
 
 <p>In the following chapters, you’ll see many more examples of how Netty simplifies scalability and concurrency.</p>
 
@@ -285,17 +282,17 @@ ChannelHandlers are invoked for different types of events.
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction0/" data-toggle="tooltip" data-placement="top" title="netty in action 精简">
+                        <a href="/%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/2017/12/01/TimerTask/" data-toggle="tooltip" data-placement="top" title="定时任务的说明">
                         Previous<br>
-                        <span>netty in action 精简</span>
+                        <span>定时任务的说明</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction2/" data-toggle="tooltip" data-placement="top" title="netty in action 精简3">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Next<br>
-                        <span>netty in action 精简3</span>
+                        <span>netty in action 读书笔记</span>
                         </a>
                     </li>
                     
@@ -349,7 +346,7 @@ ChannelHandlers are invoked for different types of events.
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

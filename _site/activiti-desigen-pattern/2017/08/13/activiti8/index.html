@@ -215,7 +215,7 @@
 <!--more-->
 首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
 
   public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
 
@@ -288,12 +288,11 @@
  ...........
 
 }
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>默认的实现是：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="n">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="n">ActivityBehaviorFactory</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="n">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="n">ActivityBehaviorFactory</span> <span class="o">{</span>
 
   <span class="c1">// Start event</span>
   <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">EXCEPTION_MAP_FIELD</span> <span class="o">=</span> <span class="s">"mapExceptions"</span><span class="o">;</span>
@@ -313,8 +312,7 @@
   <span class="o">}</span>
 <span class="o">...........</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>我们在<strong>「activiti和设计模式(7)」</strong> 中定义的usertask是多实例的，所以对应的Behavior是：</p>
 
@@ -388,7 +386,7 @@
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

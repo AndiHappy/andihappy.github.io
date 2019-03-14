@@ -238,7 +238,7 @@
 
 <p>代码说话了：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NettyServer</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NettyServer</span> <span class="o">{</span>
 	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Log</span> <span class="n">LOG</span> <span class="o">=</span> <span class="n">LogFactory</span><span class="o">.</span><span class="na">getLog</span><span class="o">(</span><span class="n">NettyServer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">bind</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span><span class="c1">//2</span>
 		<span class="c1">// 配置服务端的NIO线程组</span>
@@ -269,17 +269,15 @@
 	<span class="o">}</span>
 <span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>1 首先执行1，然后顺着执行到了10</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code> <span class="n">io</span><span class="o">.</span><span class="na">netty</span><span class="o">.</span><span class="na">bootstrap</span><span class="o">.</span><span class="na">AbstractBootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">String</span><span class="o">,</span> <span class="kt">int</span><span class="o">)</span>
-</code></pre>
-</div>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">io</span><span class="o">.</span><span class="na">netty</span><span class="o">.</span><span class="na">bootstrap</span><span class="o">.</span><span class="na">AbstractBootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">String</span><span class="o">,</span> <span class="kt">int</span><span class="o">)</span>
+</code></pre></div></div>
 
 <p>具体的内容：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> public ChannelFuture bind(SocketAddress localAddress) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public ChannelFuture bind(SocketAddress localAddress) {
         validate();//校验参数
         if (localAddress == null) {
             throw new NullPointerException("localAddress");
@@ -287,12 +285,11 @@
         return doBind(localAddress);
     }
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>具体的执行：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>    private ChannelFuture doBind(final SocketAddress localAddress) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private ChannelFuture doBind(final SocketAddress localAddress) {
         final ChannelFuture regFuture = initAndRegister();
         final Channel channel = regFuture.channel();
         if (regFuture.cause() != null) {
@@ -316,10 +313,9 @@
 
         return promise;
     }
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>final ChannelFuture initAndRegister() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final ChannelFuture initAndRegister() {
         Channel channel;
         try {
             channel = createChannel();
@@ -369,12 +365,11 @@
     默认的处理的children的个数是：Runtime.getRuntime().availableProcessors() * 2
     这个应该是服务端能够同时处理客户端的连接数。
     一般是你CPU *2的个数，在Reactor模式中，mainReactor角色一般只需要一个线程就搞定了，subReactor角色就是那个苦逼的worker了，一般boss（mainReactor）一个就够了，subReactor就是需要多个了。
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Channnel的初始化：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code>     <span class="nd">@Override</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     <span class="nd">@Override</span>
     <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">Channel</span> <span class="n">channel</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">ChannelOption</span><span class="o">&lt;?&gt;,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">();</span>
         <span class="kd">synchronized</span> <span class="o">(</span><span class="n">options</span><span class="o">)</span> <span class="o">{</span>
@@ -414,12 +409,11 @@
         <span class="o">});</span>
     <span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>具体的绑定的代码:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code> <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doBind0</span><span class="o">(</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doBind0</span><span class="o">(</span>
             <span class="kd">final</span> <span class="n">ChannelFuture</span> <span class="n">regFuture</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Channel</span> <span class="n">channel</span><span class="o">,</span>
             <span class="kd">final</span> <span class="n">SocketAddress</span> <span class="n">localAddress</span><span class="o">,</span> <span class="kd">final</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="o">)</span> <span class="o">{</span>
 
@@ -436,10 +430,9 @@
             <span class="o">}</span>
         <span class="o">});</span>
     <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>最后是调用sync的代码:</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>io.netty.channel.DefaultChannelPromise.sync();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>io.netty.channel.DefaultChannelPromise.sync();
 
  @Override
     public ChannelPromise sync() throws InterruptedException {
@@ -493,8 +486,7 @@
     //volatile的关键字来标识连接的状态
     private volatile Object result;
     
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
 
@@ -567,7 +559,7 @@
                             
         				
                             
-                				<a href="/tags/#学习" title="学习" rel="19">
+                				<a href="/tags/#学习" title="学习" rel="22">
                                     学习
                                 </a>
                             

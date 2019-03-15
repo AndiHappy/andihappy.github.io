@@ -5,13 +5,22 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 15 Mar 2019 11:01:08 +0800</pubDate>
-    <lastBuildDate>Fri, 15 Mar 2019 11:01:08 +0800</lastBuildDate>
+    <pubDate>Fri, 15 Mar 2019 20:50:11 +0800</pubDate>
+    <lastBuildDate>Fri, 15 Mar 2019 20:50:11 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title>redis梳理</title>
-        <description>&lt;!--more--&gt;
+        <description>&lt;p&gt;redis主要操作的数据有五种，String，List，Map，Set，sort Set 简称为ZSet。这五类的操作的数据的底层
+是如何运行的。
+redis为什么这么快？
+redis的集群的模式
+redis的内存管理模式
+redis的持久化操作等常见的问题。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;首先我们发现问题，然后我们一个一个的回答，深入。&lt;/p&gt;
 </description>
         <pubDate>Fri, 01 Mar 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/03/01/redis-data/</link>

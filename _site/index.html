@@ -193,6 +193,31 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/03/01/redis-data/">
+        <h2 class="post-title">
+            redis梳理
+        </h2>
+        
+        <h3 class="post-subtitle">
+            redis对应的数据结构底层实现的原理
+        </h3>
+        
+        <div class="post-content-preview">
+        
+
+        </div>
+        <!-- <div class="post-content-preview">
+            
+
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on March 1, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/">
         <h2 class="post-title">
             netty in action 读书笔记
@@ -209,10 +234,10 @@
 
         </div>
         <!-- <div class="post-content-preview">
-            ■ Bootstrapping     
-■ ChannelOptions and attributes    
-   
-bootstrapping an application is the process of configuring it to run—though the details of the process may not be as simple as its defin...
+            ■ Bootstrapping   
+■ ChannelOptions and attributes  
+ 
+bootstrapping an application is the process of configuring it to run—though the details of the process may not be as simple as its definition,...
         </div> -->
     </a>
     <p class="post-meta">
@@ -240,12 +265,12 @@ bootstrapping an application is the process of configuring it to run—though th
 
         </div>
         <!-- <div class="post-content-preview">
-            ■ Threading model overview    
-■ Event loop concept and implementation    
-■ Task scheduling    
-■ Implementation details    
-   
-we must always guard against the possible side effects of concurren...
+            ■ Threading model overview  
+■ Event loop concept and implementation  
+■ Task scheduling  
+■ Implementation details  
+ 
+we must always guard against the possible side effects of concurrent executio...
         </div> -->
     </a>
     <p class="post-meta">
@@ -270,13 +295,18 @@ we must always guard against the possible side effects of concurren...
 
         </div>
         <!-- <div class="post-content-preview">
-            The ChannelHandler and ChannelPipeline      
+            The ChannelHandler and ChannelPipeline    
+ 
+The Channel lifecycle   
    
-The Channel lifecycle     
-![Channel的状态](http://7xtrwx.com1.z0.glb.clouddn.com/faf428c08e7607718839a50f4173ae21.png)     
-Channel的状态     
+Channel的状态
 
-The Chann...
+The ChannelHandler lifecycle   
+
+
+Channelhandler的生命周期
+
+When a ChannelInboundHandler implementation overrides ch...
         </div> -->
     </a>
     <p class="post-meta">
@@ -302,8 +332,8 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
 
         </div>
         <!-- <div class="post-content-preview">
-            explain the transport implementations that come bundled with Netty and the use cases appropriate to each.       
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteB...
+            explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     
+the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuf...
         </div> -->
     </a>
     <p class="post-meta">
@@ -330,13 +360,13 @@ verifying your development tools and environment,   <br />
 
         </div>
         <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的架构，主要的模块。       
-verifying your development tools and environment,     
- building application logic with ChannelHandlers.      
+            这章主要的是介绍netty的架构，主要的模块。     
+verifying your development tools and environment,   
+ building application logic with ChannelHandlers.
 
 
 
-From a high-level perspective, Netty addresses two c...
+From a high-level perspective, Netty addresses two correspondi...
         </div> -->
     </a>
     <p class="post-meta">
@@ -361,11 +391,11 @@ From a high-level perspective, Netty addresses two c...
 
         </div>
         <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的基本的概念。      
+            这章主要的是介绍netty的基本的概念。    
 
-We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.   
+We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.
 
-Although we’ve spoken of the client, the figure show...
+Although we’ve spoken of the client, the figure shows mul...
         </div> -->
     </a>
     <p class="post-meta">
@@ -390,15 +420,14 @@ Although we’ve spoken of the client, the figure show...
 
         </div>
         <!-- <div class="post-content-preview">
-            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。   
+            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。 
 
-~~~java    
 
 
 /**
  * 任务的执行，依赖于Timer，可以特定的时间执行或者按照某种规律循环的执行
  * A facility for threads to schedule tasks for future execution in a background thread.
- * Tasks may...
+ * Tasks may be scheduled ...
         </div> -->
     </a>
     <p class="post-meta">
@@ -425,11 +454,14 @@ Although we’ve spoken of the client, the figure show...
         <!-- <div class="post-content-preview">
             netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
 
-1. the system must scale up to 150,000 concurrent users with no loss of performance。      
 
-scale up 负载       
+  the system must scale up to 150,000 concurrent users with no loss of performance。
 
-2. If you can say with confidence, “Sure, no p...
+
+scale up 负载
+
+
+  If you can say with confidence, “Sure, no problem,” the...
         </div> -->
     </a>
     <p class="post-meta">
@@ -457,45 +489,14 @@ scale up 负载
             springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
 
 
-spring的启动是从一个java类的main函数开始的，这个应该没有异议：     
+spring的启动是从一个java类的main函数开始的，这个应该没有异议：
 
-~~~java  
 public static void main(String[] args) {
-		SpringApplication applicat...
+		SpringApplication application = new Sprin...
         </div> -->
     </a>
     <p class="post-meta">
         Posted by zhailzh on December 1, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/question/2017/11/04/netty1/">
-        <h2 class="post-title">
-            问题总结（一）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            梳理自己遇到的问题，开始进行总结分析
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-              自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。
-
-
-1. springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
-2. NIO的编程，netty是如果处理的？
-3. 分布式锁的使用场合，除了使用r...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 4, 2017
     </p>
 </div>
 <hr>
@@ -550,6 +551,12 @@ public static void main(String[] args) {
                             
                                 <a href="/tags/#定时任务" title="定时任务" rel="1">
                                     定时任务
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#redis" title="redis" rel="1">
+                                    redis
                                 </a>
                             
                         

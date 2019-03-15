@@ -1,0 +1,9 @@
+Configuration file: /Users/guizhai/Documents/GitHub/andihappy.github.io/_config.yml
+            Source: /Users/guizhai/Documents/GitHub/andihappy.github.io
+       Destination: /Users/guizhai/Documents/GitHub/andihappy.github.io/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating... 
+                    done in 0.895 seconds.
+ Auto-regeneration: enabled for '/Users/guizhai/Documents/GitHub/andihappy.github.io'
+    Server address: http://127.0.0.1:4000/
+  Server running... press ctrl-c to stop.

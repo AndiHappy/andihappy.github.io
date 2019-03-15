@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>activiti和设计模式(1) - 飞翔的面包 | FlyBread Blog</title>
+    <title>redis梳理 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/">
+    <link rel="canonical" href="http://localhost:4000/2019/03/01/redis-data/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        <a class="tag" href="/tags/#redis" title="redis">redis</a>
                         
                     </div>
-                    <h1>activiti和设计模式(1)</h1>
+                    <h1>redis梳理</h1>
                     
                     
-                    <h2 class="subheading">通过学习activiti的源码，从设计模式这个角度去分析这个框架，熟悉源码，学习其中的设计思想</h2>
+                    <h2 class="subheading">redis对应的数据结构底层实现的原理</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 2, 2017</span>
+                    <span class="meta">Posted by zhailzh on March 1, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,98 +209,7 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<ol>
-  <li>activiti的源码的主要的架构</li>
-  <li>activiti前两层包含的设计模式</li>
-</ol>
-
-<p>从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   <br />
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！</p>
-
-<p>另外的一个原因，在于activiti的主设计人员已经经历了一次设计jbpmn，可能被坑过一次了，所以在第二次设计的时候，更加的完善。</p>
-
-<p>至于为什么选择了从设计模式分析activiti，主要是想提供一个另外的角度，看看能不能学到点大神设计框架的精髓。</p>
-
-<!--more-->
-
-<p>activiti的总体的架构，我们可以简单的从一张图上面，大致的了解：</p>
-
-<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/1e08b5a26c027da0e7da4fcec3365d66.png" alt="activiti架构图" />  <br />
-我们首先分析，上面的两层，首先看代码：</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">EngineServices</span> <span class="o">{</span>
-
-  <span class="n">RepositoryService</span> <span class="nf">getRepositoryService</span><span class="o">();</span>
-
-  <span class="n">RuntimeService</span> <span class="nf">getRuntimeService</span><span class="o">();</span>
-
-  <span class="n">FormService</span> <span class="nf">getFormService</span><span class="o">();</span>
-
-  <span class="n">TaskService</span> <span class="nf">getTaskService</span><span class="o">();</span>
-
-  <span class="n">HistoryService</span> <span class="nf">getHistoryService</span><span class="o">();</span>
-
-  <span class="n">IdentityService</span> <span class="nf">getIdentityService</span><span class="o">();</span>
-
-  <span class="n">ManagementService</span> <span class="nf">getManagementService</span><span class="o">();</span>
-
-  <span class="n">DynamicBpmnService</span> <span class="nf">getDynamicBpmnService</span><span class="o">();</span>
-
-  <span class="n">ProcessEngineConfiguration</span> <span class="nf">getProcessEngineConfiguration</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>我们可以从EngineServer得到各个服务的，官网上面具体的调用的案例也证明了这一点，例如启动一个流程的代码：</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RuntimeService</span> <span class="n">runtimeService</span> <span class="o">=</span> <span class="n">processEngine</span><span class="o">.</span><span class="na">getRuntimeService</span><span class="o">();</span>
-<span class="n">ProcessInstance</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceByKey</span><span class="o">(</span><span class="s">"vacationRequest"</span><span class="o">,</span> <span class="n">variables</span><span class="o">);</span>
-</code></pre></div></div>
-
-<p>我们可以明显的看出来，这个就是一个封装，针对引擎提供各个功能的分模块的封装，从接口的代码可以看出来分为了：     <br />
-针对资源的RepositoryService    <br />
-实时运行的RuntimeService   <br />
-表单的FormService    <br />
-任务的TaskService    <br />
-历史的HistoryService    <br />
-。。。。。</p>
-
-<p>这个就是设计模式中的： Facade Pattern</p>
-<blockquote>
-  <p>The facade pattern (also spelled façade) is a software design pattern commonly used with object-oriented programming. The name is an analogy to an architectural façade.</p>
-</blockquote>
-
-<blockquote>
-  <p>A facade is an object that provides a simplified interface to a larger body of code, such as a class library. A facade can</p>
-</blockquote>
-
-<blockquote>
-  <p>make a software library easier to use, understand and test, since the facade has convenient methods for common tasks,
-make the library more readable, for the same reason,
-reduce dependencies of outside code on the inner workings of a library, since most code uses the facade, thus allowing more flexibility in developing the system,
-wrap a poorly designed collection of APIs with a single well-designed API.</p>
-</blockquote>
-
-<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/f24a768c242537604d16c79aa854f14e.png" alt="FacadePattern的示意图" /></p>
-
-<p>按照GOF的说法，Facade模式的意图是：为了子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。</p>
-
-<p>其实activi在组织API的时候，采用了两次的Facade Pattern，第一次把各个功能归类，形成一个个的服务，例如在RepositoryService中包含了：</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-  <span class="n">DeploymentBuilder</span> <span class="nf">createDeployment</span><span class="o">();</span>
-  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">deleteDeploymentCascade</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">cascade</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">setDeploymentCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">);</span>
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getDeploymentResourceNames</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="n">InputStream</span> <span class="nf">getResourceAsStream</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="n">String</span> <span class="n">resourceName</span><span class="o">);</span>    
-  <span class="err">。。。。。。</span>
-</code></pre></div></div>
-
-<p>针对流程定义的部署，查找删除等等操作，这样我们关于资源，或者流程定义的操作，就直接到RepositoryService中查找即可，这个是第一次的封装，也是第一次的Facade Pattern。</p>
-
-<p>然后activiti 把归类好的服务，又进行了一次封装，统一归类到了EngineService，这样我们调用API的入口，就有了统一的入口，更加的方便快捷了，而且也为后面的spring的注入，提供了良好的基础。</p>
-
-<p>采用Facade Pattern 二次归类是一种非常常见的归类API的方法。由于API过于繁杂，进行归类，在统一的一个类中进行展示，这样调用方在调用的时候，只需要根据想调用的功能到得到具体的server，找到具体的功能的API即可，寻找起来比较的方便，而且代码比较的清晰，明了。</p>
+				<!--more-->
 
 
                 <hr style="visibility: hidden;">
@@ -308,19 +217,12 @@ wrap a poorly designed collection of APIs with a single well-designed API.</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/" data-toggle="tooltip" data-placement="top" title="再次出发">
+                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
                         Previous<br>
-                        <span>再次出发</span>
+                        <span>netty in action 读书笔记</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/activiti-desigen-pattern/2017/08/08/activit2/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(2)">
-                        Next<br>
-                        <span>activiti和设计模式(2)</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -417,8 +319,8 @@ wrap a poorly designed collection of APIs with a single well-designed API.</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/activiti-desigen-pattern/2017/08/02/activit1";
-    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/02/activit1/";
+    var disqus_identifier = "/2019/03/01/redis-data";
+    var disqus_url = "http://localhost:4000/2019/03/01/redis-data/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

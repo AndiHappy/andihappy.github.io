@@ -5,13 +5,47 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 16 Apr 2019 10:12:20 +0800</pubDate>
-    <lastBuildDate>Tue, 16 Apr 2019 10:12:20 +0800</lastBuildDate>
+    <pubDate>Tue, 16 Apr 2019 10:19:48 +0800</pubDate>
+    <lastBuildDate>Tue, 16 Apr 2019 10:19:48 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
+        <title>远程工作language的选择</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://blog.usejournal.com/what-technologies-to-learn-to-land-a-remote-job-in-2018-7dff03e17982&quot;&gt;文章地址&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;What technologies to learn to land a remote job in 2018&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;At this point in my career, I’m quite invested in the whole remote working, digital nomad shtick. My family, friends, and even strangers online now recognize me as the “guy who works in his pajamas from home”. So, perhaps I’m the man for the job when it comes to recommending technologies that will help propel you into this lifestyle.
+Note: I focus primarily on software development, so if you’re a videographer or something, this post won’t provide as much value.&lt;/p&gt;
+
+&lt;p&gt;Before I just go off（进行） ranting about the technologies I believe will assist（帮助） you in getting a remote gig（演奏，临时工作）; there are a few attributes that may be beneficial, or in some cases required. For example, you’ll have a much better chance if you’re personable, have past experience working from home, or have existing clientele（委托人，顾客）. For now, though, let’s omit（to fail to include or do something） anything that falls under a similar category, I want to focus primarily on the tech.
+Firstly, let’s focus on programming languages. I searched every popular language on several remote job sites that fit my criteria（a principle or standard by which something may be judged or decided.） (i.e. exclusively remote jobs to avoid on-site positions slipping through the cracks). One downside was most of these sites had 0 jobs available for certain languages. So, I resorted to StackOverflow for another metric, as it had remote jobs available for more obscure languages like Perl and R. StackOverflow jobs provided a solid baseline for remote jobs, and even did a superb job of filtering all on-site positions out.
+The results
+Obviously, these results are subject to change over the course of this year, so keep that in mind.&lt;/p&gt;
+
+&lt;p&gt;Results for 8 commonly used programming languages
+Personally, I didn’t find this very surprising. Javascript has been growing exponentially for the past few years with the emergence of node.js and various front-end frameworks. Java, on the other hand is a tad bit interesting, because nearly all the jobs are senior positions. Python had a healthy mixture of web, machine learning, and data science jobs. Ruby is a little misleading because ALL of the jobs involved Ruby on Rails — the web framework (more on frameworks later). C++ and Go were very close, but I’d be willing to bet Go overtakes the former shortly.
+One thing to note regarding Javascript is the over abundance of frameworks that have been hitting the scene for the past few years. I mention React quite a bit in my articles surrounding the remote job landscape. (Mostly because I contribute my first remote job to my capabilities using the framework.) Job searchers should still be seeing a consistent flow of React positions popping up. At the time of writing it was ahead of the race in terms of front-end frameworks, with angular close behind, and vue quickly picking up steam. With the rise of React Native in the mobile space, experience working in React has become even more beneficial. Not surprisingly, express is still far ahead of the other backend frameworks.
+I would like to take a minute to talk about Ruby in a little more detail. I wrote above about all the positions being Ruby on Rails (the popular web framework), but interestingly I also spotted a lot of senior-level positions for the language. I presume the age of the language and framework has something a lot to do with this. As the language becomes less popular — not saying it’s “dying” by any stretch — the roles become a tad more demanding; at least that’s what I’ve come to find. So if you’re new to web development I’d avoid putting your eggs in the Ruby basket as it would be difficult to land a junior-level role.
+Another language to zoom in on would be PHP. Frameworks like Laravel and Symfony are all the buzz right now, but we can’t dismiss WordPress. Admittedly, I did less research into the 8th ranked language on the list, but I found a majority of the positions to be WordPress. Furthermore, positions such as these were quite a bit less technical. After reading the requirements for a few postings, it was clear that they fell more into the creative/design side of things — UI, UX, PSD-to-HTML, all were common themes.
+I’ll wrap up with a few words from my personal experience working and researching in this field. If you consider yourself “language agnostic” or a “T-shaped developer” you’ll have a much better chance of landing a remote job. I would consider myself very focused on React development, but I try to stay up to date on other technologies. A lot of co-workers ask how I know so much about something like Django, but spend no professional time working with the framework. The answer is quite simple, I love python and web development so I spend a lot of time reading about Django and building side-projects with the technology. I also dip my feet into WordPress every now and then because of freelance work that comes my way. It’s easy to excel in one particular language and maintain competency in another if the other interests you. A friend of mine works all day with node.js, but seems to be a master of 4–6 other tech stacks. She’s developed small games, created several bots, even dipped into machine learning. It’s her passion.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;So, my suggestion is to focus on a language that will bring you monetary and lifestyle results, but also pursue your passions and interests. I know it feels like you’re just wasting time if you play around with unpopular technologies, but you’re having fun, and that prevents burnout.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;996投入的是自己的passions and interests.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 15 Apr 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/04/15/remotework/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/04/15/remotework/</guid>
+        
+        
+      </item>
+    
+      <item>
         <title>为什么RethinkDB失败了？</title>
-        <description>&lt;p&gt;文件地址：http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html&lt;/p&gt;
+        <description>&lt;p&gt;&lt;a href=&quot;http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html&quot;&gt;文章地址&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;In hindsight, two things went wrong – we picked a terrible market and optimized the product for the wrong metrics of goodness.Each mistake likely cut RethinkDB’s valuation by one to two orders of magnitude（数量级）. So if we got either of these right, RethinkDB would have been the size of MongoDB, and if we got both of them right, we eventually could have been the size of Red Hat[1].&lt;/p&gt;
 
@@ -862,140 +896,6 @@ ChannelHandlers are invoked for different types of events.
         
         
         <category>工作总结</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
-&lt;!--more--&gt;&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;the system must scale up to 150,000 concurrent users with no loss of performance。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;scale up 负载&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;If you can say with confidence, “Sure, no problem,” then hats off to you。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;hats off to you&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;next steps were probably to browse the site, download the code, peruse the Javadocs and a few blogs, and start hacking. If you already had solid network programming experience, you probably made good progress；&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;High-performance systems like the one in our example require more than first-class coding skills; they demand expertise in several complex areas: networking, multithreading, and concurrency.&lt;/p&gt;
-
-&lt;p&gt;Java开始提供的Socket连接，只支持阻塞形式的IO。&lt;/p&gt;
-
-&lt;p&gt;Socket server = new ServerSocket(8080).accept();&lt;/p&gt;
-
-&lt;p&gt;accept的APIDOC中有一句：The method blocks until a connection is made.
-accept() blocks until a connection is established on the ServerSocket b, then returns a new Socket for communication between the client and the server. The ServerSocket then resumes（重新恢复） listening for incoming connections.&lt;/p&gt;
-
-&lt;p&gt;这种方式的利弊：      &lt;br /&gt;
-First, at any point many threads could be dormant（休眠）, just waiting for input or output data to appear on the line.      &lt;br /&gt;
-因为 new BufferedReader(new InputStreamReader(this.socket.getInputStream())).readerLine() 没有数据的时候，会被阻塞的&lt;/p&gt;
-
-&lt;p&gt;Second,each thread requires an allocation of stack memory whose default size ranges from 64 KB to 1 MB, depending on the OS.           &lt;br /&gt;
-如果每一个Client的连接是新建一个socket连接的话，那么需要给这个socket分配64kb到1MB的内存&lt;/p&gt;
-
-&lt;p&gt;Third, even if a Java virtual machine (JVM) can physically support a very large number of threads, the overhead of context-switching will begin to be troublesome long before that limit is reached, say by the time you reach 10,000 connections.        &lt;br /&gt;
-JVM线程数的限制以及多开的线程造成的线程切换造成的花销。      &lt;br /&gt;
-在这种通信的模型下面，基本上保持着每一个client对应一个线程，所以对大规模的同时连接，JVM的线程数是一种限制&lt;/p&gt;
-
-&lt;p&gt;第二种的变形，只是在服务端提供线程池的方式来处理客户端的接入，这样的话，对JVM的线程限制数就有了一种解决方案。          &lt;br /&gt;
-这种情况下，如果某些线程处理数据比较的慢，那么这些线程会夯在线程池中，可能就会影响其他客户端的接入和其他线程数据的处理&lt;/p&gt;
-
-&lt;p&gt;JDK1.4 2002发布，支持NIO模型。         &lt;br /&gt;
-Java support for non-blocking I/O was introduced in 2002, with the JDK 1.4 package java.nio，which provide considerably more control over the utilization of network resources.&lt;/p&gt;
-
-&lt;p&gt;The class java.nio.channels.Selector is the linchpin（关键） of Java’s non-blocking I/O implementation.          &lt;br /&gt;
-It uses the event notification API to indicate which, among a set of non-blocking sockets, are ready for I/O.&lt;/p&gt;
-
-&lt;p&gt;利弊：
-■ Many connections can be handled with fewer threads, and thus with far less overhead due to memory management and context-switching.          &lt;br /&gt;
-较少的线程就能够处理接入和数据处理，然后线程切换和内存管理变得比较的简单      &lt;br /&gt;
-■ Threads can be retargeted to other tasks when there is no I/O to handle.  &lt;br /&gt;
-没有IO线程进行处理的时候，线程能够重定向处理其他的任务。&lt;/p&gt;
-
-&lt;p&gt;这种通信模型下，主要的是基于：Selector，SocketChannel，Buffer     &lt;br /&gt;
-这种通信模型，已经能够基本支持网络通信的需要，但是IO通信过程中可靠，重连，断网重链等问题仍需要自己进行开发。&lt;/p&gt;
-
-&lt;p&gt;JDK1.7 升级了NIO，变为了NIO2，提供了异步io的通道         &lt;br /&gt;
-NIO2.0 的异步套接字通道是真正的异步非阻塞I/O,它对应UNIX 网络编程中的事件驱动I/O (AIO)，它不需要通过多路复用器(Selector) 对注册的通道进行轮询操作即可实现异步读写，从而简化了NIO 的编程模型。&lt;/p&gt;
-
-&lt;p&gt;In particular, processing and dispatching I/O reliably and efficiently under heavy load is a cumbersome（笨重的） and error-prone task best left to a high-performance networking expert—Netty&lt;/p&gt;
-
-&lt;p&gt;We’ve learned from long and painful experience that the direct use of low-level APIs exposes complexity and introduces a critical dependency on skills that tend to be in short supply.Hence, a fundamental concept of object orientation: hide the complexity of underlying imple- mentations behind simpler abstractions.
-This principle has stimulated the development of numerous frameworks that encapsulate solutions to common programming tasks, many of them germane to distributed systems development. It’s probably safe to assert that all professional Java developers are familiar with at least one of these.&lt;/p&gt;
-
-&lt;p&gt;对于框架的封装，对于我们Developer，不知道是一件好事还是坏事？&lt;/p&gt;
-
-&lt;p&gt;In essence, a system that is both asynchronous and event-driven exhibits a particular and, to us, extremely valuable kind of behavior: it can respond to events occurring at any time and in any order.        &lt;br /&gt;
-异步的事件处理系统         &lt;br /&gt;
-This capability is critical for achieving the highest levels of scalability&lt;/p&gt;
-
-&lt;p&gt;Non-blocking network calls free us from having to wait for the completion of an operation.         &lt;br /&gt;
-Fully asynchronous I/O builds on this feature and carries it a step further: an asynchronous method returns immediately and notifies the user when it is complete, directly or at a later time.&lt;/p&gt;
-
-&lt;p&gt;Selectors allow us to monitor many connections for events with many fewer threads.&lt;/p&gt;
-
-&lt;p&gt;Putting these elements together, with non-blocking I/O we can handle very large numbers of events much more rapidly and economically than would be possible with blocking I/O. From the point of view of networking, this is key to the kind of systems we want to build,and as you’ll see, it is also key to Netty’s design from the ground up.&lt;/p&gt;
-
-&lt;p&gt;netty设计的关键在于非阻塞的网络通信和Selector感知连接等不同的事件&lt;/p&gt;
-
-&lt;p&gt;netty的主要的模块：           &lt;br /&gt;
-■ Channels：管道           &lt;br /&gt;
-■ Callbacks：A callback is simply a method, a reference to which has been provided to another method.           &lt;br /&gt;
-■ Futures:A Future provides another way to notify an application when an operation has com- pleted. This object acts as a placeholder for the result of an asynchronous operation; it will complete at some point in the future and provide access to the result.           &lt;br /&gt;
-■ Events and handlers&lt;/p&gt;
-
-&lt;p&gt;Channels：For now, think of a Channel as a vehicle for incoming (inbound) and outgoing (out- bound) data. As such, it can be open or closed, connected or disconnected.           &lt;br /&gt;
-管道           &lt;br /&gt;
-Callbacks are used in a broad range of programming situations and represent one of the most common ways to notify an interested party that an operation has completed.   &lt;br /&gt;
-回调   &lt;br /&gt;
-In fact, callbacks and Futures are complementary mecha- nisms; in combination they make up one of the key building blocks of Netty itself       &lt;br /&gt;
-Future这个可以翻译为未来值？&lt;/p&gt;
-
-&lt;p&gt;Netty is a networking framework,so events are categorized by their relevance to inbound or outbound data flow.  &lt;br /&gt;
-Events that may be triggered by inbound data or an associated change of state include  &lt;br /&gt;
-■ Active or inactive connections   &lt;br /&gt;
-■ Data reads  &lt;br /&gt;
-■ User events &lt;br /&gt;
-■ Error events &lt;br /&gt;
-An outbound event is the result of an operation that will trigger an action in the future, which may be  &lt;br /&gt;
-■ Opening or closing a connection to a remote peer  &lt;br /&gt;
-■ Writing or flushing data to a socket&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/82d4921691f30a71bea6f4b204353f8b.png&quot; alt=&quot;envent&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Netty’s asynchronous programming model is built on the concepts of Futures and callbacks, with the dispatching of events to handler methods happening at a deeper level. Taken together, these elements provide a processing environment that allows the logic of your application to evolve independently of any concerns with network operations. This is a key goal of Netty’s design approach&lt;/p&gt;
-
-&lt;p&gt;netty 是建立在 Future和Callback，以及把各种类型的事件交由Handler处理的基础上的。这种机制保证了应用与网路通信模块之间的相对的独立，这也是netty设计过程中一个比较重要的点。&lt;/p&gt;
-
-&lt;p&gt;Netty abstracts the Selector away from the application by firing events, eliminating all the handwritten dispatch code that would otherwise be required. Under the covers, an EventLoop is assigned to each Channel to handle all of the events, including    &lt;br /&gt;
-■ Registration of interesting events    &lt;br /&gt;
-■ Dispatching events to ChannelHandlers    &lt;br /&gt;
-■ Scheduling further actions&lt;/p&gt;
-
-&lt;p&gt;Netty抽闲Selector的作用，消除了分发代码的编写，这里的分发代码指的是：Selector在接到Socket的事件的时候，需要触发相对应的逻辑，例如：connect事件对应的连接逻辑，读事件对应的数据请求逻辑等等。&lt;/p&gt;
-
-&lt;p&gt;抽象成了一个对象：EventLoop，这个EventLoop还是比较的重要的一个抽象类。&lt;/p&gt;
-
-&lt;p&gt;The EventLoop itself is driven by only one thread that handles all of the I/O events for one Channel and does not change during the lifetime of the EventLoop. This simple and powerful design eliminates any concern you might have about synchronization in your ChannelHandlers, so you can focus on providing the right logic to be executed when there is interesting data to process. As we’ll see when we explore Netty’s thread- ing model in detail, the API is simple and compact.&lt;/p&gt;
-
-&lt;p&gt;EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁&lt;/p&gt;
-</description>
-        <pubDate>Fri, 01 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/01/nettyinaction0/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/01/nettyinaction0/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
         
       </item>
     

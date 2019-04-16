@@ -2,7 +2,7 @@
 layout: post
 title: "为什么RethinkDB失败了？"
 ---
-文件地址：http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html
+[文章地址](http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html)
 
 In hindsight, two things went wrong – we picked a terrible market and optimized the product for the wrong metrics of goodness.Each mistake likely cut RethinkDB’s valuation by one to two orders of magnitude（数量级）. So if we got either of these right, RethinkDB would have been the size of MongoDB, and if we got both of them right, we eventually could have been the size of Red Hat[1].
 

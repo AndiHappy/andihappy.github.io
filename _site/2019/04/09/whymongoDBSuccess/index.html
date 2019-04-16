@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>redis梳理 - 飞翔的面包 | FlyBread Blog</title>
+    <title>为什么RethinkDB失败了？ - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/03/01/redis-data/">
+    <link rel="canonical" href="http://localhost:4000/2019/04/09/whymongoDBSuccess/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -164,13 +164,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+<!-- <img src="/img/home-bg1.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-2015.jpg')
+        background-image: url('/img/home-bg1.jpg')
     }
 
     
@@ -183,15 +183,13 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#redis" title="redis">redis</a>
-                        
                     </div>
-                    <h1>redis梳理</h1>
+                    <h1>为什么RethinkDB失败了？</h1>
                     
                     
-                    <h2 class="subheading">redis对应的数据结构底层实现的原理，以及常见的问题</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by zhailzh on March 1, 2019</span>
+                    <span class="meta">Posted by 飞翔的面包 on April 9, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,16 +207,50 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>redis主要操作的数据有五种，String，List，Map，Set，sort Set 简称为ZSet。这五类的操作的数据的底层
-是如何运行的。
-redis为什么这么快？
-redis的集群的模式
-redis的内存管理模式
-redis的持久化操作等常见的问题。</p>
+				<p>文件地址：http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html</p>
+
+<p>In hindsight, two things went wrong – we picked a terrible market and optimized the product for the wrong metrics of goodness.Each mistake likely cut RethinkDB’s valuation by one to two orders of magnitude（数量级）. So if we got either of these right, RethinkDB would have been the size of MongoDB, and if we got both of them right, we eventually could have been the size of Red Hat[1].</p>
 
 <!--more-->
 
-<p>首先我们发现问题，然后我们一个一个的回答，深入。</p>
+<p>两个原因：</p>
+
+<p>市场的选择：
+		设想中的数据库市场非常的大，但是大家把你当做是开源软件。需求很大，但很多都是伪需求。伪需求的前提下面，真正的订单获取非常的困难。
+		Developers love building developer tools, often for free. So while there is massive demand, the supply vastly outstrips it. This drives the number of alternatives up, and the prices down to zero.
+For us, it meant an intractable customer acquisition funnel. This has disastrous domino effects. It demoralizes the team, and makes it very challenging to attract investment and hire top talent. In turn, that constrains your resources so you can’t make sufficient investment in product and distribution. Startups live and die by momentum, and early distribution challenges almost always doom you to eventual death.</p>
+
+<p>产品的方向：</p>
+
+<p>一开始的产品的方向: elegant, robust, and beautiful product</p>
+
+<ul>
+  <li>Correctness. We made very strict guarantees, and fulfilled them religiously.</li>
+  <li>Simplicity of the interface. We took on most of the complexity in the implementation, so application developers wouldn’t have to.</li>
+  <li>Consistency. We made everything from the query language, to the client drivers, to cluster configuration, to documentation, to the marketing copy on the front page as consistent as possible.</li>
+</ul>
+
+<p>其分析的正确的方向：</p>
+
+<ul>
+  <li>Timely arrival. They wanted the product to actually exist when they needed it, not three years later.</li>
+  <li>Palpable speed. People wanted RethinkDB to be fast on workloads they actually tried, rather than “real world” workloads we suggested. For example, they’d write quick scripts to measure how long it takes to insert ten thousand documents without ever reading them back. MongoDB mastered these workloads brilliantly, while we fought the losing battle of educating the market.</li>
+  <li>A use case. We set out to build a good database system, but users wanted a good way to do X(e.g. a good way to store JSON documents from hapi, a good way to store and analyze logs, a good way to create reports, etc.)</li>
+</ul>
+
+<p>合适的就是最好的，这个是完美的注解。</p>
+
+<p>By the time we felt RethinkDB satisfied our design goals and we were confident enough to recommend it to be used in production, almost everyone was asking “how is RethinkDB different from MongoDB?” We worked hard to explain why correctness, simplicity, and consistency are important, but ultimately these weren’t the metrics of goodness that mattered to most users.</p>
+
+<p>迭代解决了很多的问题，满足需求，满足当下的需求，满足当下的有效的需求。</p>
+
+<p>But over time I learned to appreciate the wisdom of the crowds. MongoDB turned regular developers into heroes when people needed it, not years after the fact. It made data storage fast, and let people ship products quickly. And over time, MongoDB grew up. One by one, they fixed the issues with the architecture, and now it is an excellent product. It may not be as beautiful as we would have wanted, but it does the job, and it does it well.</p>
+
+<p>一步错步步错，在原有的基础性上进行了错误的方向转变。
+The obvious problem with a small database company building a cloud service is that it pattern matches to a common startup failure mode – splitting focus. </p>
+
+<p>规律就是规律，不会因为你的忽视就不存在。
+Early RethinkDB was quite a bit like that. We had no intuition for products or markets, so we’d go through the motions of building a company without actually understanding what we were doing. What’s more, we had enormous optimism bias. Just like physicians know that gifts from pharmaceutical companies have biasing effects for other physicians but believe they are immune from the effect, we believed we were immune from the laws of economics and the math of running a business. The math, of course, eventually caught up with us.</p>
 
 
                 <hr style="visibility: hidden;">
@@ -226,19 +258,12 @@ redis的持久化操作等常见的问题。</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/" data-toggle="tooltip" data-placement="top" title="netty in action 读书笔记">
+                        <a href="/2019/03/01/redis-data/" data-toggle="tooltip" data-placement="top" title="redis梳理">
                         Previous<br>
-                        <span>netty in action 读书笔记</span>
+                        <span>redis梳理</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/04/09/whymongoDBSuccess/" data-toggle="tooltip" data-placement="top" title="为什么RethinkDB失败了？">
-                        Next<br>
-                        <span>为什么RethinkDB失败了？</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -259,20 +284,6 @@ redis的持久化操作等常见的问题。</p>
             </div>
 
     <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
         
 
     <!-- Sidebar Container -->
@@ -335,8 +346,8 @@ redis的持久化操作等常见的问题。</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/03/01/redis-data";
-    var disqus_url = "http://localhost:4000/2019/03/01/redis-data/";
+    var disqus_identifier = "/2019/04/09/whymongoDBSuccess";
+    var disqus_url = "http://localhost:4000/2019/04/09/whymongoDBSuccess/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -497,50 +508,6 @@ redis的持久化操作等常见的问题。</p>
 
 
 <!-- Side Catalog -->
-
-<script type="text/javascript">
-    function generateCatalog (selector) {
-        var P = $('div.post-container'),a,n,t,l,i,c;
-        a = P.find('h1,h2,h3,h4,h5,h6');
-        a.each(function () {
-            n = $(this).prop('tagName').toLowerCase();
-            i = "#"+$(this).prop('id');
-            t = $(this).text();
-            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
-            l = $('<li class="'+n+'_nav"></li>').append(c);
-            $(selector).append(l);
-        });
-        return true;
-    }
-
-    generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function(e){
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
-    /*
-     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
-     * Fork by Hux to support padding
-     */
-    async("/js/jquery.nav.js", function () {
-        $('.catalog-body').onePageNav({
-            currentClass: "active",
-            changeHash: !1,
-            easing: "swing",
-            filter: "",
-            scrollSpeed: 700,
-            scrollOffset: 0,
-            scrollThreshold: .2,
-            begin: null,
-            end: null,
-            scrollChange: null,
-            padding: 80
-        });
-    });
-</script>
 
 
 

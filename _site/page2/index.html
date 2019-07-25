@@ -208,15 +208,14 @@
 
         </div>
         <!-- <div class="post-content-preview">
-            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。   
+            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。 
 
-~~~java    
 
 
 /**
  * 任务的执行，依赖于Timer，可以特定的时间执行或者按照某种规律循环的执行
  * A facility for threads to schedule tasks for future execution in a background thread.
- * Tasks may...
+ * Tasks may be scheduled ...
         </div> -->
     </a>
     <p class="post-meta">
@@ -243,11 +242,14 @@
         <!-- <div class="post-content-preview">
             netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
 
-1. the system must scale up to 150,000 concurrent users with no loss of performance。      
 
-scale up 负载       
+  the system must scale up to 150,000 concurrent users with no loss of performance。
 
-2. If you can say with confidence, “Sure, no p...
+
+scale up 负载
+
+
+  If you can say with confidence, “Sure, no problem,” the...
         </div> -->
     </a>
     <p class="post-meta">
@@ -275,11 +277,10 @@ scale up 负载
             springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
 
 
-spring的启动是从一个java类的main函数开始的，这个应该没有异议：     
+spring的启动是从一个java类的main函数开始的，这个应该没有异议：
 
-~~~java  
 public static void main(String[] args) {
-		SpringApplication applicat...
+		SpringApplication application = new Sprin...
         </div> -->
     </a>
     <p class="post-meta">
@@ -304,12 +305,13 @@ public static void main(String[] args) {
 
         </div>
         <!-- <div class="post-content-preview">
-              自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。
+            自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。
 
 
-1. springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
-2. NIO的编程，netty是如果处理的？
-3. 分布式锁的使用场合，除了使用r...
+
+  springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
+  NIO的编程，netty是如果处理的？
+  分布式锁的使用场合，除了使用redis...
         </div> -->
     </a>
     <p class="post-meta">
@@ -334,15 +336,17 @@ public static void main(String[] args) {
 
         </div>
         <!-- <div class="post-content-preview">
-              JAVA的优化方面，设计的内容非常的多，有一本数是专门讲这个的，自己只是对JAVA应用程序所关心的几个部分，根据自己遇到的情况，来进行梳理，学习。
+            JAVA的优化方面，设计的内容非常的多，有一本数是专门讲这个的，自己只是对JAVA应用程序所关心的几个部分，根据自己遇到的情况，来进行梳理，学习。
 
 
-1. 针对Tomcat 的JVM的优化：
 
-~~~java
+  针对Tomcat 的JVM的优化：
+
+
 
 /opt/jdk/jre/bin/java 
--Djava.util.logging.config.file=/opt/C7910/conf/logging.propertie...
+-Djava.util.logging.config.file=/opt/C7910/conf/logging.properties 
+-Djava...
         </div> -->
     </a>
     <p class="post-meta">
@@ -369,10 +373,9 @@ public static void main(String[] args) {
 
         </div>
         <!-- <div class="post-content-preview">
-            线程之间的通信，在java中有两种：        
-  一种是synchronized对应的wait，和notify；      
+            线程之间的通信，在java中有两种：      
+  一种是synchronized对应的wait，和notify；    
   另外一种，就是Lock中对应的Condition中的await和signal
-
 
 
 
@@ -402,15 +405,19 @@ public static void main(String[] args) {
 
         </div>
         <!-- <div class="post-content-preview">
-               读写锁也是在同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）的基础上面实现的，不过就是复杂了点。
+            读写锁也是在同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）的基础上面实现的，不过就是复杂了点。
 
 
 
-  读写锁的主要的要求就是：     
-> 1. 读线程占有线程锁状态的情况下，其余的读线程都能进入临界区，执行代码。但是写线程会被阻塞。
-> 2. 写线程占有线程锁的情况下，其他的读线程，写线程都会被阻塞
+读写锁的主要的要求就是：
 
-待续。...
+  
+    读线程占有线程锁状态的情况下，其余的读线程都能进入临界区，执行代码。但是写线程会被阻塞。
+    写线程占有线程锁的情况下，其他的读线程，写线程都会被阻塞
+  
+
+
+待续。。。。。...
         </div> -->
     </a>
     <p class="post-meta">
@@ -435,10 +442,10 @@ public static void main(String[] args) {
 
         </div>
         <!-- <div class="post-content-preview">
-               梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
+            梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
 
 
-java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现锁的...
+java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现锁的基础呢...
         </div> -->
     </a>
     <p class="post-meta">
@@ -463,6 +470,7 @@ java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现�
         </div>
         <!-- <div class="post-content-preview">
             
+
         </div> -->
     </a>
     <p class="post-meta">
@@ -489,9 +497,13 @@ java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现�
 
         </div>
         <!-- <div class="post-content-preview">
-            BPMN中不仅规定了每一个图标代表的意义，例如：      
-![exclusivegateway的示意图](http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png)    
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在Activi...
+            BPMN中不仅规定了每一个图标代表的意义，例如：    
+  
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  
+
+首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：
+
+public interface ActivityBehav...
         </div> -->
     </a>
     <p class="post-meta">

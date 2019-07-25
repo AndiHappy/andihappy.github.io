@@ -211,14 +211,17 @@
 
         </div>
         <!-- <div class="post-content-preview">
-            一个具体的流程启动以后，具体流程示意图：     
-![简单会签流程示意图](http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png)     
+            一个具体的流程启动以后，具体流程示意图：   
 
-追踪流程的运转的情况，找到好玩的代码。    
 
-根据状态机的跳转的动作：     
-~~~
-PROCESS_START = new AtomicOpe...
+追踪流程的运转的情况，找到好玩的代码。  
+
+根据状态机的跳转的动作：
+PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUT...
         </div> -->
     </a>
     <p class="post-meta">
@@ -243,12 +246,13 @@ PROCESS_START = new AtomicOpe...
 
         </div>
         <!-- <div class="post-content-preview">
-            流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？  
+            流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？
 
 
 state Pattern：
 
-> The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. Wi...
+
+  The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. Wit...
         </div> -->
     </a>
     <p class="post-meta">
@@ -273,15 +277,14 @@ state Pattern：
 
         </div>
         <!-- <div class="post-content-preview">
-            此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。  
+            此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。
 
 
 
-首先我们还是看代码：      
+首先我们还是看代码：
 
-```
 Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-           ActivitiEventBuil...
+           ActivitiEventBuilder.createEn...
         </div> -->
     </a>
     <p class="post-meta">
@@ -306,13 +309,15 @@ Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
 
         </div>
         <!-- <div class="post-content-preview">
-            此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。  
+            此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。
 
 
-1. 首先是找到流程的定义：     
 
-~~~
-ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefin...
+  首先是找到流程的定义：
+
+
+ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
+w...
         </div> -->
     </a>
     <p class="post-meta">
@@ -343,10 +348,9 @@ ProcessDefinition def = repositoryService.createProcessDefinitionQuery().process
 
 
 
-首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？      
+首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？
 
-~~~
-...
+BpmnXMLCon...
         </div> -->
     </a>
     <p class="post-meta">
@@ -371,13 +375,14 @@ ProcessDefinition def = repositoryService.createProcessDefinitionQuery().process
 
         </div>
         <!-- <div class="post-content-preview">
-            activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：**Interpreter pattern**.
+            activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：Interpreter pattern.
 
 
-首先是启动的代码：       
-~~~java
+首先是启动的代码：
 //调用方：
-ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variab...
+ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variablesObject);      
+
+...
         </div> -->
     </a>
     <p class="post-meta">
@@ -406,11 +411,10 @@ ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId
 
 
 
- activity服务的实现，很有自己的特色，show code:
+activity服务的实现，很有自己的特色，show code:
 
-~~~java
 public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
-  public Pro...
+  public ProcessInsta...
         </div> -->
     </a>
     <p class="post-meta">
@@ -445,13 +449,15 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
 
         </div>
         <!-- <div class="post-content-preview">
-            1. activiti的源码的主要的架构
-2. activiti前两层包含的设计模式
+            
+  activiti的源码的主要的架构
+  activiti前两层包含的设计模式
 
-从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。     
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！        
 
-另外的一个原...
+从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   
+一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！
+
+另外的一个原因，在于activi...
         </div> -->
     </a>
     <p class="post-meta">
@@ -476,19 +482,18 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
 
         </div>
         <!-- <div class="post-content-preview">
-            终于再次的出发，想今后写点东西。   
+            终于再次的出发，想今后写点东西。
 
 
 
+正文
 
-## 正文     
+这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   
+自己有时间了，在慢慢的修改，变为自己喜欢的。
 
-这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。     
-自己有时间了，在慢慢的修改，变为自己喜欢的。		
- 
 每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
 一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天...
+常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。		...
         </div> -->
     </a>
     <p class="post-meta">

@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>activiti和设计模式(4) - 飞翔的面包 | FlyBread Blog</title>
+    <title>沉下心来分析HashMap的源码 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/01/hashmap/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        <a class="tag" href="/tags/#JDK" title="JDK">JDK</a>
                         
                     </div>
-                    <h1>activiti和设计模式(4)</h1>
+                    <h1>沉下心来分析HashMap的源码</h1>
                     
                     
-                    <h2 class="subheading">activiti中核心业务的组织模型</h2>
+                    <h2 class="subheading">分析HashMap的源码，尽自己可能的详细</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 10, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 1, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,121 +209,14 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。</p>
+				<p>HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。</p>
 
 <!--more-->
-<ol>
-  <li>首先是找到流程的定义：</li>
-</ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
-workFlowId).processDefinitionTenantId(orgId).singleResult();
-</code></pre></div></div>
+<p>首先是最初的图：</p>
 
-<p>有一个需要注意的问题，这种情况下查找的流程定义，ProcessDefinition没有进行解析彻底，只是数据库字段的映射。</p>
-
-<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/400f810b94ca69ac6171fc1c29bed382.png" alt="" /></p>
-
-<ol>
-  <li>启动流程实例：</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ProcessInstance ins = runtimeService
- .startProcessInstanceById(workFlowId, formId,variablesObject);
-</code></pre></div></div>
-
-<p>进入命令行：StartProcessInstanceCmd<ProcessInstance>，返回的是一个ProcessInstance,具体的代码是：</ProcessInstance></p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessInstance execute(CommandContext commandContext) {
-// 找到部署管理器DeploymentManager
-  DeploymentManager deploymentManager = commandContext
-    .getProcessEngineConfiguration()//说明①
-    .getDeploymentManager();
-
-  // Find the process definition
-  ProcessDefinitionEntity processDefinition = null;
-  if (processDefinitionId != null) {
-    processDefinition = deploymentManager.findDeployedProcessDefinitionById(processDefinitionId);//说明②
-  }
-  // .......
-  //这个地方省略了依靠其他参变量寻找processDefiniton的代码
-
-  // Do not start process a process instance if the process definition is suspended
-  if (deploymentManager.isProcessDefinitionSuspended(processDefinition.getId())) {
-    throw new ActivitiException("Cannot start process instance. Process definition "
-            + processDefinition.getName() + " (id = " + processDefinition.getId() + ") is suspended");
-  }
-
-  // Start the process instance
-  ExecutionEntity processInstance = processDefinition.createProcessInstance(businessKey);//说明③
-
-  // now set the variables passed into the start command
-  initializeVariables(processInstance);//说明④
-
-  // now set processInstance name
-  if (processInstanceName != null) {
-    processInstance.setName(processInstanceName);
-    commandContext.getHistoryManager().recordProcessInstanceNameChange(processInstance.getId(), processInstanceName);
-  }
-
-  processInstance.start();//说明⑤
-
-  return processInstance;
-}
-
-</code></pre></div></div>
-
-<p>说明①：CommandContext,以及processEngineConfiguration 都是单例的模式，只不过从代码上面看，和一般的单例模式不太一样，找不到private的构造方法。</p>
-
-<p>说明②: 通过部署管理器寻找流程定义的过程：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>org.activiti.engine.impl.persistence.deploy.DeploymentManager.
-findDeployedProcessDefinitionById(String)
-</code></pre></div></div>
-<p>首先是到缓存中查找，如果缓存中没有，再到数据库中查找，这个缓存的大小，可以在引擎的配置文件中配置：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;property name="processDefinitionCacheLimit" value="10" /&gt;
-</code></pre></div></div>
-<p>通过数据库查找的流程定义依然是没有完全解析的，具体的全部的解析的过程在什么地方呢？</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
-    String processDefinitionId = processDefinition.getId();
-    String deploymentId = processDefinition.getDeploymentId();
-    processDefinition = processDefinitionCache.get(processDefinitionId);
-    if (processDefinition==null) {
-      DeploymentEntity deployment = Context
-        .getCommandContext()
-        .getDeploymentEntityManager()
-        .findDeploymentById(deploymentId);//在这个地方拿到具体的流程定义文件，resource红有值了。
-      deployment.setNew(false);
-      deploy(deployment, null);//具体的解析发生在这个过程中，activitis填充了解析的内容
-      processDefinition = processDefinitionCache.get(processDefinitionId);
-
-      if (processDefinition==null) {
-        throw new ActivitiException("deployment '"+deploymentId+"' didn't put process definition '"+processDefinitionId+"' in the cache");
-      }
-    }
-    return processDefinition;
-  }
-</code></pre></div></div>
-
-<p>说明③：activiti中没有ProcessInstanceEntity，有的只是ExecutionEntity。创建ExecutionEntity的时候，把历史数据全部的创建，并且插入了数据库中。</p>
-
-<p>另外还有流程实例创建的事件广播出去，这个使用的是观察者模式，这个模式在activiti中可谓是到处都是，主要用于事件的通知，订阅之类的。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 实例数据创建
- Context.getCommandContext().getHistoryManager()
-      .recordProcessInstanceStart(processInstance);
-
-      // 事件广播
-      if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-                ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processInstance));
-    }
-</code></pre></div></div>
-<p>说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。</p>
-
-<p>说明⑤：进入状态机的设计模式</p>
+<p><img src="https://github.com/AndiHappy/andihappy.github.io/blob/master/img/404-bg.jpg" alt="git图片" /></p>
 
 
                 <hr style="visibility: hidden;">
@@ -331,19 +224,12 @@ findDeployedProcessDefinitionById(String)
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/activiti-desigen-pattern/2017/08/10/activit3/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(3)">
+                        <a href="/2019/07/01/readingbook/" data-toggle="tooltip" data-placement="top" title="怎么读书">
                         Previous<br>
-                        <span>activiti和设计模式(3)</span>
+                        <span>怎么读书</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/activiti-desigen-pattern/2017/08/13/activit5/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(5)">
-                        Next<br>
-                        <span>activiti和设计模式(5)</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -442,8 +328,8 @@ findDeployedProcessDefinitionById(String)
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/activiti-desigen-pattern/2017/08/10/activit4";
-    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/10/activit4/";
+    var disqus_identifier = "/2019/08/01/hashmap";
+    var disqus_url = "http://localhost:4000/2019/08/01/hashmap/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

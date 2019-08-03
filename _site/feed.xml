@@ -5,9 +5,29 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 25 Jul 2019 10:23:54 +0800</pubDate>
-    <lastBuildDate>Thu, 25 Jul 2019 10:23:54 +0800</lastBuildDate>
+    <pubDate>Sat, 03 Aug 2019 17:30:22 +0800</pubDate>
+    <lastBuildDate>Sat, 03 Aug 2019 17:30:22 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>沉下心来分析HashMap的源码</title>
+        <description>&lt;p&gt;HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;首先是最初的图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/AndiHappy/andihappy.github.io/blob/master/img/404-bg.jpg&quot; alt=&quot;git图片&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 01 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/01/hashmap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/01/hashmap/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
     
       <item>
         <title>怎么读书</title>
@@ -774,86 +794,6 @@ The pattern for outbound messages is the reverse: an encoder converts the mes- s
         <pubDate>Sun, 03 Dec 2017 17:00:00 +0800</pubDate>
         <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/</link>
         <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;这章主要的是介绍netty的基本的概念。    &lt;br /&gt;
-&lt;!--more--&gt;
-We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.&lt;/p&gt;
-
-&lt;p&gt;Although we’ve spoken of the client, the figure shows multiple clients connected simultaneously to the server. The number of clients that can be supported is limited, in theory, only by the system resources available (and any constraints that might be imposed by the JDK version in use).&lt;/p&gt;
-
-&lt;p&gt;客户端的连接数，和服务端的资源有关系，一般和文件打开数有关联。&lt;/p&gt;
-
-&lt;p&gt;All Netty servers require the following:
-■ At least one ChannelHandler—This component implements the server’s processing of data received from the client—its business logic.&lt;/p&gt;
-
-&lt;p&gt;ChannelHandler 一个很重要的功能就是，处理客户端的发送的数据&lt;/p&gt;
-
-&lt;p&gt;■ Bootstrapping—This is the startup code that configures the server. At a minimum, it binds the server to the port on which it will listen for connection requests.&lt;/p&gt;
-
-&lt;p&gt;Bootstrap 和 ServerBootstrap 就是启动netty的辅助类&lt;/p&gt;
-
-&lt;p&gt;ChannelInboundHandlerAdapter has a straightforward（简单易懂的） API, and each of its methods can be overridden to hook into the event lifecycle at the appropriate point. &lt;strong&gt;Because you need to handle all received data, you override channelRead().&lt;/strong&gt; In this server you simply echo the data to the remote peer.&lt;/p&gt;
-
-&lt;p&gt;Overriding exceptionCaught() allows you to react to any Throwable subtypes— here you log the exception and close the connection. &lt;strong&gt;A more elaborate（复杂，精心制作的） application might try to recover from the exception,&lt;/strong&gt; but in this case simply closing the connection signals to the remote peer that an error has occurred.&lt;/p&gt;
-
-&lt;p&gt;ChannelInboundHandlerAdapter 一般Handler需要继承的类，主要override的方法是：    &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/1ab0e3db6783f4ca1cfc126d679065d8.png&quot; alt=&quot;ChannelInBoundHandlerAdapter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;override channelActive(), invoked when a connection has been established. This ensures that something is written to the server as soon as possible, which in this case is a byte buffer that encodes the string “Netty rocks!”.&lt;/p&gt;
-
-&lt;p&gt;这个方法可以用来做登录或者token的验证的逻辑！！&lt;/p&gt;
-
-&lt;p&gt;What happens if an exception isn’t caught?&lt;/p&gt;
-
-&lt;p&gt;Every Channel has an associated ChannelPipeline, which holds a chain of Channel- Handler instances. By default, a handler will forward the invocation of a handler method to the next one in the chain. Therefore, if exceptionCaught()is not imple- mented somewhere along the chain, exceptions received will travel to the end of the ChannelPipeline and will be logged. For this reason, your application should supply at least one ChannelHandler that implements exceptionCaught().&lt;/p&gt;
-
-&lt;p&gt;每一个Handler属于一个 handler链中，每一个handler链绑在一个ChannelPipel中。如果Handler中对产生的异常没有处理，将会沿着handler链中传入到下一个handler，一直到最后一个。&lt;/p&gt;
-
-&lt;p&gt;针对Handler的总结：
-ChannelHandlers are invoked for different types of events.
-■ Applications implement or extend ChannelHandlers to hook into the event lifecycle and provide custom application logic.&lt;/p&gt;
-
-&lt;p&gt;■ Architecturally, ChannelHandlers help to keep your business logic decoupled from networking code. This simplifies development as the code evolves in response to changing requirements.&lt;/p&gt;
-
-&lt;p&gt;ChannelHandlers处理的是不同类型的Event，与网路通信解耦。&lt;/p&gt;
-
-&lt;p&gt;In this section you’ll encounter the term transport. In the standard, multilayered view of networking protocols, the transport layer is the one that provides services for end- to-end or host-to-host communications.   &lt;br /&gt;
-传输层，四层网路模型中第二层，具体的是tcp udp等协议层。&lt;/p&gt;
-
-&lt;p&gt;Internet communications are based on the TCP transport. NIO transport refers to a transport that’s mostly identical to TCP except for server-side performance enhance- ments provided by the Java NIO implementation。&lt;/p&gt;
-
-&lt;p&gt;和TCP协议非常的像，只是增加了服务端性能的提升。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt; b.childHandler(new ChannelInitializer&amp;lt;SocketChannel&amp;gt;() { // 7
-            @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-              ch.pipeline().addLast(new EchoServerHandler());
-            }
-          });
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;you make use of a special class, ChannelInitializer. This is key. &lt;strong&gt;When a new connection is accepted, a new child Channel will be created, and the Channel Initializer will add an instance of your EchoServerHandler to the Channel’s ChannelPipeline.&lt;/strong&gt; As we explained earlier, this handler will receive notifications about inbound messages.&lt;/p&gt;
-
-&lt;p&gt;每一次新的连接的到来，就会创建一个新的Channel。&lt;/p&gt;
-
-&lt;p&gt;NIO is used in this example because it’s currently the most widely used transport, thanks to its scalability and thoroughgoing asynchrony. But a different transport implementation could be used as well. If you wished to use the OIO transport in your server, you’d specify OioServerSocketChannel and OioEventLoopGroup.&lt;/p&gt;
-
-&lt;p&gt;OIO的协议是&lt;/p&gt;
-
-&lt;p&gt;In the following chapters, you’ll see many more examples of how Netty simplifies scalability and concurrency.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 02 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/</guid>
         
         <category>学习</category>
         

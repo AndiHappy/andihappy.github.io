@@ -5,9 +5,239 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 03 Aug 2019 20:23:58 +0800</pubDate>
-    <lastBuildDate>Sat, 03 Aug 2019 20:23:58 +0800</lastBuildDate>
+    <pubDate>Sat, 03 Aug 2019 20:32:46 +0800</pubDate>
+    <lastBuildDate>Sat, 03 Aug 2019 20:32:46 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>沉下心来分析HashMap的源码（二）</title>
+        <description>&lt;p&gt;HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;cm&quot;&gt;/**
+   * Implements Map.put and related methods.
+   * put逻辑：
+   * 	1. 检查hashmap中的table是否需要扩容
+   * 	2.1 确定放入的值的位置：(n - 1) &amp;amp; hash，hash的计算方式：(h = key.hashCode()) ^ (h &amp;gt;&amp;gt;&amp;gt; 16)
+   * 	2.2 如果该位置没有值，直接的新建Node，设置key，value值，放入table
+   * 	2.3 如果该位置有Node值，判断key值有否相同
+   * 		2.3.1  相同则是替换value值
+   *     2.3.2  不相同则是判断Node值的类型
+   *     		2.3.2.1 如果Node值的类性是：TreeNode，标识为一颗红黑树的类型，调用putTreeVal
+   */&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;V&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;putVal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;V&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;onlyIfAbsent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;evict&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+      &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* n 代表的是原始的hashmap中 table 的 length值*/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+         &lt;span class=&quot;c1&quot;&gt;//扩容&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// &amp;amp; 值的运算：得到的值只可能比n-1小,如果table[i]为null,直接的赋值即可。&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//①&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+          &lt;span class=&quot;c1&quot;&gt;// p=table[i]; hash值相同，k值和p的key值一样，直接的替换&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hash&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))))&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//②&lt;/span&gt;
+             &lt;span class=&quot;c1&quot;&gt;//替换value值&lt;/span&gt;
+             &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//③&lt;/span&gt;
+             &lt;span class=&quot;c1&quot;&gt;// 如果有值，并且Node的类型是TreeNode类型，调用TreeNode的putTreeVal&lt;/span&gt;
+             &lt;span class=&quot;c1&quot;&gt;// TODO 暂时的放弃这个分支的分析&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putTreeVal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// ④&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// 如果不是TreeNode，那就是一个链表的类型&lt;/span&gt;
+              &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binCount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+                      &lt;span class=&quot;c1&quot;&gt;// 如果达到了7个，开始变换数据结构&lt;/span&gt;
+                      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binCount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TREEIFY_THRESHOLD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// -1 for 1st&lt;/span&gt;
+                          &lt;span class=&quot;c1&quot;&gt;//传入的参数竟然是table和hash值&lt;/span&gt;
+                          &lt;span class=&quot;n&quot;&gt;treeifyBin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+                      &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+                  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+                  &lt;span class=&quot;c1&quot;&gt;//4.2&lt;/span&gt;
+                  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hash&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hash&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))))&lt;/span&gt;
+                      &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+                  &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+              &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+          &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// existing mapping for key&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;V&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oldValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+              &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;onlyIfAbsent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oldValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                  &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//               afterNodeAccess(e);&lt;/span&gt;
+              &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oldValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;modCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threshold&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;resize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;afterNodeInsertion&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;evict&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里面最重要的就是③ 和 ④ 两种情况，其中4种的 &lt;strong&gt;treeifyBin(tab, hash)&lt;/strong&gt;  会首先被触发，在链表元素为七的时候，也就是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;k0 -&amp;gt; k1 -&amp;gt; k2 -&amp;gt; k3 -&amp;gt; k4 -&amp;gt; k5 -&amp;gt; k6
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在k6 加入的时候，节点到达了7个的时候，触发：treeifyBin&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void treeifyBin(Node&amp;lt;K,V&amp;gt;[] tab, int hash) {
+  	 	this.table = tab;
+       int n, index; Node&amp;lt;K,V&amp;gt; e;
+//       if (tab == null || (n = tab.length) &amp;lt; MIN_TREEIFY_CAPACITY)
+       if (tab == null || (n = tab.length) &amp;lt; 1)
+           resize();
+       else if ((e = tab[index = (n - 1) &amp;amp; hash]) != null) {
+           TreeNode&amp;lt;K,V&amp;gt; hd = null, tl = null;
+           // 先把Node节点全部的转化为TreeNode节点
+           do {
+               TreeNode&amp;lt;K,V&amp;gt; p = replacementTreeNode(e, null);
+               if (tl == null)
+                   hd = p;
+               else {
+                   p.prev = tl;
+                   tl.next = p;
+               }
+               tl = p;
+           } while ((e = e.next) != null);
+
+           // 此时的hd为0-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;...-&amp;gt;end 为链表的数据结构
+           if ((tab[index] = hd) != null)
+          	 	 // 链状的TreeNode节点转为为树状
+               hd.treeify(tab);
+       }
+   }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这个方法最主要的一点是通过一个 do while 循环把Node节点转化为TreeNode节点，然后进行红黑树转化，调用：treeify。&lt;/p&gt;
+
+&lt;p&gt;从这里我们可以得到③的类型判断的逻辑了，如果节点是TreeNode节点的类型，那么数组内存储的就是一个红黑树了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;if (p instanceof TreeNode)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;直接的调用，红黑树的插入操作了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;e = ((TreeNode&amp;lt;K,V&amp;gt;)p).putTreeVal(this, tab, hash, key, value);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;关于红黑树的逻辑，我们下篇接着说，这篇我们主要集中在Map的数据结构。&lt;/p&gt;
+
+&lt;p&gt;最后还有一个推测：从这里我们可以推测remove的逻辑，当TreeNode的节点少于8个，也就是7个的时候，调用链表话的操作，再次转化数据结构吗？&lt;/p&gt;
+
+&lt;h3 id=&quot;remove操作&quot;&gt;REMOVE操作&lt;/h3&gt;
+
+&lt;p&gt;直接上代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  public V remove(Object key) {
+    Node&amp;lt;K,V&amp;gt; e;
+    return (e = removeNode(hash(key), key, null, false, true)) == null ?
+        null : e.value;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;hash 算法为同一个算法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final Node&amp;lt;K,V&amp;gt; removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
+    Node&amp;lt;K,V&amp;gt;[] tab; Node&amp;lt;K,V&amp;gt; p; int n, index;
+
+    if ((tab = table) != null &amp;amp;&amp;amp; (n = tab.length) &amp;gt; 0 &amp;amp;&amp;amp; (p = tab[index = (n - 1) &amp;amp; hash]) != null) {
+
+        Node&amp;lt;K,V&amp;gt; node = null, e; K k; V v;
+        // finde node value
+        if (p.hash == hash &amp;amp;&amp;amp;((k = p.key) == key || (key != null &amp;amp;&amp;amp; key.equals(k))))
+            node = p;
+        else if ((e = p.next) != null) {
+            if (p instanceof TreeNode)
+                node = ((TreeNode&amp;lt;K,V&amp;gt;)p).getTreeNode(hash, key);
+            else {
+                do {
+                    if (e.hash == hash &amp;amp;&amp;amp;((k = e.key) == key ||(key != null &amp;amp;&amp;amp; key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }
+        }
+
+        // !matchValue || (v = node.value) == value
+        // node为key值对应的节点，p为key的前一个节点
+        if (node != null &amp;amp;&amp;amp; (!matchValue || (v = node.value) == value ||(value != null &amp;amp;&amp;amp; value.equals(v)))) {
+            if (node instanceof TreeNode)
+               // node 为当前的节点
+                ((TreeNode&amp;lt;K,V&amp;gt;)node).removeTreeNode(this, tab, movable);
+            else if (node == p)
+                tab[index] = node.next;
+            else
+                p.next = node.next;
+
+            ++modCount;
+            --size;
+//               afterNodeRemoval(node);
+            return node;
+        }
+    }
+    return null;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;像比较PUT的逻辑来说，Remove操作，首先要找到删除的节点，然后根据删除节点所在的数组中存储节点的类型，来进行确定，是进行链表的删除操作，还是红黑树的节点删除操作。&lt;/p&gt;
+
+&lt;p&gt;节点的转化，肯定在红黑的删除操作中，由于红黑树的删除的操作比较的复杂，所以我们直接看我们关心的逻辑即可：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; final void removeTreeNode(MyMap&amp;lt;K,V&amp;gt; map, Node&amp;lt;K,V&amp;gt;[] tab,boolean movable) {
+
+   。。。。。。。。
+   if (root == null || (movable&amp;amp;&amp;amp; (root.right == null|| (rl = root.left) == null || rl.left == null))) {
+           	 	 // 由树转化为链表的数据结构
+                tab[index] = first.untreeify(map);  // too small
+                return;
+            }
+   。。。。。。。
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;判断也比较有意思&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final Node&amp;lt;K,V&amp;gt; untreeify(MyMap&amp;lt;K,V&amp;gt; map) {
+    Node&amp;lt;K,V&amp;gt; hd = null, tl = null;
+    for (Node&amp;lt;K,V&amp;gt; q = this; q != null; q = q.next) {
+        Node&amp;lt;K,V&amp;gt; p = map.replacementNode(q, null);
+        if (tl == null)
+            hd = p;
+        else
+            tl.next = p;//⑤
+        tl = p;
+    }
+    return hd;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;从代码中可以看到，确实和我们预料的情况一样。在一定的条件下，树直接退化为链表数据结构。&lt;/p&gt;
+
+&lt;p&gt;关于红黑树的操作，HashMap的操作，也和普通的红黑树不一样，准确的说，是比普通的红黑树复杂，因为涉及到树节点集成的next， 和自己定义的pre指向的保持，不然也不会有 树直接退化为链表 的方法untreeify 的操作⑤标注的next操作。具体是如何的维持，我们下篇再说。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 03 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/03/hashmap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/03/hashmap/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
     
       <item>
         <title>沉下心来分析HashMap的源码</title>
@@ -190,16 +420,10 @@
       &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;总共有四中情况，我们一一说明：&lt;/p&gt;
-
-&lt;p&gt;① 第一种情况，最简单：相当于 &lt;em&gt;table[0]&lt;/em&gt;  为NULL，直接的设置，如下图：&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hash1.jpg&quot; alt=&quot;Map原来的数据结构&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;② 第二种情况，key值直接相同，PUT操作出发了替换的逻辑&lt;/p&gt;
 </description>
-        <pubDate>Thu, 01 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/01/hashmap/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/01/hashmap/</guid>
+        <pubDate>Fri, 02 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/02/hashmap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/02/hashmap/</guid>
         
         <category>JDK</category>
         
@@ -872,105 +1096,6 @@ Unpooled 工具类。&lt;/p&gt;
         <pubDate>Mon, 04 Dec 2017 17:00:00 +0800</pubDate>
         <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/</link>
         <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;这章主要的是介绍netty的架构，主要的模块。     &lt;br /&gt;
-verifying your development tools and environment,   &lt;br /&gt;
- building application logic with ChannelHandlers.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;From a high-level perspective, Netty addresses two corresponding areas of concern, which we might label broadly as technical and architectural. First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum application performance and scalability under heavy load. Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplify ing development while maximizing the testability, modularity, and reusability of code.&lt;/p&gt;
-
-&lt;p&gt;netty的两个方面，技术层次的异步和事件处理机制，架构层面的很多的设计模式。&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;**The following sections will add detail to our discussion of the Channel, EventLoop, and ChannelFuture classes which, taken together, can be thought of as representing Netty’s networking abstraction: **&lt;/em&gt;    &lt;br /&gt;
-■ Channel—Sockets    &lt;br /&gt;
-■ EventLoop—Control flow, multithreading, concurrency  &lt;br /&gt;
-■ ChannelFuture—Asynchronous notification&lt;/p&gt;
-
-&lt;p&gt;netty的框架抽象的内容：Channel，socket连接的抽象，EventLoop，并发，多线程事件控制流。ChannelFuture，异步的通知。&lt;/p&gt;
-
-&lt;p&gt;Basic I/O operations (bind(), connect(), read(), and write()) depend on primitives supplied by the underlying network transport. In Java-based networking, the funda- mental construct is class Socket. Netty’s Channel interface provides an API that greatly reduces the complexity of working directly with Sockets. Additionally, Channel is the root of an extensive class hierarchy having many predefined, specialized implementations。example：
-NioSocketChannel&lt;/p&gt;
-
-&lt;p&gt;netty针对socket操作的抽象出来的是Channel，具体的集成关系：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DefaultAttributeMap&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractNioChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractChannel&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractNioByteChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractNioChannel&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SocketChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NioSocketChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractNioByteChannel&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;netty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SocketChannel&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;The EventLoop defines Netty’s core abstraction for handling events that occur during the lifetime of a connection。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/26aa162535f06260ad225a84bf19f3a8.png&quot; alt=&quot;Channel，EventLoop之间的关系&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From the application developer’s standpoint, the primary component of Netty is the ChannelHandler, which serves as the container for all application logic that applies to handling inbound and outbound data. This is possible because ChannelHandler methods are triggered by network events (where the term “event” is used very broadly). In fact, a ChannelHandler can be dedicated to almost any kind of action, such as converting data from one format to another or handling exceptions thrown during processing.&lt;/p&gt;
-
-&lt;p&gt;对开发者具体使用来说，netty最主要就是ChannelHandler了，可以专业处理各种各样的Event事件。&lt;/p&gt;
-
-&lt;p&gt;A ChannelPipeline provides a container for a chain of ChannelHandlers and defines an API for propagating the flow of inbound and outbound events along the chain. When a Channel is created, it is automatically assigned its own ChannelPipeline.    &lt;br /&gt;
-ChannelHandlers are installed in the ChannelPipeline as follows:     &lt;br /&gt;
-■ A ChannelInitializer implementation is registered with a ServerBootstrap.  &lt;br /&gt;
-■ When ChannelInitializer.initChannel() is called, the ChannelInitializer installs a custom set of ChannelHandlers in the pipeline.   &lt;br /&gt;
-■ The ChannelInitializer removes itself from the ChannelPipeline.&lt;/p&gt;
-
-&lt;p&gt;ChannelPipeline 可以说是包含了ChannelHandler的容器，一个container。&lt;/p&gt;
-
-&lt;p&gt;The movement of an event through the pipeline is the work of the ChannelHandlers that have been installed during the initialization, or bootstrapping phase of the application. These objects receive events, execute the processing logic for which they have been implemented, and pass the data to the next handler in the chain. The order in which they are executed is determined by the order in which they were added. &lt;strong&gt;For all practical purposes, it’s this ordered arrangement of ChannelHandlers that we refer to as the ChannelPipeline.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;ChannelHandler 处理事件，然后把处理事件后数据传给下一个ChannelHandler，安排这个顺序就是ChannelPipeline。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/5983e2d96f71af4c1ffa9050f46e533a.png&quot; alt=&quot;pipeline和handler&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Figure 3.3 also shows that &lt;strong&gt;both inbound and outbound handlers can be installed in the same pipeline.&lt;/strong&gt;  If a message or any other inbound event is read, it will start from the head of the pipeline and be passed to the first ChannelInboundHandler. This handler may or may not actually modify the data, depending on its specific function, after which the data will be passed to the next ChannelInboundHandler in the chain. Finally, the data will reach the tail of the pipeline, at which point all processing is terminated.&lt;/p&gt;
-
-&lt;p&gt;一个Pipeline中如果有 inbound 和 outbound 的handler，一个事件的处理顺序？？   &lt;br /&gt;
-按照inbound的顺序，是按照pipeline中增加的顺序，然后在最后一个的inbound的handler中调用 ctx.write(object) 就会再次的调用outbound的handler去处理了。   &lt;br /&gt;
-When a ChannelHandler is added to a ChannelPipeline, it’s assigned a Channel- HandlerContext, which represents the binding between a ChannelHandler and the ChannelPipeline. Although this object can be used to obtain the underlying Channel, it’s mostly utilized to write outbound data.&lt;/p&gt;
-
-&lt;p&gt;ChannelHandler都会绑定一个 ChannelHandlerContext，这个上下文比较的有用。&lt;/p&gt;
-
-&lt;p&gt;Netty provides a number of default handler implementations in the form of adapter classes, which are intended to simplify the development of an application’s processing logic. You’ve seen that each ChannelHandler in a pipeline is responsible for forwarding events to the next handler in the chain. These adapter classes (and their subclasses) do this automatically, so you can override only the methods and events you want to specialize.&lt;/p&gt;
-
-&lt;p&gt;netty 提供的默认的handler：&lt;/p&gt;
-
-&lt;p&gt;ByteToMessageDecoder    &lt;br /&gt;
-MessageToByteEncoder&lt;/p&gt;
-
-&lt;p&gt;字节到特殊类型的JAVA对象和JAVA对应到自己的转换的对象。
-The pattern for outbound messages is the reverse: an encoder converts the mes- sage to bytes and &lt;strong&gt;forwards them to the next ChannelOutboundHandler.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;SimpleChannelInboundHandler&lt;T&gt;   
- a handler that receives a decoded mes- sage and applies business logic to the data.where T is the Java type of the message you want to process.&lt;/T&gt;&lt;/p&gt;
-
-&lt;p&gt;Please keep in mind that strictly speak- ing the term “connection” applies only to connection-oriented protocols such as TCP, which guarantee ordered delivery of messages between the connected endpoints.&lt;/p&gt;
-
-&lt;p&gt;connection 应该对应的是 “链接”&lt;/p&gt;
-
-&lt;p&gt;Netty的启动类区分了Client和Server，分别是bootStrap 和 ServerBootStrap，其中ServerBootStrap绑定到本地的一个端口上，因为server需要监听这个端口上面的数据，BootStrap却是可以连接到一个remote peer。&lt;/p&gt;
-
-&lt;p&gt;第二种不同的点，就是BootStrap只需要一个EventLoopGroup，但是ServerBootStrap 需要两个。&lt;/p&gt;
-
-&lt;p&gt;A server needs two distinct sets of Channels. The first set will contain a single ServerChannel representing the server’s own listening socket, bound to a local port. The second set will contain all of the Channels that have been created to handle incom- ing client connections—one for each connection the server has accepted. Figure 3.4 illustrates this model, and shows why two distinct EventLoopGroups are required.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/c4c708ecd1b21e36cc553764267db07c.png&quot; alt=&quot;server的EventLoopCroup&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;server端的两个EventLoopGroup，一个是处理Connection接入，监听接口数据的，一个是处理接入以后的业务逻辑的。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 03 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/</guid>
         
         <category>学习</category>
         

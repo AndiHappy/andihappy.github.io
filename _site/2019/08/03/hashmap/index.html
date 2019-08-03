@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
+    <meta name="theme-color" content="#000000">
+    
+    <title>沉下心来分析HashMap的源码（二） - 飞翔的面包 | FlyBread Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2019/08/03/hashmap/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">飞翔的面包</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">首页</a>
+                    </li>
+                    <li>
+                        <a href="/about/">关于</a>
+                    </li>
+                    <li>
+                        <a href="/tags">标签</a>
+                    </li>
+                    <li>
+                        <a href="/category/">分类</a>
+                    </li>
+                   <!--  
+                    <li>
+                        <a href="/category/">分类展示</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                     -->
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-2015.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#JDK" title="JDK">JDK</a>
+                        
+                    </div>
+                    <h1>沉下心来分析HashMap的源码（二）</h1>
+                    
+                    
+                    <h2 class="subheading">分析HashMap的源码，尽自己可能的详细</h2>
+                    
+                    <span class="meta">Posted by zhailzh on August 3, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<p>HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。</p>
+
+<!--more-->
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="cm">/**
+   * Implements Map.put and related methods.
+   * put逻辑：
+   * 	1. 检查hashmap中的table是否需要扩容
+   * 	2.1 确定放入的值的位置：(n - 1) &amp; hash，hash的计算方式：(h = key.hashCode()) ^ (h &gt;&gt;&gt; 16)
+   * 	2.2 如果该位置没有值，直接的新建Node，设置key，value值，放入table
+   * 	2.3 如果该位置有Node值，判断key值有否相同
+   * 		2.3.1  相同则是替换value值
+   *     2.3.2  不相同则是判断Node值的类型
+   *     		2.3.2.1 如果Node值的类性是：TreeNode，标识为一颗红黑树的类型，调用putTreeVal
+   */</span>
+  <span class="kd">final</span> <span class="n">V</span> <span class="nf">putVal</span><span class="o">(</span><span class="kt">int</span> <span class="n">hash</span><span class="o">,</span> <span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyIfAbsent</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">evict</span><span class="o">)</span> <span class="o">{</span>
+
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;[]</span> <span class="n">tab</span><span class="o">;</span>
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">;</span>
+      <span class="kt">int</span> <span class="n">n</span><span class="o">,</span><span class="cm">/* n 代表的是原始的hashmap中 table 的 length值*/</span> <span class="n">i</span><span class="o">;</span>
+
+      <span class="k">if</span> <span class="o">((</span><span class="n">tab</span> <span class="o">=</span> <span class="n">table</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">(</span><span class="n">n</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+         <span class="c1">//扩容</span>
+          <span class="n">n</span> <span class="o">=</span> <span class="o">(</span><span class="n">tab</span> <span class="o">=</span> <span class="n">resize</span><span class="o">()).</span><span class="na">length</span><span class="o">;</span>
+      <span class="c1">// &amp; 值的运算：得到的值只可能比n-1小,如果table[i]为null,直接的赋值即可。</span>
+      <span class="k">if</span> <span class="o">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="o">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">hash</span><span class="o">])</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="c1">//①</span>
+          <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+      <span class="k">else</span> <span class="o">{</span>
+          <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">e</span><span class="o">;</span>
+          <span class="n">K</span> <span class="n">k</span><span class="o">;</span>
+          <span class="c1">// p=table[i]; hash值相同，k值和p的key值一样，直接的替换</span>
+          <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;((</span><span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">)</span> <span class="o">==</span> <span class="n">key</span> <span class="o">||</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">k</span><span class="o">))))</span><span class="c1">//②</span>
+             <span class="c1">//替换value值</span>
+             <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
+          <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="n">TreeNode</span><span class="o">)</span><span class="c1">//③</span>
+             <span class="c1">// 如果有值，并且Node的类型是TreeNode类型，调用TreeNode的putTreeVal</span>
+             <span class="c1">// TODO 暂时的放弃这个分支的分析</span>
+              <span class="n">e</span> <span class="o">=</span> <span class="o">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;)</span><span class="n">p</span><span class="o">).</span><span class="na">putTreeVal</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+          <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// ④</span>
+            <span class="c1">// 如果不是TreeNode，那就是一个链表的类型</span>
+              <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">binCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="o">;</span> <span class="o">++</span><span class="n">binCount</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="k">if</span> <span class="o">((</span><span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">next</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                      <span class="n">p</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+                      <span class="c1">// 如果达到了7个，开始变换数据结构</span>
+                      <span class="k">if</span> <span class="o">(</span><span class="n">binCount</span> <span class="o">&gt;=</span> <span class="n">TREEIFY_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="c1">// -1 for 1st</span>
+                          <span class="c1">//传入的参数竟然是table和hash值</span>
+                          <span class="n">treeifyBin</span><span class="o">(</span><span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">);</span>
+                      <span class="k">break</span><span class="o">;</span>
+                  <span class="o">}</span>
+                  <span class="c1">//4.2</span>
+                  <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;((</span><span class="n">k</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">key</span><span class="o">)</span> <span class="o">==</span> <span class="n">key</span> <span class="o">||</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">k</span><span class="o">))))</span>
+                      <span class="k">break</span><span class="o">;</span>
+                  <span class="n">p</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
+              <span class="o">}</span>
+          <span class="o">}</span>
+
+          <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// existing mapping for key</span>
+              <span class="n">V</span> <span class="n">oldValue</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">value</span><span class="o">;</span>
+              <span class="k">if</span> <span class="o">(!</span><span class="n">onlyIfAbsent</span> <span class="o">||</span> <span class="n">oldValue</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+                  <span class="n">e</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+<span class="c1">//               afterNodeAccess(e);</span>
+              <span class="k">return</span> <span class="n">oldValue</span><span class="o">;</span>
+          <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="o">++</span><span class="n">modCount</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(++</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">)</span>
+          <span class="n">resize</span><span class="o">();</span>
+      <span class="n">afterNodeInsertion</span><span class="o">(</span><span class="n">evict</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里面最重要的就是③ 和 ④ 两种情况，其中4种的 <strong>treeifyBin(tab, hash)</strong>  会首先被触发，在链表元素为七的时候，也就是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>k0 -&gt; k1 -&gt; k2 -&gt; k3 -&gt; k4 -&gt; k5 -&gt; k6
+</code></pre></div></div>
+
+<p>在k6 加入的时候，节点到达了7个的时候，触发：treeifyBin</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash) {
+  	 	this.table = tab;
+       int n, index; Node&lt;K,V&gt; e;
+//       if (tab == null || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)
+       if (tab == null || (n = tab.length) &lt; 1)
+           resize();
+       else if ((e = tab[index = (n - 1) &amp; hash]) != null) {
+           TreeNode&lt;K,V&gt; hd = null, tl = null;
+           // 先把Node节点全部的转化为TreeNode节点
+           do {
+               TreeNode&lt;K,V&gt; p = replacementTreeNode(e, null);
+               if (tl == null)
+                   hd = p;
+               else {
+                   p.prev = tl;
+                   tl.next = p;
+               }
+               tl = p;
+           } while ((e = e.next) != null);
+
+           // 此时的hd为0-&gt;1-&gt;2-&gt;3-&gt;...-&gt;end 为链表的数据结构
+           if ((tab[index] = hd) != null)
+          	 	 // 链状的TreeNode节点转为为树状
+               hd.treeify(tab);
+       }
+   }
+</code></pre></div></div>
+
+<p>这个方法最主要的一点是通过一个 do while 循环把Node节点转化为TreeNode节点，然后进行红黑树转化，调用：treeify。</p>
+
+<p>从这里我们可以得到③的类型判断的逻辑了，如果节点是TreeNode节点的类型，那么数组内存储的就是一个红黑树了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (p instanceof TreeNode)
+</code></pre></div></div>
+
+<p>直接的调用，红黑树的插入操作了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+</code></pre></div></div>
+
+<p>关于红黑树的逻辑，我们下篇接着说，这篇我们主要集中在Map的数据结构。</p>
+
+<p>最后还有一个推测：从这里我们可以推测remove的逻辑，当TreeNode的节点少于8个，也就是7个的时候，调用链表话的操作，再次转化数据结构吗？</p>
+
+<h3 id="remove操作">REMOVE操作</h3>
+
+<p>直接上代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public V remove(Object key) {
+    Node&lt;K,V&gt; e;
+    return (e = removeNode(hash(key), key, null, false, true)) == null ?
+        null : e.value;
+}
+</code></pre></div></div>
+
+<p>hash 算法为同一个算法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, index;
+
+    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (p = tab[index = (n - 1) &amp; hash]) != null) {
+
+        Node&lt;K,V&gt; node = null, e; K k; V v;
+        // finde node value
+        if (p.hash == hash &amp;&amp;((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
+            node = p;
+        else if ((e = p.next) != null) {
+            if (p instanceof TreeNode)
+                node = ((TreeNode&lt;K,V&gt;)p).getTreeNode(hash, key);
+            else {
+                do {
+                    if (e.hash == hash &amp;&amp;((k = e.key) == key ||(key != null &amp;&amp; key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }
+        }
+
+        // !matchValue || (v = node.value) == value
+        // node为key值对应的节点，p为key的前一个节点
+        if (node != null &amp;&amp; (!matchValue || (v = node.value) == value ||(value != null &amp;&amp; value.equals(v)))) {
+            if (node instanceof TreeNode)
+               // node 为当前的节点
+                ((TreeNode&lt;K,V&gt;)node).removeTreeNode(this, tab, movable);
+            else if (node == p)
+                tab[index] = node.next;
+            else
+                p.next = node.next;
+
+            ++modCount;
+            --size;
+//               afterNodeRemoval(node);
+            return node;
+        }
+    }
+    return null;
+}
+</code></pre></div></div>
+
+<p>像比较PUT的逻辑来说，Remove操作，首先要找到删除的节点，然后根据删除节点所在的数组中存储节点的类型，来进行确定，是进行链表的删除操作，还是红黑树的节点删除操作。</p>
+
+<p>节点的转化，肯定在红黑的删除操作中，由于红黑树的删除的操作比较的复杂，所以我们直接看我们关心的逻辑即可：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> final void removeTreeNode(MyMap&lt;K,V&gt; map, Node&lt;K,V&gt;[] tab,boolean movable) {
+
+   。。。。。。。。
+   if (root == null || (movable&amp;&amp; (root.right == null|| (rl = root.left) == null || rl.left == null))) {
+           	 	 // 由树转化为链表的数据结构
+                tab[index] = first.untreeify(map);  // too small
+                return;
+            }
+   。。。。。。。
+
+</code></pre></div></div>
+
+<p>判断也比较有意思</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; untreeify(MyMap&lt;K,V&gt; map) {
+    Node&lt;K,V&gt; hd = null, tl = null;
+    for (Node&lt;K,V&gt; q = this; q != null; q = q.next) {
+        Node&lt;K,V&gt; p = map.replacementNode(q, null);
+        if (tl == null)
+            hd = p;
+        else
+            tl.next = p;//⑤
+        tl = p;
+    }
+    return hd;
+}
+</code></pre></div></div>
+
+<p>从代码中可以看到，确实和我们预料的情况一样。在一定的条件下，树直接退化为链表数据结构。</p>
+
+<p>关于红黑树的操作，HashMap的操作，也和普通的红黑树不一样，准确的说，是比普通的红黑树复杂，因为涉及到树节点集成的next， 和自己定义的pre指向的保持，不然也不会有 树直接退化为链表 的方法untreeify 的操作⑤标注的next操作。具体是如何的维持，我们下篇再说。</p>
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/08/02/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码">
+                        Previous<br>
+                        <span>沉下心来分析HashMap的源码</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+                <!-- 网易云跟帖 评论框 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <!-- 网易云跟帖 评论框 end -->
+                
+            </div>
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!-- Featured Tags -->
+              <!--    -->
+                <!-- <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5> -->
+                 <!--    <div class="tags">
+        				 
+                            
+        				
+                            
+                				<a href="/tags/#学习" title="学习" rel="22">
+                                    学习
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#JDK" title="JDK" rel="2">
+                                    JDK
+                                </a>
+                            
+        				
+        			</div> -->
+               <!--  </section> -->
+               <!--   -->
+
+                <!-- Friends Blog -->
+               <!--   -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 网易云跟帖JS代码 start -->
+<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+<script>
+  var cloudTieConfig = {
+    url: document.location.href,
+    sourceId: "",
+    productKey: "de25fc98a6fe48b3bc8a7ae765da99a0",
+    target: "cloud-tie-wrapper"
+  };
+  var yunManualLoad = true;
+  Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+</script>
+<!-- 网易云跟帖JS代码 end -->
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "https-andihappy-github-io-2";
+    var disqus_identifier = "/2019/08/03/hashmap";
+    var disqus_url = "http://localhost:4000/2019/08/03/hashmap/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Theme modify by <a href="http://huangxuan.me">飞翔的面包</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=andihappy&repo=andihappy.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+        var P = $('div.post-container'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/01/hashmap/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/02/hashmap/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -191,7 +191,7 @@
                     
                     <h2 class="subheading">分析HashMap的源码，尽自己可能的详细</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 1, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 2, 2019</span>
                 </div>
             </div>
         </div>
@@ -389,12 +389,6 @@
   <span class="o">}</span>
 </code></pre></div></div>
 
-<p>总共有四中情况，我们一一说明：</p>
-
-<p>① 第一种情况，最简单：相当于 <em>table[0]</em>  为NULL，直接的设置，如下图：<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hash1.jpg" alt="Map原来的数据结构" /></p>
-
-<p>② 第二种情况，key值直接相同，PUT操作出发了替换的逻辑</p>
-
 
                 <hr style="visibility: hidden;">
 
@@ -407,6 +401,13 @@
                         </a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="/2019/08/03/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码（二）">
+                        Next<br>
+                        <span>沉下心来分析HashMap的源码（二）</span>
+                        </a>
+                    </li>
                     
                 </ul>
 
@@ -470,6 +471,10 @@
                             
         				
                             
+                				<a href="/tags/#JDK" title="JDK" rel="2">
+                                    JDK
+                                </a>
+                            
         				
         			</div> -->
                <!--  </section> -->
@@ -505,8 +510,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/01/hashmap";
-    var disqus_url = "http://localhost:4000/2019/08/01/hashmap/";
+    var disqus_identifier = "/2019/08/02/hashmap";
+    var disqus_url = "http://localhost:4000/2019/08/02/hashmap/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

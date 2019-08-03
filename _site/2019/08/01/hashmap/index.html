@@ -214,9 +214,186 @@
 
 <!--more-->
 
+<h3 id="粗略的印象">粗略的印象</h3>
+
 <p>首先是最初的图：</p>
 
-<p><img src="https://github.com/AndiHappy/andihappy.github.io/blob/master/img/404-bg.jpg" alt="git图片" /></p>
+<p><img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hashmap1.jpg" alt="Map原来的数据结构" /></p>
+
+<p>这个是我们以前常见的map的数据结构：桶，也可以称之为链表数组。但是1.8以后，在某些特殊的情况下，链表会和红黑树相互的转化，变成下面的这种数据结构：</p>
+
+<p><img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hashmap2.jpg" alt="Map原来的数据结构2" /></p>
+
+<h3 id="准备工作">准备工作</h3>
+
+<p>但是具体是如何转化的，如何实现的，我们需要跟踪代码，进行详细的跟踪。
+为了调试和注释的方便，我重写了hash的算法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+   * 3288498===&gt; 3288448
+   *
+   * 1100100010110110110010
+   * 0000000000000000110010
+   * 1100100010110110000000
+   *
+   * 高中低位的字符全部的参与进来，把key的hash值打散
+   */</span>
+	 <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">hash</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+
+<span class="c1">//     int h;</span>
+<span class="c1">//     return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span>
+
+     <span class="cm">/**
+		  * 为了测试，hash值一律的返回0
+		  * */</span>
+     <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+ <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这样的话，全部的元素都会添加到桶的第一个位置上，把数据的变化表现的更加详尽。</p>
+
+<h3 id="测试代码">测试代码</h3>
+
+<p>暂时先看Map最主要的两个操作，PUT和REMOVE，因为这两个操作针对的都是元素的增加和减少，在这个过程中能够看到数据结构的变化。</p>
+
+<p>测试的代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//正经的测试</span>
+		<span class="n">MyMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">mymap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">mymap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"k"</span><span class="o">+</span><span class="n">i</span><span class="o">,</span> <span class="s">"v"</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">mymap</span><span class="o">.</span><span class="na">table</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+
+		<span class="n">mymap</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="s">"k5"</span><span class="o">);</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">mymap</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="s">"k"</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="数据结构的准备工作">数据结构的准备工作：</h3>
+
+<p>从小到大的来说，首先是 Key 和 Value 组成键值对的表示 Node节点，Node节点表示为链表的节点，所以就有了next的属性。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span>  <span class="o">{</span>
+     <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">hash</span><span class="o">;</span> <span class="c1">// 包含一个hash值</span>
+     <span class="kd">public</span> <span class="kd">final</span> <span class="n">K</span> <span class="n">key</span><span class="o">;</span>
+     <span class="kd">public</span> <span class="n">V</span> <span class="n">value</span><span class="o">;</span>
+     <span class="kd">public</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">next</span><span class="o">;</span> <span class="c1">// 指向下一个节点</span>
+
+</code></pre></div></div>
+
+<p>然后就是红黑树节点的表示，具有left，right，red之类的标志性属性，不过在HashMap中，红黑树的节点是Node的子类，主要是为了转换的方便，后面的代码中可以看到。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">LinkedHashMap</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">parent</span><span class="o">;</span>  <span class="c1">// red-black tree links</span>
+    <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">left</span><span class="o">;</span>
+    <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">right</span><span class="o">;</span>
+    <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">prev</span><span class="o">;</span>    <span class="c1">// needed to unlink next upon deletion</span>
+    <span class="kt">boolean</span> <span class="n">red</span><span class="o">;</span>
+</code></pre></div></div>
+<p>从这个我们还可以看到，不仅有right ，left，red，还有parent，pre属性。</p>
+
+<p>最后就是存储节点的数组的数据结构：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 非序列化</span>
+  <span class="kd">transient</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;[]</span> <span class="n">table</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>TreeNode继承自Node，在数组的表述中直接的声明Node节点即可。</p>
+
+<h3 id="put操作">PUT操作</h3>
+
+<p>代码的注释已经非常的详细，我会在代码的操作的过程中添加对应的图示，以便于更加明白的说明：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">V</span> <span class="nf">put</span><span class="o">(</span><span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">putVal</span><span class="o">(</span><span class="n">hash</span><span class="o">(</span><span class="n">key</span><span class="o">),</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>期中的 <em>hash(key)</em> 经过了改写，全部的返回0，这样数据结构变化的会更加的明显，但是在原始的HashMap肯定不是这样的，如hash方法中的注释一样，原始的hash注重散列的均匀度。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="cm">/**
+   * Implements Map.put and related methods.
+   * put逻辑：
+   * 	1. 检查hashmap中的table是否需要扩容
+   * 	2.1 确定放入的值的位置：(n - 1) &amp; hash，hash的计算方式：(h = key.hashCode()) ^ (h &gt;&gt;&gt; 16)
+   * 	2.2 如果该位置没有值，直接的新建Node，设置key，value值，放入table
+   * 	2.3 如果该位置有Node值，判断key值有否相同
+   * 		2.3.1  相同则是替换value值
+   *     2.3.2  不相同则是判断Node值的类型
+   *     		2.3.2.1 如果Node值的类性是：TreeNode，标识为一颗红黑树的类型，调用putTreeVal
+   */</span>
+  <span class="kd">final</span> <span class="n">V</span> <span class="nf">putVal</span><span class="o">(</span><span class="kt">int</span> <span class="n">hash</span><span class="o">,</span> <span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyIfAbsent</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">evict</span><span class="o">)</span> <span class="o">{</span>
+
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;[]</span> <span class="n">tab</span><span class="o">;</span>
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">;</span>
+      <span class="kt">int</span> <span class="n">n</span><span class="o">,</span><span class="cm">/* n 代表的是原始的hashmap中 table 的 length值*/</span> <span class="n">i</span><span class="o">;</span>
+
+      <span class="k">if</span> <span class="o">((</span><span class="n">tab</span> <span class="o">=</span> <span class="n">table</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">(</span><span class="n">n</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+         <span class="c1">//扩容</span>
+          <span class="n">n</span> <span class="o">=</span> <span class="o">(</span><span class="n">tab</span> <span class="o">=</span> <span class="n">resize</span><span class="o">()).</span><span class="na">length</span><span class="o">;</span>
+      <span class="c1">// &amp; 值的运算：得到的值只可能比n-1小,如果table[i]为null,直接的赋值即可。</span>
+      <span class="k">if</span> <span class="o">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="o">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">hash</span><span class="o">])</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="c1">//①</span>
+          <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+      <span class="k">else</span> <span class="o">{</span>
+          <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">e</span><span class="o">;</span>
+          <span class="n">K</span> <span class="n">k</span><span class="o">;</span>
+          <span class="c1">// p=table[i]; hash值相同，k值和p的key值一样，直接的替换</span>
+          <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;((</span><span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">)</span> <span class="o">==</span> <span class="n">key</span> <span class="o">||</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">k</span><span class="o">))))</span><span class="c1">//②</span>
+             <span class="c1">//替换value值</span>
+             <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
+          <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="n">TreeNode</span><span class="o">)</span><span class="c1">//③</span>
+             <span class="c1">// 如果有值，并且Node的类型是TreeNode类型，调用TreeNode的putTreeVal</span>
+             <span class="c1">// TODO 暂时的放弃这个分支的分析</span>
+              <span class="n">e</span> <span class="o">=</span> <span class="o">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;)</span><span class="n">p</span><span class="o">).</span><span class="na">putTreeVal</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+          <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// ④</span>
+            <span class="c1">// 如果不是TreeNode，那就是一个链表的类型</span>
+              <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">binCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="o">;</span> <span class="o">++</span><span class="n">binCount</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="k">if</span> <span class="o">((</span><span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">next</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                      <span class="n">p</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+                      <span class="c1">// 如果达到了7个，开始变换数据结构</span>
+                      <span class="k">if</span> <span class="o">(</span><span class="n">binCount</span> <span class="o">&gt;=</span> <span class="n">TREEIFY_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="c1">// -1 for 1st</span>
+                          <span class="c1">//传入的参数竟然是table和hash值</span>
+                          <span class="n">treeifyBin</span><span class="o">(</span><span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">);</span>
+                      <span class="k">break</span><span class="o">;</span>
+                  <span class="o">}</span>
+                  <span class="c1">//4.2</span>
+                  <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;((</span><span class="n">k</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">key</span><span class="o">)</span> <span class="o">==</span> <span class="n">key</span> <span class="o">||</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">k</span><span class="o">))))</span>
+                      <span class="k">break</span><span class="o">;</span>
+                  <span class="n">p</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
+              <span class="o">}</span>
+          <span class="o">}</span>
+
+          <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// existing mapping for key</span>
+              <span class="n">V</span> <span class="n">oldValue</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">value</span><span class="o">;</span>
+              <span class="k">if</span> <span class="o">(!</span><span class="n">onlyIfAbsent</span> <span class="o">||</span> <span class="n">oldValue</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+                  <span class="n">e</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+<span class="c1">//               afterNodeAccess(e);</span>
+              <span class="k">return</span> <span class="n">oldValue</span><span class="o">;</span>
+          <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="o">++</span><span class="n">modCount</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(++</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">)</span>
+          <span class="n">resize</span><span class="o">();</span>
+      <span class="n">afterNodeInsertion</span><span class="o">(</span><span class="n">evict</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>总共有四中情况，我们一一说明：</p>
+
+<p>① 第一种情况，最简单：相当于 <em>table[0]</em>  为NULL，直接的设置，如下图：<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hash1.jpg" alt="Map原来的数据结构" /></p>
+
+<p>② 第二种情况，key值直接相同，PUT操作出发了替换的逻辑</p>
 
 
                 <hr style="visibility: hidden;">

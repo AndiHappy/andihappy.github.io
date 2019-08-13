@@ -5,14 +5,77 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 03 Aug 2019 20:32:46 +0800</pubDate>
-    <lastBuildDate>Sat, 03 Aug 2019 20:32:46 +0800</lastBuildDate>
+    <pubDate>Wed, 07 Aug 2019 17:36:26 +0800</pubDate>
+    <lastBuildDate>Wed, 07 Aug 2019 17:36:26 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
+        <title>沉下心来分析HashMap的源码（三）学习红黑树</title>
+        <description>&lt;p&gt;HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;每个节点或者是红色，或者是黑色&lt;/li&gt;
+  &lt;li&gt;根节点是黑色&lt;/li&gt;
+  &lt;li&gt;每一个叶子节点(最后的空节点)是黑色的&lt;/li&gt;
+  &lt;li&gt;如果一个节点是红色的，那么它的孩子节点都是黑色的&lt;/li&gt;
+  &lt;li&gt;从任意一个节点到叶子节点，经过的黑色节点是一样的&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;完全的不清楚为什么这么定义，以及这么定义的原因是什么。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;先导&quot;&gt;先导&lt;/h3&gt;
+
+&lt;p&gt;先说红黑树的由来，是为了查找的平衡，从二叉查找树说起。&lt;/p&gt;
+
+&lt;p&gt;二叉查找树：从根节点开始，左节点的值小于根节点，右节点的值大于右节点。并且每一颗子树都满足这个条件，所以便于查找：查找的时候，只需要比对就能够瞬速的找到所在子树，继而找到对应的节点。但是二叉查找树有一个缺点就是：容易偏向一侧，我们向往的二叉查找树是图一，结果却有很多图二的情况。
+&lt;img src=&quot;&quot; alt=&quot;图1&quot; /&gt;
+&lt;img src=&quot;&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;平衡树2-3树&quot;&gt;平衡树：2-3树&lt;/h3&gt;
+&lt;p&gt;在这种需求下，平衡树的概念就应运而生了。红黑树就是一种平衡树，它可以保证二叉树基本符合我们预料的那种平衡的结构，但是理解红黑树之前，必须先了解另一种树，叫2-3树，红黑树背后的逻辑就是它。&lt;/p&gt;
+
+&lt;p&gt;2-3树：2-3树满足二分搜索树的性质。不同的是在2-3树中，存在两种节点。一种是有两个叶子节点的，我们称作“2节点” 如图3；另一种是有三个叶子节点的，我们称作“3节点”，如图4，图5展示的是一个完整的2-3 树，满足从根节点到任意一个叶子节点的高度都是相同的。
+&lt;img src=&quot;&quot; alt=&quot;图3&quot; /&gt;
+&lt;img src=&quot;&quot; alt=&quot;图4&quot; /&gt;
+&lt;img src=&quot;&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-3树如何保持平衡&quot;&gt;2-3树如何保持平衡&lt;/h3&gt;
+
+&lt;p&gt;2-3树平衡的保持，主要依赖两个操作：拆分和合并。其中拆分主要发生在3节点插入时候，如下图6，图7完整的展示可一个查分的过程：
+&lt;img src=&quot;&quot; alt=&quot;图6&quot; /&gt;
+&lt;img src=&quot;&quot; alt=&quot;图7&quot; /&gt;
+拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），然后通过4节点的中间状态查分为三个2节点.但是在图7的第三步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第4步。如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.
+&lt;img src=&quot;&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-3树和红黑树的关系&quot;&gt;2-3树和红黑树的关系&lt;/h3&gt;
+
+&lt;p&gt;对于2-3树中的“2节点”，对应于红黑树中的“黑节点”，即相当于普通二分搜索树中的一个节点。&lt;/p&gt;
+
+&lt;p&gt;对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。那么问题又来了，对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。&lt;/p&gt;
+
+&lt;p&gt;http://redmapleren.com/2018/09/23/%E5%85%B3%E4%BA%8E%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/&lt;/p&gt;
+
+&lt;p&gt;2-3树是二叉查找树的变种，树中的2和3代表两种节点，以下表示为2-节点和3-节点。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2-节点即普通节点：包含一个元素，两条子链接。
+
+3-节点则是扩充版，包含2个元素和三条链接：两个元素A、B，左边的链接指向小于A的节点，中间的链接指向介于A、B值之间的节点，右边的链接指向大于B的节点。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 04 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/04/hashmap0/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/04/hashmap0/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
+    
+      <item>
         <title>沉下心来分析HashMap的源码（二）</title>
-        <description>&lt;p&gt;HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
-所以这次尽可能详细的注释源码，也为这块做一个总结。&lt;/p&gt;
+        <description>&lt;p&gt;HashMap的源码在JDK 1.8 的Put和Remove操作。&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -873,229 +936,6 @@ java -Dio.netty.leakDetectionLevel=ADVANCED&lt;/p&gt;
         <pubDate>Tue, 05 Dec 2017 17:00:00 +0800</pubDate>
         <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/05/nettyinaction5/</link>
         <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/05/nettyinaction5/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     &lt;br /&gt;
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuffer.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;a Channel has a ChannelPipeline and a ChannelConfig assigned to it. The ChannelConfig holds all of the configuration settings for the Channel and supports hot changes.&lt;/p&gt;
-
-&lt;p&gt;The ChannelPipeline holds all of the ChannelHandler instances that will be applied to inbound and outbound data and events.&lt;/p&gt;
-
-&lt;p&gt;Typical uses for ChannelHandlers include:   &lt;br /&gt;
-■ Transforming data from one format to another   &lt;br /&gt;
-■ Providing notification of exceptions   &lt;br /&gt;
-■ Providing notification of a Channel becoming active or inactive  &lt;br /&gt;
-■ Providing notification when a Channel is registered with or deregistered from an EventLoop   &lt;br /&gt;
-■ Providing notification about user-defined events&lt;/p&gt;
-
-&lt;p&gt;The ChannelPipeline implements a common design pattern, Intercepting Filter. UNIX pipes are another familiar example: com- mands are chained together, with the output of one command connecting to the input of the next in line.&lt;/p&gt;
-
-&lt;p&gt;The ChannelPipeline implements a common design pattern, Intercepting Filter. UNIX pipes are another familiar example: com- mands are chained together, with the output of one command connecting to the input of the next in line.&lt;/p&gt;
-
-&lt;p&gt;过滤链的设计模式，类似Unix的pipe&lt;/p&gt;
-
-&lt;p&gt;keep in mind that the broad range of functionality offered by Netty relies on a small number of interfaces. This means that you can make significant modifications to application logic without wholesale refactoring of your code base.&lt;/p&gt;
-
-&lt;p&gt;netty设计过程中注重的一个点： a small number of interfaces。&lt;/p&gt;
-
-&lt;p&gt;Netty’s Channel implementations are thread-safe, so you can store a reference to a Channel and use it whenever you need to write something to the remote peer, even when many threads are in use.&lt;/p&gt;
-
-&lt;p&gt;Channel是线程安全的。&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteBuf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Unpooled&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;copiedBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;your data&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;CharsetUtil&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UTF_8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;retain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//新建的线程可以随便的调用&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;writer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;duplicate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/5940f5d7453b6ab69893d714abefa445.png&quot; alt=&quot;transport&quot; /&gt; &lt;br /&gt;
-netty支持的协议。&lt;/p&gt;
-
-&lt;p&gt;The basic concept behind the selector is to serve as a registry where you request to be notified when the state of a Channel changes. The possible state changes are
-■ A new Channel was accepted and is ready.
-■ A Channel connection was completed.
-■ A Channel has data that is ready for reading.
-■ A Channel is available for writing data.
-After the application reacts to the change of state, the selector is reset and the process repeats, running on a thread that checks for changes and responds to them accordingly.&lt;/p&gt;
-
-&lt;p&gt;pipeline时间的变化，底层的实现还是基于：java.nio.channels.SelectionKey.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/2fffdbdfb610aa63b43ce28b520ac893.png&quot; alt=&quot;底层实现&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Zero-copy&lt;/p&gt;
-
-&lt;p&gt;Zero-copy is a feature currently available only with NIO and Epoll transport. It allows you to quickly and efficiently move data from a file system to the network without copying from kernel space to user space, which can significantly improve perfor- mance in protocols such as FTP or HTTP. &lt;strong&gt;This feature is not supported by all OSes. Specifically it is not usable with file systems that implement data encryption or compression—only the raw content of a file can be transferred.&lt;/strong&gt; Conversely, transferring files that have already been encrypted isn’t a problem.&lt;/p&gt;
-
-&lt;p&gt;零拷贝技术，是的netty的效率比较的高效。不支持文件系统中数据的压缩和解压缩。但是传输压缩的数据是没有问题的。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Netty’s NIO transport is based on the common abstraction for asynchronous/non-blocking networking provided by Java.&lt;/strong&gt; Although this ensures that Netty’s non-blocking API will be usable on any platform, it also entails limitations, because the JDK has to make compromises in order to deliver the same capabilities on all systems.&lt;/p&gt;
-
-&lt;p&gt;netty基于JDK提动的网路通信功能，保证了平台的普适性。但是也正因为是JDK为了平台的普适性，做出了妥协。&lt;/p&gt;
-
-&lt;p&gt;Given this, you may wonder how Netty can support NIO with the same API used for asynchronous transports. The answer is that Netty makes use of the SO_TIMEOUT Socket flag, which specifies the maximum number of milliseconds to wait for an I/O opera- tion to complete. If the operation fails to complete within the specified interval, a SocketTimeoutException is thrown. Netty catches this exception and continues the processing loop. On the next EventLoop run, it will try again. This is the only way an asynchronous framework like Netty can support OIO&lt;/p&gt;
-
-&lt;p&gt;OIO和NIO实现的差别。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/e5bb374823d0ad784f28e27327ac0a19.png&quot; alt=&quot;channel的选择&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Netty’s API for data handling is exposed through two components—abstract class ByteBuf and interface ByteBufHolder.     &lt;br /&gt;
-These are some of the advantages of the ByteBuf API:
-■ It’s extensible to userdefined buffer types.  &lt;br /&gt;
-■ Transparent zero-copy is achieved by a built-in composite buffer type.  &lt;br /&gt;
-■ Capacity is expanded on demand (as with the JDK StringBuilder).   &lt;br /&gt;
-■ Switching between reader and writer modes doesn’t require calling ByteBuffer’s flip() method.  &lt;br /&gt;
-■ Reading and writing employ distinct indices.  &lt;br /&gt;
-■ Method chaining is supported.  &lt;br /&gt;
-■ Reference counting is supported.   &lt;br /&gt;
-■ Pooling is supported.&lt;/p&gt;
-
-&lt;p&gt;netty中使用bytebuffer的原因：
-1.易于扩展用户自定义的数据类型  &lt;br /&gt;
-2.新建类型的时候可以确定是否是Zero-Copy类型  &lt;br /&gt;
-3.自动需求自动扩展容量  &lt;br /&gt;
-4.读写之间的切换不用调用flip   &lt;br /&gt;
-5.读写标志位的分离，方法链，引用计算以及池化的支持&lt;/p&gt;
-
-&lt;p&gt;Because all network communications involve the movement of sequences of bytes, &lt;strong&gt;an efficient and easy-to-use data structure is an obvious necessity.&lt;/strong&gt; Netty’s ByteBuf imple- mentation meets and exceeds these requirements.&lt;/p&gt;
-
-&lt;p&gt;netty不用JDK自带的ByteBuffer，而是自行扩展了ByteBuf的原因。&lt;/p&gt;
-
-&lt;p&gt;To understand the relationship between these indices, consider what would happen if you were to read bytes until the readerIndex reached the same value as the writerIndex. At that point, you would have reached the end of readable data. Attempting to read beyond that point would trigger an IndexOutOfBoundsException, just as when you attempt to access data beyond the end of an array.&lt;/p&gt;
-
-&lt;p&gt;ByteBuf使用了两个index，readerIndex和writerIndex，为了操作的方便。netty封装的ByteBuf的实质：an array of bytes with distinct indices to control read and write access。&lt;/p&gt;
-
-&lt;p&gt;另外ByteBuf提供的方法中，只有以read或者writer开头的方法名称，才会改变readindex或者writeindex的位置。&lt;/p&gt;
-
-&lt;p&gt;The most frequently used ByteBuf pattern stores the data in the heap space of the JVM. Referred to as a backing array, this pattern provides fast allocation and dealloca- tion in situations where pooling isn’t in use.&lt;/p&gt;
-
-&lt;p&gt;最常用的ByteBuf模式将数据存储在JVM的堆空间中。这一模式被称为backing array，在不使用池的情况下，该模式提供了快速分配和回收。这种分配的方式称为：heapBuffer&lt;/p&gt;
-
-&lt;p&gt;NOTE Attempting to access a backing array when hasArray() returns false will trigger an UnsupportedOperation-  Exception. This pattern is similar to uses of the JDK’s ByteBuffer.&lt;/p&gt;
-
-&lt;p&gt;Direct buffer is another ByteBuf pattern. We expect that memory allocated for object creation will always come from the heap, but it doesn’t have to—&lt;strong&gt;the ByteBuffer class that was introduced in JDK 1.4 with NIO allows a JVM implementation to allocate memory via native calls.&lt;/strong&gt; This aims to avoid copying the buffer’s contents to (or from) an intermediate buffer before (or after) each invocation of a native I/O operation.The Javadoc for ByteBuffer states explicitly,&lt;strong&gt;“The contents of direct buffers will reside outside of the normal garbage-collected heap.”&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;还有一种Buffer 称之为Direct buffer，这也是零拷贝的一个方面。&lt;/p&gt;
-
-&lt;p&gt;The primary disadvantage of direct buffers is that they’re somewhat more expensive to allocate and release than are heap-based buffers. You may also encounter another drawback if you’re working with legacy code: because the data isn’t on the heap, you may have to make a copy, as shown next.&lt;/p&gt;
-
-&lt;p&gt;direct buffers 分配和释放都比heap buffers 花费比较的高。并且direct buffers不能够make a copy。&lt;/p&gt;
-
-&lt;p&gt;The third and final pattern uses a composite buffer, which presents an aggregated view of multiple ByteBufs. Here you can add and delete ByteBuf instances as needed, a fea- ture entirely absent from the JDK’s ByteBuffer      implementation.&lt;/p&gt;
-
-&lt;p&gt;Netty implements this pattern with a subclass of ByteBuf, CompositeByteBuf, which provides a virtual representation of multiple buffers as a single, merged buffer&lt;/p&gt;
-
-&lt;p&gt;第三中的类型是混合类型，实现的类型是：CompositeByteBuf。&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;n&quot;&gt;ByteBuf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heapBuf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UnpooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;heapBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;    
-
-		&lt;span class=&quot;n&quot;&gt;UnpooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;directBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;   
-
-		&lt;span class=&quot;n&quot;&gt;CompositeByteBuf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UnpooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compositeBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;heapBuf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;heapBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compositeBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;PooledByteBufAllocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DEFAULT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;directBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/c1598edefd37939bcb469ccac6bf11cc.png&quot; alt=&quot;CompositeByteBuf&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;CompositeByteBuf may not allow access to a backing array, so accessing the data in a CompositeByteBuf resembles the direct buffer pattern, as shown next.&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;CompositeByteBuf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compBuf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Unpooled&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compositeBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compBuf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;readableBytes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;compBuf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBytes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compBuf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;readerIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;handleArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Note that Netty optimizes socket I/O operations that employ CompositeByteBuf, elim- inating whenever possible the performance and memory usage penalties that are incurred with the JDK’s buffer implementation.2 This optimization takes place in Netty’s core code and is therefore not exposed, but you should be aware of its impact.&lt;/p&gt;
-
-&lt;p&gt;Netty在Socket通信的时候，使用了已经优化的CompositeByteBuf，消除了使用JDK自带的Buffer，可能产生的性能和内存上的问题。&lt;/p&gt;
-
-&lt;p&gt;While you may be tempted to call discardReadBytes() frequently to maximize the writable segment, please be aware that this will most likely cause memory copying because the readable bytes (marked CONTENT in the figures) have to be moved to the start of the buffer. We advise doing this only when it’s really needed; for example, when memory is at a premium.&lt;/p&gt;
-
-&lt;p&gt;readindex之前的部分，就是已读的部分，已经没有什么用处了，调用discardReadBytes，可以提高buffer的利用率，但是可能会引发内存拷贝的发生，所以谨慎使用。&lt;/p&gt;
-
-&lt;p&gt;The method writableBytes() is used here to determine whether there is sufficient space in the buffer.&lt;/p&gt;
-
-&lt;p&gt;writableBytes 取得剩余的可写的字节。&lt;/p&gt;
-
-&lt;p&gt;The JDK’s InputStream defines the methods mark(int readlimit) and reset(). These are used to mark the current position in the stream to a specified value and to reset the stream to that position, respectively.&lt;/p&gt;
-
-&lt;p&gt;mark和reset的作用，标记和恢复。&lt;/p&gt;
-
-&lt;p&gt;Similarly, you can set and reposition the ByteBuf readerIndex and writerIndex by calling markReaderIndex(), markWriterIndex(), resetReaderIndex(), and reset- WriterIndex(). These are similar to the InputStream calls, except that there’s no readlimit parameter to specify when the mark becomes invalid.    &lt;br /&gt;
-对应的ByteBuf中也有标记和恢复。&lt;/p&gt;
-
-&lt;p&gt;You can also move the indices to specified positions by calling readerIndex(int) or writerIndex(int). Attempting to set either index to an invalid position will cause an IndexOutOfBoundsException.&lt;/p&gt;
-
-&lt;p&gt;对特定的标识进行标记&lt;/p&gt;
-
-&lt;p&gt;You can set both readerIndex and writerIndex to 0 by calling clear(). Note that this doesn’t clear the contents of memory.&lt;/p&gt;
-
-&lt;p&gt;clear 不清理内存的内容。&lt;/p&gt;
-
-&lt;p&gt;Calling clear() is much less expensive than discardReadBytes() because it resets the indices without copying any memory.&lt;/p&gt;
-
-&lt;p&gt;能使用clear不使用discardReadbytes。&lt;/p&gt;
-
-&lt;p&gt;■ duplicate()    &lt;br /&gt;
-■ slice()  &lt;br /&gt;
-■ slice(int, int)  &lt;br /&gt;
-■ Unpooled.unmodifiableBuffer(…)  &lt;br /&gt;
-■ order(ByteOrder)  &lt;br /&gt;
-■ readSlice(int)  &lt;br /&gt;
- This makes a derived buffer inexpensive to create, but it also means that if you modify its contents you are modifying the source instance as well, so beware.&lt;/p&gt;
-
-&lt;p&gt;使用上面的方法，能够得到一个副本的buf，但是需要注意，操作的时候是同一个buf。&lt;/p&gt;
-
-&lt;p&gt;If you need a true copy of an existing buffer, use copy() or copy(int,int). Unlike a derived buffer, the ByteBuf returned by this call has an independent copy of the data.&lt;/p&gt;
-
-&lt;p&gt;如果不想要副本，可以直接的调用copy，直接弄一个新的。&lt;/p&gt;
-
-&lt;p&gt;To reduce the overhead of allocating and deallocating memory, Netty implements pooling with the interface ByteBufAllocator, which can be used to allocate instances of any of the ByteBuf varieties we’ve described.    &lt;br /&gt;
-You can obtain a reference to a ByteBufAllocator either from a Channel (each of which can have a distinct instance) or through the ChannelHandlerContext that is bound to a ChannelHandler.    &lt;br /&gt;
-使用ByteBufAllocator分配ByteBuf,ByteBufAllocator的引用可以通过Channel来进行获得。&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;ByteBufAllocator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allocator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;alloc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ByteBufAllocator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allocator2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;alloc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Netty provides two implementations of ByteBufAllocator: PooledByteBufAllocator and UnpooledByteBufAllocator. The former pools ByteBuf instances to improve per- formance and minimize memory fragmentation. This implementation uses an effi- cient approach to memory allocation known as jemalloc4 that has been adopted by a number of modern OSes. The latter implementation doesn’t pool ByteBuf instances and returns a new instance every time it’s called.&lt;/p&gt;
-
-&lt;p&gt;PooledByteBufAllocator和UnpooledByteBufAllocator，亦如类名所示。&lt;/p&gt;
-
-&lt;p&gt;There may be situations where you don’t have a reference to a ByteBufAllocator. For this case, Netty provides a utility class called Unpooled, which provides static helper methods to create unpooled ByteBuf instances.  &lt;br /&gt;
-Unpooled 工具类。&lt;/p&gt;
-
-&lt;p&gt;Reference counting is a technique for optimizing memory use and performance by releasing the resources held by an object when it is no longer referenced by other objects.    &lt;br /&gt;
-引用计算&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Channel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ByteBufAllocator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allocator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;alloc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;....&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ByteBuf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allocator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;directBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;assert&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;refCnt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Mon, 04 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/</guid>
         
         <category>学习</category>
         

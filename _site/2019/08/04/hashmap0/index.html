@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>复习算法和数据结构（1） - 飞翔的面包 | FlyBread Blog</title>
+    <title>沉下心来分析HashMap的源码（三）学习红黑树 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/04/hashmap0/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#温故而知新" title="温故而知新">温故而知新</a>
+                        <a class="tag" href="/tags/#JDK" title="JDK">JDK</a>
                         
                     </div>
-                    <h1>复习算法和数据结构（1）</h1>
+                    <h1>沉下心来分析HashMap的源码（三）学习红黑树</h1>
                     
                     
-                    <h2 class="subheading">整理自己的笔记，回顾自己以前记录的算法和数据结构，争取做到温故而知新。</h2>
+                    <h2 class="subheading">红黑树相关的操作，尽可能的详细</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 18, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 4, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,7 +209,58 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				
+				<p>HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：</p>
+
+<ol>
+  <li>每个节点或者是红色，或者是黑色</li>
+  <li>根节点是黑色</li>
+  <li>每一个叶子节点(最后的空节点)是黑色的</li>
+  <li>如果一个节点是红色的，那么它的孩子节点都是黑色的</li>
+  <li>从任意一个节点到叶子节点，经过的黑色节点是一样的</li>
+</ol>
+
+<p>完全的不清楚为什么这么定义，以及这么定义的原因是什么。</p>
+
+<!--more-->
+
+<h3 id="先导">先导</h3>
+
+<p>先说红黑树的由来，是为了查找的平衡，从二叉查找树说起。</p>
+
+<p>二叉查找树：从根节点开始，左节点的值小于根节点，右节点的值大于右节点。并且每一颗子树都满足这个条件，所以便于查找：查找的时候，只需要比对就能够瞬速的找到所在子树，继而找到对应的节点。但是二叉查找树有一个缺点就是：容易偏向一侧，我们向往的二叉查找树是图一，结果却有很多图二的情况。
+<img src="" alt="图1" />
+<img src="" alt="图2" /></p>
+
+<h3 id="平衡树2-3树">平衡树：2-3树</h3>
+<p>在这种需求下，平衡树的概念就应运而生了。红黑树就是一种平衡树，它可以保证二叉树基本符合我们预料的那种平衡的结构，但是理解红黑树之前，必须先了解另一种树，叫2-3树，红黑树背后的逻辑就是它。</p>
+
+<p>2-3树：2-3树满足二分搜索树的性质。不同的是在2-3树中，存在两种节点。一种是有两个叶子节点的，我们称作“2节点” 如图3；另一种是有三个叶子节点的，我们称作“3节点”，如图4，图5展示的是一个完整的2-3 树，满足从根节点到任意一个叶子节点的高度都是相同的。
+<img src="" alt="图3" />
+<img src="" alt="图4" />
+<img src="" alt="图5" /></p>
+
+<h3 id="2-3树如何保持平衡">2-3树如何保持平衡</h3>
+
+<p>2-3树平衡的保持，主要依赖两个操作：拆分和合并。其中拆分主要发生在3节点插入时候，如下图6，图7完整的展示可一个查分的过程：
+<img src="" alt="图6" />
+<img src="" alt="图7" />
+拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），然后通过4节点的中间状态查分为三个2节点.但是在图7的第三步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第4步。如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.
+<img src="" alt="图8" /></p>
+
+<h3 id="2-3树和红黑树的关系">2-3树和红黑树的关系</h3>
+
+<p>对于2-3树中的“2节点”，对应于红黑树中的“黑节点”，即相当于普通二分搜索树中的一个节点。</p>
+
+<p>对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。那么问题又来了，对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。</p>
+
+<p>http://redmapleren.com/2018/09/23/%E5%85%B3%E4%BA%8E%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</p>
+
+<p>2-3树是二叉查找树的变种，树中的2和3代表两种节点，以下表示为2-节点和3-节点。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2-节点即普通节点：包含一个元素，两条子链接。
+
+3-节点则是扩充版，包含2个元素和三条链接：两个元素A、B，左边的链接指向小于A的节点，中间的链接指向介于A、B值之间的节点，右边的链接指向大于B的节点。
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -217,19 +268,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/activiti-desigen-pattern/2017/08/13/activiti8/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(8)">
+                        <a href="/2019/08/03/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码（二）">
                         Previous<br>
-                        <span>activiti和设计模式(8)</span>
+                        <span>沉下心来分析HashMap的源码（二）</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/concurrent/2017/08/26/concurrent/" data-toggle="tooltip" data-placement="top" title="JDK并发框架的描述（一）">
-                        Next<br>
-                        <span>JDK并发框架的描述（一）</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -332,8 +376,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg";
-    var disqus_url = "http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/";
+    var disqus_identifier = "/2019/08/04/hashmap0";
+    var disqus_url = "http://localhost:4000/2019/08/04/hashmap0/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -5,9 +5,433 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 07 Aug 2019 17:36:26 +0800</pubDate>
-    <lastBuildDate>Wed, 07 Aug 2019 17:36:26 +0800</lastBuildDate>
+    <pubDate>Tue, 13 Aug 2019 22:52:08 +0800</pubDate>
+    <lastBuildDate>Tue, 13 Aug 2019 22:52:08 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>沉下心来分析HashMap的源码（四）红黑树的插入</title>
+        <description>&lt;p&gt;理解了2-3树和红黑树的对应的关系，再去梳理红黑树的插入和删除操作，就会更加的容易理解和记忆一点。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;红黑树的插入操作&quot;&gt;红黑树的插入操作&lt;/h3&gt;
+
+&lt;h4 id=&quot;情况1&quot;&gt;情况1&lt;/h4&gt;
+
+&lt;p&gt;当为Null树的时候，插入第一个节点：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;节点设置为根节点，设置为黑色，如下图所示：&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt1.jpg&quot; alt=&quot;图1&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;情况2&quot;&gt;情况2&lt;/h4&gt;
+&lt;p&gt;存在父节点的情况下，插入节点，分为两种情况：2-3树上面就是有2节点形成3节点的过程。
+  2.1 插入的是左节点，也就是比父节点要小，直接的插入即可,但是需要考虑着色的问题。如图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt2.jpg&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;2.2 如果插入的节点比父节点大，就需要变换顺序，外加改变颜色了，如下图：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt3.jpg&quot; alt=&quot;图3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中的坐旋转，使用文字描述为：&lt;/p&gt;
+
+&lt;p&gt;左旋： 右节点（right）和其父节点（right-parent）进行交换，交换的过程中，right-parent 的右分支被强制的叉开，所以把right的左孩子（right-left）放到了right-parent 的右分支，然后把right-parent 放到了right的左孩子上。&lt;/p&gt;
+
+&lt;p&gt;图片的描述为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt4.jpg&quot; alt=&quot;图4&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;代码描述为：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
+ *  旋转节点：为 p.right
+ *  方法的输入的参数为 旋转子树的根节点，可以理解为图中的node节点
+ * */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateLeft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// p的右节点即是旋转上升的节点，然后旋转上升后，该节点的左节点为P，原来的左节点，这是为p的右节点&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 设置循转节点的父节点，以及P原来父节点的指向的设置&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;//旋转节点为右节点，原来的左孩子设置为P&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;情况3&quot;&gt;情况3&lt;/h4&gt;
+&lt;p&gt;在父节点存在的情况下，如果左孩子的左孩子一直插入的情况下，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt5.jpg&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这个时候就是右旋的操作，具体的文字描述为：&lt;/p&gt;
+
+&lt;p&gt;右旋： 左节点（left）和其父节点（left-parent）进行交换，交换的过程中，left-parent 的左分支被强制的叉开，所以把left的右孩子（left-right）放到了left-parent 的左分支，然后把left-parent 放到了left的左孩子上。&lt;/p&gt;
+
+&lt;p&gt;具体的图示如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt6.jpg&quot; alt=&quot;图6&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;具体的代码示例为：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
+	 * 该方法的参数，并不是被旋转的节点，而是调整子树的根节点，可以理解为图中的node节点
+	 * */&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateRight&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;// p的左节点设置为 原来左节点的右子树&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// 旋转过程中父节点的设置，上升节点的父节点以及原来父节点的指向的设置&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// 最后右节点和p旋转后父节点的设置&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;情况4&quot;&gt;情况4：&lt;/h4&gt;
+&lt;p&gt;特殊的情况下，如：红色的右节点下插入左孩子，或者红色的左节点下，插入右孩子。
+具体的情况的一种如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt7.jpg&quot; alt=&quot;图7&quot; /&gt;
+针对这种情况，第一步我们可以通过一次左旋转，变成我们熟悉的情况3.具体的操作如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt8.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+&lt;h3 id=&quot;插入的情况总结&quot;&gt;插入的情况总结&lt;/h3&gt;
+
+&lt;p&gt;具体的操作分为三种：左旋，右旋，变色
+具体的情况如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt9.jpg&quot; alt=&quot;图9&quot; /&gt;
+具体的代码如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int put(K key) {
+		Node t = root;
+		if (t == null) {
+			root = new Node(key, null);
+			size = 1;
+			modCount++;
+			return 1;
+		}
+
+		Node parent = findParent(key);
+		if (parent != null) {
+			int cmp = this.comparator != null ? this.comparator.compare(key, parent.key)
+					: ((Comparable&amp;lt;? super K&amp;gt;) key).compareTo(parent.key);
+			Node e = new Node(key, parent);
+			if (cmp &amp;lt; 0)
+				parent.left = e;
+			else
+				parent.right = e;
+			fixAfterInsertion(e);
+			size++;
+			modCount++;
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+  private void fixAfterInsertion(Node x) {
+		x.color = RED;
+		// x 为null，x为root的第一个节点，直接的跳走
+		/**
+		 * 如果x parent 节点为黑，那么x 为红，直接的跳过即可。
+		 * */
+		while (x != null &amp;amp;&amp;amp; x != root &amp;amp;&amp;amp; x.parent.color == RED) {
+			if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
+				Node uncle = rightOf(parentOf(parentOf(x)));
+				if (colorOf(uncle) == RED) {
+					// 图三
+					setColor(parentOf(x), BLACK);
+					setColor(uncle, BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					x = parentOf(parentOf(x));
+				} else {
+					// uncle 节点为黑或者uncle 节点为null
+					if (x == rightOf(parentOf(x))) {
+						x = parentOf(x);
+						/**
+						 * 这个操作，非常的有意思，按照左旋方法的定义，参数应该是旋转子树的根节点，但是这个传入的是旋转节点
+						 * 然后，就变成了：x右节点和x交换位置，并且在交换位置的过程中，x有右节点变为了左节点。
+						 * 图②
+						 * */
+						rotateLeft(x);
+					}
+					// 调整颜色，当前节点为红色节点，是定死的。所以把父节点设为黑，爷节节点设置为红
+					setColor(parentOf(x), BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					// x 为left节点，进行右旋
+					// 图①
+					rotateRight(parentOf(parentOf(x)));
+				}
+			} else {
+				Node uncle = leftOf(parentOf(parentOf(x)));
+				if (colorOf(uncle) == RED) {
+					setColor(parentOf(x), BLACK);
+					setColor(uncle, BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					x = parentOf(parentOf(x));
+				} else {
+					if (x == leftOf(parentOf(x))) {
+						x = parentOf(x);
+						rotateRight(x);
+					}
+					setColor(parentOf(x), BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					rotateLeft(parentOf(parentOf(x)));
+				}
+			}
+		}
+		root.color = BLACK;
+	}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Tue, 06 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/06/hashmap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/06/hashmap/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>沉下心来分析HashMap的源码（四）红黑树的插入</title>
+        <description>&lt;p&gt;理解了2-3树和红黑树的对应的关系，再去梳理红黑树的插入和删除操作，就会更加的容易理解和记忆一点。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;红黑树的插入操作&quot;&gt;红黑树的插入操作&lt;/h3&gt;
+
+&lt;h4 id=&quot;情况1&quot;&gt;情况1&lt;/h4&gt;
+
+&lt;p&gt;当为Null树的时候，插入第一个节点：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;节点设置为根节点，设置为黑色，如下图所示：&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt1.jpg&quot; alt=&quot;图1&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;情况2&quot;&gt;情况2&lt;/h4&gt;
+&lt;p&gt;存在父节点的情况下，插入节点，分为两种情况：2-3树上面就是有2节点形成3节点的过程。
+  2.1 插入的是左节点，也就是比父节点要小，直接的插入即可,但是需要考虑着色的问题。如图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt2.jpg&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;2.2 如果插入的节点比父节点大，就需要变换顺序，外加改变颜色了，如下图：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt3.jpg&quot; alt=&quot;图3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中的坐旋转，使用文字描述为：&lt;/p&gt;
+
+&lt;p&gt;左旋： 右节点（right）和其父节点（right-parent）进行交换，交换的过程中，right-parent 的右分支被强制的叉开，所以把right的左孩子（right-left）放到了right-parent 的右分支，然后把right-parent 放到了right的左孩子上。&lt;/p&gt;
+
+&lt;p&gt;图片的描述为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt4.jpg&quot; alt=&quot;图4&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;代码描述为：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
+ *  旋转节点：为 p.right
+ *  方法的输入的参数为 旋转子树的根节点，可以理解为图中的node节点
+ * */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateLeft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// p的右节点即是旋转上升的节点，然后旋转上升后，该节点的左节点为P，原来的左节点，这是为p的右节点&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 设置循转节点的父节点，以及P原来父节点的指向的设置&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;//旋转节点为右节点，原来的左孩子设置为P&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;情况3&quot;&gt;情况3&lt;/h4&gt;
+&lt;p&gt;在父节点存在的情况下，如果左孩子的左孩子一直插入的情况下，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt5.jpg&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这个时候就是右旋的操作，具体的文字描述为：&lt;/p&gt;
+
+&lt;p&gt;右旋： 左节点（left）和其父节点（left-parent）进行交换，交换的过程中，left-parent 的左分支被强制的叉开，所以把left的右孩子（left-right）放到了left-parent 的左分支，然后把left-parent 放到了left的左孩子上。&lt;/p&gt;
+
+&lt;p&gt;具体的图示如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt6.jpg&quot; alt=&quot;图6&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;具体的代码示例为：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
+	 * 该方法的参数，并不是被旋转的节点，而是调整子树的根节点，可以理解为图中的node节点
+	 * */&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateRight&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;c1&quot;&gt;// p的左节点设置为 原来左节点的右子树&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// 旋转过程中父节点的设置，上升节点的父节点以及原来父节点的指向的设置&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+			&lt;span class=&quot;c1&quot;&gt;// 最后右节点和p旋转后父节点的设置&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;情况4&quot;&gt;情况4：&lt;/h4&gt;
+&lt;p&gt;特殊的情况下，如：红色的右节点下插入左孩子，或者红色的左节点下，插入右孩子。
+具体的情况的一种如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt7.jpg&quot; alt=&quot;图7&quot; /&gt;
+针对这种情况，第一步我们可以通过一次左旋转，变成我们熟悉的情况3.具体的操作如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt8.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+&lt;h3 id=&quot;插入的情况总结&quot;&gt;插入的情况总结&lt;/h3&gt;
+
+&lt;p&gt;具体的操作分为三种：左旋，右旋，变色
+具体的情况如下图所示：
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt9.jpg&quot; alt=&quot;图9&quot; /&gt;
+具体的代码如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int put(K key) {
+		Node t = root;
+		if (t == null) {
+			root = new Node(key, null);
+			size = 1;
+			modCount++;
+			return 1;
+		}
+
+		Node parent = findParent(key);
+		if (parent != null) {
+			int cmp = this.comparator != null ? this.comparator.compare(key, parent.key)
+					: ((Comparable&amp;lt;? super K&amp;gt;) key).compareTo(parent.key);
+			Node e = new Node(key, parent);
+			if (cmp &amp;lt; 0)
+				parent.left = e;
+			else
+				parent.right = e;
+			fixAfterInsertion(e);
+			size++;
+			modCount++;
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+  private void fixAfterInsertion(Node x) {
+		x.color = RED;
+		// x 为null，x为root的第一个节点，直接的跳走
+		/**
+		 * 如果x parent 节点为黑，那么x 为红，直接的跳过即可。
+		 * */
+		while (x != null &amp;amp;&amp;amp; x != root &amp;amp;&amp;amp; x.parent.color == RED) {
+			if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
+				Node uncle = rightOf(parentOf(parentOf(x)));
+				if (colorOf(uncle) == RED) {
+					// 图三
+					setColor(parentOf(x), BLACK);
+					setColor(uncle, BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					x = parentOf(parentOf(x));
+				} else {
+					// uncle 节点为黑或者uncle 节点为null
+					if (x == rightOf(parentOf(x))) {
+						x = parentOf(x);
+						/**
+						 * 这个操作，非常的有意思，按照左旋方法的定义，参数应该是旋转子树的根节点，但是这个传入的是旋转节点
+						 * 然后，就变成了：x右节点和x交换位置，并且在交换位置的过程中，x有右节点变为了左节点。
+						 * 图②
+						 * */
+						rotateLeft(x);
+					}
+					// 调整颜色，当前节点为红色节点，是定死的。所以把父节点设为黑，爷节节点设置为红
+					setColor(parentOf(x), BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					// x 为left节点，进行右旋
+					// 图①
+					rotateRight(parentOf(parentOf(x)));
+				}
+			} else {
+				Node uncle = leftOf(parentOf(parentOf(x)));
+				if (colorOf(uncle) == RED) {
+					setColor(parentOf(x), BLACK);
+					setColor(uncle, BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					x = parentOf(parentOf(x));
+				} else {
+					if (x == leftOf(parentOf(x))) {
+						x = parentOf(x);
+						rotateRight(x);
+					}
+					setColor(parentOf(x), BLACK);
+					setColor(parentOf(parentOf(x)), RED);
+					rotateLeft(parentOf(parentOf(x)));
+				}
+			}
+		}
+		root.color = BLACK;
+	}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Mon, 05 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/05/hashmap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/05/hashmap/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
     
       <item>
         <title>沉下心来分析HashMap的源码（三）学习红黑树</title>
@@ -30,39 +454,74 @@
 &lt;p&gt;先说红黑树的由来，是为了查找的平衡，从二叉查找树说起。&lt;/p&gt;
 
 &lt;p&gt;二叉查找树：从根节点开始，左节点的值小于根节点，右节点的值大于右节点。并且每一颗子树都满足这个条件，所以便于查找：查找的时候，只需要比对就能够瞬速的找到所在子树，继而找到对应的节点。但是二叉查找树有一个缺点就是：容易偏向一侧，我们向往的二叉查找树是图一，结果却有很多图二的情况。
-&lt;img src=&quot;&quot; alt=&quot;图1&quot; /&gt;
-&lt;img src=&quot;&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t1.jpg&quot; alt=&quot;图1&quot; /&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t2.jpg&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;平衡树2-3树&quot;&gt;平衡树：2-3树&lt;/h3&gt;
 &lt;p&gt;在这种需求下，平衡树的概念就应运而生了。红黑树就是一种平衡树，它可以保证二叉树基本符合我们预料的那种平衡的结构，但是理解红黑树之前，必须先了解另一种树，叫2-3树，红黑树背后的逻辑就是它。&lt;/p&gt;
 
 &lt;p&gt;2-3树：2-3树满足二分搜索树的性质。不同的是在2-3树中，存在两种节点。一种是有两个叶子节点的，我们称作“2节点” 如图3；另一种是有三个叶子节点的，我们称作“3节点”，如图4，图5展示的是一个完整的2-3 树，满足从根节点到任意一个叶子节点的高度都是相同的。
-&lt;img src=&quot;&quot; alt=&quot;图3&quot; /&gt;
-&lt;img src=&quot;&quot; alt=&quot;图4&quot; /&gt;
-&lt;img src=&quot;&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t3.jpg&quot; alt=&quot;图3&quot; /&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t4.jpg&quot; alt=&quot;图4&quot; /&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t5.jpg&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;2-3树如何保持平衡&quot;&gt;2-3树如何保持平衡&lt;/h3&gt;
 
 &lt;p&gt;2-3树平衡的保持，主要依赖两个操作：拆分和合并。其中拆分主要发生在3节点插入时候，如下图6，图7完整的展示可一个查分的过程：
-&lt;img src=&quot;&quot; alt=&quot;图6&quot; /&gt;
-&lt;img src=&quot;&quot; alt=&quot;图7&quot; /&gt;
-拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），然后通过4节点的中间状态查分为三个2节点.但是在图7的第三步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第4步。如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.
-&lt;img src=&quot;&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t6.jpg&quot; alt=&quot;图6&quot; /&gt;
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t7.jpg&quot; alt=&quot;图7&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），(4 7 9) 这个节点，然后通过4节点的中间状态查分为三个2节点. &lt;br /&gt;
+但是在图7的第二步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第三步。&lt;/p&gt;
+
+&lt;p&gt;如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t8.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;2-3树和红黑树的关系&quot;&gt;2-3树和红黑树的关系&lt;/h3&gt;
 
 &lt;p&gt;对于2-3树中的“2节点”，对应于红黑树中的“黑节点”，即相当于普通二分搜索树中的一个节点。&lt;/p&gt;
 
-&lt;p&gt;对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。那么问题又来了，对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。&lt;/p&gt;
+&lt;p&gt;对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？&lt;/p&gt;
 
-&lt;p&gt;http://redmapleren.com/2018/09/23/%E5%85%B3%E4%BA%8E%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/&lt;/p&gt;
+&lt;p&gt;其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。&lt;/p&gt;
 
-&lt;p&gt;2-3树是二叉查找树的变种，树中的2和3代表两种节点，以下表示为2-节点和3-节点。&lt;/p&gt;
+&lt;p&gt;对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2-节点即普通节点：包含一个元素，两条子链接。
+&lt;p&gt;大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。&lt;/p&gt;
 
-3-节点则是扩充版，包含2个元素和三条链接：两个元素A、B，左边的链接指向小于A的节点，中间的链接指向介于A、B值之间的节点，右边的链接指向大于B的节点。
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;如下图所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t9.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后一颗2-3树的就可以转化为一颗红黑树了，如下图所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t10.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;再次的分析红黑树的性质&quot;&gt;再次的分析红黑树的性质&lt;/h3&gt;
+
+&lt;p&gt;讨论了2-3树与红黑树之间的关系，我们再回过头来看一下红黑树的5条定义和性质，会发现很好理解了。&lt;/p&gt;
+
+&lt;p&gt;1.每个节点或者是红色，或者是黑色
+这条定义很好理解，在此不做解释。&lt;/p&gt;
+
+&lt;p&gt;2.根节点是黑色&lt;/p&gt;
+
+&lt;p&gt;根据之前说过的，红色的节点对应于2-3树中“3节点”中较小的那个节点，拆成两个“2节点”的话则是一个左子树的节点，即&lt;strong&gt;红色的节点总是可以和其父节点进行融合&lt;/strong&gt;，所以红色节点一定有父节点，显然根节点不能是红色，所以根节点是黑色。&lt;/p&gt;
+
+&lt;p&gt;3.每一个叶子节点(最后的空节点)是黑色的&lt;/p&gt;
+
+&lt;p&gt;这条性质和第2条是对应的。对于叶子节点（最后的空节点），一颗空树的根节点也为黑色，所以与其说第三条是一条性质，不如说也是一个定义。&lt;/p&gt;
+
+&lt;p&gt;4.如果一个节点是红色的，那么它的孩子节点都是黑色的&lt;/p&gt;
+
+&lt;p&gt;根据上面2-3树与红黑树两种节点的对比图，我们很容易看到，红色节点的两个子树，对应2-3树中的话，要么是一个“2节点”，要么是一个“3节点”，而不管是“2节点”还是“3节点”，相连的第一个节点都是黑色的，所以说红色节点的孩子节点都是黑色的。&lt;/p&gt;
+
+&lt;p&gt;5.从任意一个节点到叶子节点，经过的黑色节点是一样的&lt;/p&gt;
+
+&lt;p&gt;根据2-3树与红黑树的关系对比图，可以发现，红黑树中一个黑色节点对应2-3树中一整个节点（“2节点”或“3节点”），而2-3树是完全平衡的树，从根节点到任意路径的叶子节点，经过的节点个数都是相同的，对应红黑树中，即从任意节点到叶子节点，经过的黑色节点是一样的。&lt;/p&gt;
+
+&lt;p&gt;对比2-3树总结起来，其实也就两条。其中一条是关于着色的：每个节点都有颜色，非红即黑。根节点，叶子节点为黑色。红色节点的孩子节点为黑色。另外一条是关于2-3树的平衡性的。即是到每一个叶子节点是平衡的，对应的红黑树，也就是经过的黑色节点是一样的。&lt;/p&gt;
 </description>
         <pubDate>Sun, 04 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/04/hashmap0/</link>
@@ -773,169 +1232,6 @@ bootstrapping an application is the process of configuring it to run—though th
         <pubDate>Thu, 07 Dec 2017 17:00:00 +0800</pubDate>
         <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/</link>
         <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;■ Threading model overview  &lt;br /&gt;
-■ Event loop concept and implementation  &lt;br /&gt;
-■ Task scheduling  &lt;br /&gt;
-■ Implementation details  &lt;br /&gt;
-&lt;!--more--&gt; &lt;br /&gt;
-we must always guard against the possible side effects of concurrent execution, it’s important to understand the implications of the model being applied (there are single-thread models as well). Ignoring these matters and merely hoping for the best is tantamount to gambling—with the odds definitely against you.&lt;/p&gt;
-
-&lt;p&gt;忽视这些事情，仅仅是希望得到最好的，就等于赌博，而你的胜算是绝对的。&lt;/p&gt;
-
-&lt;p&gt;Java 5 then introduced the Executor API, whose thread pools greatly improved performance through Thread caching and reuse.&lt;/p&gt;
-
-&lt;p&gt;java5才开始的Thread的缓存和重新利用的线程池应用。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/89d7a27b645a2a7146c20fd61f0184ef.png&quot; alt=&quot;线程池的Pattern&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Netty’s EventLoop is part of a collaborative design that employs two fundamental APIs: concurrency and networking. First, the package io.netty.util.concurrent builds on the JDK package java.util.concurrent to provide thread executors. Second, the classes in the package io.netty.channel extend these in order to interface with Channel events.&lt;/p&gt;
-
-&lt;p&gt;EventLoop的设计的基础：并发性和网络性。&lt;/p&gt;
-
-&lt;p&gt;event-handling logic must be generic and flexible enough to handle all possible use cases. Therefore, in Netty 4 all I/O operations and events are handled by the Thread that has been assigned to the EventLoop.&lt;/p&gt;
-
-&lt;p&gt;事件处理逻辑需要足够的灵活能够处理所有的事件。&lt;/p&gt;
-
-&lt;p&gt;The ScheduledExecutorService implementation has limitations, such as the fact that extra threads are created as part of pool management. This can become a bottleneck if many tasks are aggressively scheduled.&lt;/p&gt;
-
-&lt;p&gt;netty的定时任务：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ScheduledFuture&amp;lt;?&amp;gt; future = ch.eventLoop().scheduleAtFixedRate(...);
-future.cancel(mayInterruptIfRunning)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Netty’s EventLoop extends ScheduledExecutorService, so it provides all of the methods available with the JDK implementation, including schedule() and scheduleAtFixedRate(), used in the preceding examples. The complete list of all the operations can be found in the Javadocs for Scheduled- ExecutorService.3&lt;/p&gt;
-
-&lt;p&gt;EventLoop扩展了ScheduledExecutorService接口，这个是比较的精彩的一个实现。所以EventLoop能够响应ScheduledExecutorService的所有的方法。&lt;/p&gt;
-
-&lt;p&gt;The superior performance of Netty’s threading model hinges on determining the identity of the currently executing Thread; that is, whether or not it is the one assigned to the current Channel and its EventLoop. (Recall that the EventLoop is responsible for handling all events for a Channel during its lifetime.)&lt;/p&gt;
-
-&lt;p&gt;当前执行的线程，当前的Channel，EventLoop 这三者是什么的关系？？&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-		&lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;futrueres&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;channel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;eventLoop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scheduleAtFixedRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SECONDS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;    
-
-
-    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledFuture&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ScheduledFutureTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inEventLoop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;scheduledTaskQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;execute&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;scheduledTaskQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;     
-
-
- &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inEventLoop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Wed, 06 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/06/nettyinaction6/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/06/nettyinaction6/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;The ChannelHandler and ChannelPipeline    &lt;br /&gt;
-&lt;!--more--&gt; &lt;br /&gt;
-The Channel lifecycle   &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/faf428c08e7607718839a50f4173ae21.png&quot; alt=&quot;Channel的状态&quot; /&gt;   &lt;br /&gt;
-Channel的状态&lt;/p&gt;
-
-&lt;p&gt;The ChannelHandler lifecycle   &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/e18807c3810151c1d02d1ccda5feb512.png&quot; alt=&quot;Channelhandler的生命周期&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Channelhandler的生命周期&lt;/p&gt;
-
-&lt;p&gt;When a ChannelInboundHandler implementation overrides channelRead(), it is respon- sible for explicitly releasing the memory associated with pooled ByteBuf instances. Netty provides a utility method for this purpose, ReferenceCountUtil.release()&lt;/p&gt;
-
-&lt;p&gt;继承自ChannelInboundHandlerAdapter的扩展类，需要手动的释放ByteBuf的实例。&lt;/p&gt;
-
-&lt;p&gt;Because SimpleChannelInboundHandler releases resources automatically, you shouldn’t store references to any messages for later use, as these will become invalid.&lt;/p&gt;
-
-&lt;p&gt;继承自SimpleChannelInboundHandler的扩展类则不需要，因为SimpleChannelInboundHandler已经在内部进行了处理。&lt;/p&gt;
-
-&lt;p&gt;A powerful capability of ChannelOutboundHandler is to defer an operation or event on demand, which allows for sophisticated approaches to request handling. If writing to the remote peer is suspended, for example, you can defer flush operations and resume them later.&lt;/p&gt;
-
-&lt;p&gt;ChannelOutboundHandler的一个强大的能力是：根据需要推迟一个操作或者事件。？&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/3164422cdad2d0dab5aba020aa21f479.png&quot; alt=&quot;Channelhandler的继承关系&quot; /&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;Whenever you act on data by calling ChannelInboundHandler.channelRead() or ChannelOutboundHandler.write(), you need to ensure that there are no resource leaks. As you may remember from the previous chapter, Netty uses reference counting to handle pooled ByteBufs. So it’s important to adjust the reference count after you have finished using a ByteBuf.&lt;/p&gt;
-
-&lt;p&gt;调用channelRead或者wirte的时候，需要注意内存的泄漏问题。&lt;/p&gt;
-
-&lt;p&gt;To assist you in diagnosing potential problems, Netty provides class ResourceLeakDetector, which will sample about 1% of your application’s buffer allocations to check for memory leaks. The overhead involved is very small.&lt;/p&gt;
-
-&lt;p&gt;netty提供了ResourceLeakDetector，只需要在运行的设置：   &lt;br /&gt;
-java -Dio.netty.leakDetectionLevel=ADVANCED&lt;/p&gt;
-
-&lt;p&gt;Every new Channel that’s created is assigned a new ChannelPipeline. This association is permanent; the Channel can neither attach another ChannelPipeline nor detach the current one.&lt;/p&gt;
-
-&lt;p&gt;Channel一旦绑定到ChannelPipeline，就相当于定死了。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/b2580a8c978777aeb0e9cc5182927749.png&quot; alt=&quot;ChannelPipeline的handler上面的顺序&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;A ChannelHandler can modify the layout of a ChannelPipeline in real time by add- ing, removing, or replacing other ChannelHandlers. (It can remove itself from the ChannelPipeline as well.) This is one of the most important capabilities of the ChannelHandler。&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;		&lt;span class=&quot;n&quot;&gt;ChannelPipeline&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addLast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;handler1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;firstHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;handler2&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SecondHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addLast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;handler3&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ThirdHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;handler3&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;firstHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;pipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;handler2&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;handler4&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FourthHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/a58c6c9f711778b569f8a419c5453730.png&quot; alt=&quot;channelContext的操作的event的流程&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;inbound的异常操作：  &lt;br /&gt;
-■ The default implementation of ChannelHandler.exceptionCaught() forwards the current exception to the next handler in the pipeline.&lt;/p&gt;
-
-&lt;p&gt;■ If an exception reaches the end of the pipeline, it’s logged as unhandled.&lt;/p&gt;
-
-&lt;p&gt;■ To define custom handling, you override exceptionCaught(). It’s then your decision whether to propagate the exception beyond that point.&lt;/p&gt;
-
-&lt;p&gt;outbound的异常处理：&lt;/p&gt;
-
-&lt;p&gt;■ Every outbound operation returns a ChannelFuture. The ChannelFuture- Listeners registered with a ChannelFuture are notified of success or error when the operation completes.&lt;/p&gt;
-
-&lt;p&gt;■ Almost all methods of ChannelOutboundHandler are passed an instance of ChannelPromise. As a subclass of ChannelFuture, ChannelPromise can also be assigned listeners for asynchronous notification. But ChannelPromise also has writable methods that provide for immediate notification:
-             ChannelPromise setSuccess();
-             ChannelPromise setFailure(Throwable cause);&lt;/p&gt;
-
-&lt;p&gt;Why choose one approach over the other? For detailed handling of an exception, you’ll probably find it more appropriate to add the ChannelFutureListener when calling the outbound operation, as shown in listing 6.13. For a less specialized approach to handling exceptions, you might find the custom ChannelOutboundHandler imple- mentation shown in listing 6.14 to be simpler.&lt;/p&gt;
-
-&lt;p&gt;该如何选择异常，如果单个的处理，比较能够针对特殊的异常进行针对的额处理，增加ExceptionHandler的方式，便于统一的处理。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 05 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/05/nettyinaction5/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/05/nettyinaction5/</guid>
         
         <category>学习</category>
         

@@ -5,9 +5,70 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 14 Aug 2019 23:35:35 +0800</pubDate>
-    <lastBuildDate>Wed, 14 Aug 2019 23:35:35 +0800</lastBuildDate>
+    <pubDate>Fri, 30 Aug 2019 20:56:06 +0800</pubDate>
+    <lastBuildDate>Fri, 30 Aug 2019 20:56:06 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>编码编不下去了怎么办？</title>
+        <description>&lt;p&gt;How to program when you don’t feel like it
+  不想干的时候怎么办？
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;I recently well and truly “hit the wall” when it came to coding.
+Every time I sat down to code, I felt stuck, like I wasn’t making any progress at all.
+I was tired, de-motivated and dealing with headaches.
+我很累，没有动力去处理头痛问题。
+Any will to code I had previously had seemed completely gone and
+when I finally got around to programming I only did the bare minimum.最低限度。&lt;/p&gt;
+
+&lt;p&gt;Here I was on day 52 of my 100 days of code and I didn’t want to break my streak,
+but there was nothing but frustration every time I sat down to program.
+After a few days of this, I decided it wasn’t a sustainable solution, it was costing me more than than I was gaining.
+Something had to change.
+Here are some things that helped get me back on track.&lt;/p&gt;
+
+&lt;p&gt;If you find yourself completely and utterly stuck on whatever you’re working with, don’t try to force it.
+You’re more likely to produce a mess that you will dread having to work with next time and
+you end up in a self reinforcing loop of shitty days.&lt;/p&gt;
+
+&lt;p&gt;Maybe you’ve been putting off this cool tutorial or
+there’s a few easy challenges on websites such as hackerrank, codewars or kattis that you can do.
+It doesn’t really matter what you do, but it needs to be easy and quick.
+It will boost your confidence in your programming skills and give you some much needed wins.
+它将增强您对编程技巧的信心，并为您提供一些急需的胜利。&lt;/p&gt;
+
+&lt;p&gt;You can also go back to the documentation or
+see if you can find some tutorials on your problem.
+Sometimes you need to go back to basic and maybe do a few exercises on the concepts involved in your project.
+回头查看教程或者基础的内容&lt;/p&gt;
+
+&lt;p&gt;Stay here until you feel comfortable cracking on with the thing that was causing you trouble.
+If you find yourself easily distracted, try using the pomodoro technique.
+It’s basically 25 min of focused work and a 5 minute break you repeat until you have reached your goal .
+可以尝试番茄工作法&lt;/p&gt;
+
+&lt;p&gt;The most important thing is progress, especially if it is for something like 100DaysOfCode,
+but just learning in general.
+Not every day is going to be equally good, but you decide how bad a bad day is.
+So on bad days, stick to small achievable goals.
+Gain that confidence and motivation back.
+重要的是保持confidence和motivation&lt;/p&gt;
+
+&lt;p&gt;It took me a few days of solving progressively more difficult problems in the programming language I know best,
+before I felt like going back to my project. It took me 15 minutes to find and fix something that had caused me trouble for 3 days. 😅&lt;/p&gt;
+
+&lt;p&gt;Hope some of these tips were helpful. Feel free to reach out on Twitter or comment with feedback, it’s much appreciated.
+Thank you for reading ❤️&lt;/p&gt;
+</description>
+        <pubDate>Wed, 07 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/07/netty/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/07/netty/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
     
       <item>
         <title>沉下心来分析HashMap的源码（五）红黑树的删除</title>
@@ -1122,59 +1183,6 @@ redis的持久化操作等常见的问题。&lt;/p&gt;
         
         <category>redis</category>
         
-        
-      </item>
-    
-      <item>
-        <title>netty in action 读书笔记</title>
-        <description>&lt;p&gt;■ Bootstrapping   &lt;br /&gt;
-■ ChannelOptions and attributes  &lt;br /&gt;
-&lt;!--more--&gt; &lt;br /&gt;
-bootstrapping an application is the process of configuring it to run—though the details of the process may not be as simple as its definition, especially in network applications.&lt;/p&gt;
-
-&lt;p&gt;启动一个应用的门面模式的设计。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/0d1518359f078f2c0fcf6d9efaa3dca4.png&quot; alt=&quot;Bootstap&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;bootstrap的继承关系。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/2202a24bd941507239db95c61330833b.png&quot; alt=&quot;配置&quot; /&gt;&lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/6341f620bb98b62a7c060b93a86bede0.png&quot; alt=&quot;ddd&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This compatibility must be maintained; you can’t mix components having different prefixes, such as NioEventLoopGroup and OioSocketChannel. The following listing shows an attempt to do just that.   &lt;br /&gt;
-不同前缀的不能混用。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/4d93ea316f4dfdcbde120e1fc6eddc37.png&quot; alt=&quot;启动时候的配置&quot; /&gt;  &lt;br /&gt;
-&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/d2d5b9f8b5bf0e4936706c61207db0e4.png&quot; alt=&quot;client&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xtrwx.com1.z0.glb.clouddn.com/ad1fe5a83bdacb60a65017e6364e9c4b.png&quot; alt=&quot;server&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Suppose your server is processing a client request that requires it to act as a client to a third system. This can happen when an application, such as a proxy server, has to integrate with an organization’s existing systems, such as web services or databases. In such cases you’ll need to bootstrap a client Channel from a ServerChannel.&lt;/p&gt;
-
-&lt;p&gt;在一个Channel中重新连接一个Serverd的NettyClient 这个也算是一个新的用法吧。就是传说中的RPC通信。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;The topic we’ve discussed in this section and the solution presented reflect a general guideline in coding Netty applications: reuse EventLoops wherever possible to reduce the cost of thread creation.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;重新利用EventLoops，把这个类EventLoops当做线程池来进行使用，避免线程池的消耗&lt;/p&gt;
-
-&lt;p&gt;Manually configuring every channel when it’s created could become quite tedious. Fortunately, you don’t have to. Instead, you can use option() to apply ChannelOptions to a bootstrap. The values you provide will be applied automatically to all Channels created in the bootstrap. The ChannelOptions available include low-level connection details such as keep-alive or timeout properties and buffer settings.&lt;/p&gt;
-
-&lt;p&gt;netty针对所有的链接设置超时等操作，option()操作针对的是全部的Channel。&lt;/p&gt;
-
-&lt;p&gt;Netty offers the AttributeMap abstraction, a collection provided by the channel and boot- strap classes, and AttributeKey&lt;T&gt;, a generic class for inserting and retrieving attri- bute values. With these tools, you can safely associate any kind of data item with both client and server Channels.&lt;/T&gt;&lt;/p&gt;
-
-&lt;p&gt;Channel上面绑定参数和参数的值。&lt;/p&gt;
-
-&lt;p&gt;八个类一一的介绍完毕，需要写一个自己的总结出来，总结netty运行的的过程，包括扩展的协议之类的，只是把运行的的过程梳理一下。&lt;/p&gt;
-</description>
-        <pubDate>Thu, 07 Dec 2017 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/07/nettyinaction7/</guid>
-        
-        <category>学习</category>
-        
-        
-        <category>读书笔记</category>
         
       </item>
     

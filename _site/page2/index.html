@@ -193,6 +193,106 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/08/03/hashmap/">
+        <h2 class="post-title">
+            沉下心来分析HashMap的源码（二）
+        </h2>
+        
+        <h3 class="post-subtitle">
+            分析HashMap的源码，PUT和REMOVE操作
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>HashMap的源码在JDK 1.8 的Put和Remove操作。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            HashMap的源码在JDK 1.8 的Put和Remove操作。
+
+
+
+
+/**
+   * Implements Map.put and related methods.
+   * put逻辑：
+   * 	1. 检查hashmap中的table是否需要扩容
+   * 	2.1 确定放入的值的位置：(n - 1) &amp; hash，hash的计算方式：(h = key.hashCode...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 3, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/08/02/hashmap/">
+        <h2 class="post-title">
+            沉下心来分析HashMap的源码
+        </h2>
+        
+        <h3 class="post-subtitle">
+            分析HashMap的源码，尽自己可能的详细
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
+所以这次尽可能详细的注释源码，也为这块做一个总结。
+
+
+
+粗略的印象
+
+首先是最初的图：
+
+
+
+这个是我们以前常见的map的数据结构：桶，也可以称之为链表数组。但是1.8以后，在某些特殊的情况下，链表会和红黑树相互的转化，变成下面的这种数据结构：
+
+
+
+准备工作
+
+但是具体是如何...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 2, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/07/01/readingbook/">
+        <h2 class="post-title">
+            怎么读书
+        </h2>
+        
+        <div class="post-content-preview">
+        <p>It’s not about how many books you read, it’s about how much you retain from what you read.</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            It’s not about how many books you read, it’s about how much you retain from what you read. 
+
+Most people I talk to don’t have a reading strategy. They just pick up something and start reading. I us...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by 飞翔的面包 on July 1, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/04/15/remotework/">
         <h2 class="post-title">
             远程工作language的选择
@@ -411,100 +511,6 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/03/nettyinaction2/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的读书笔记+复习英语单词
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>这章主要的是介绍netty的架构，主要的模块。     <br />
-verifying your development tools and environment,   <br />
- building application logic with ChannelHandlers.</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的架构，主要的模块。     
-verifying your development tools and environment,   
- building application logic with ChannelHandlers.
-
-
-
-From a high-level perspective, Netty addresses two correspondi...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 3, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/02/nettyinaction1/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的读书笔记+复习英语单词
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>这章主要的是介绍netty的基本的概念。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的基本的概念。    
-
-We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.
-
-Although we’ve spoken of the client, the figure shows mul...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 2, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/2017/12/01/TimerTask/">
-        <h2 class="post-title">
-            定时任务的说明
-        </h2>
-        
-        <h3 class="post-subtitle">
-            Java语言中采用定时任务的实现的方法
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。 
-
-
-
-/**
- * 任务的执行，依赖于Timer，可以特定的时间执行或者按照某种规律循环的执行
- * A facility for threads to schedule tasks for future execution in a background thread.
- * Tasks may be scheduled ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 1, 2017
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -571,6 +577,12 @@ Although we’ve spoken of the client, the figure shows mul...
                             
                                 <a href="/tags/#JDK" title="JDK" rel="9">
                                     JDK
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="3">
+                                    LeetCode
                                 </a>
                             
                         

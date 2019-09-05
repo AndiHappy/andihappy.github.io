@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>复习算法和数据结构（1） - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode08 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/12/day2-3/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#温故而知新" title="温故而知新">温故而知新</a>
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>复习算法和数据结构（1）</h1>
+                    <h1>LeetCode08</h1>
                     
                     
-                    <h2 class="subheading">整理自己的笔记，回顾自己以前记录的算法和数据结构，争取做到温故而知新。</h2>
+                    <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 18, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 12, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,7 +209,92 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				
+				<p>LeetCode 第08题的分析和总结</p>
+
+<!--more-->
+<p>题目描述：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Implement atoi which converts a string to an integer.
+
+The function first discards as many whitespace characters as necessary until the first non-whitespace character is found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical digits as possible, and interprets them as a numerical value.
+
+The string can contain additional characters after those that form the integral number, which are ignored and have no effect on the behavior of this function.
+
+If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence exists because either str is empty or it contains only whitespace characters, no conversion is performed.
+
+If no valid conversion could be performed, a zero value is returned.
+
+Note:
+
+Only the space character ' ' is considered as whitespace character.
+Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. If the numerical value is out of the range of representable values, INT_MAX (231 − 1) or INT_MIN (−231) is returned.
+Example 1:
+
+Input: "42"
+Output: 42
+Example 2:
+
+Input: "   -42"
+Output: -42
+Explanation: The first non-whitespace character is '-', which is the minus sign.
+             Then take as many numerical digits as possible, which gets 42.
+Example 3:
+
+Input: "4193 with words"
+Output: 4193
+Explanation: Conversion stops at digit '3' as the next character is not a numerical digit.
+Example 4:
+
+Input: "words and 987"
+Output: 0
+Explanation: The first non-whitespace character is 'w', which is not a numerical
+             digit or a +/- sign. Therefore no valid conversion could be performed.
+Example 5:
+
+Input: "-91283472332"
+Output: -2147483648
+Explanation: The number "-91283472332" is out of the range of a 32-bit signed integer.
+             Thefore INT_MIN (−231) is returned.
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>注意异常情况的处理，注意越界
+</code></pre></div></div>
+
+<p>代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int myAtoi(String str) {
+        if(str == null || str.isEmpty()) return 0;
+        str = str.trim();
+        int index = 0;
+        int res = 0;
+        int fh = 1;
+        while(i &lt; str.length()){
+          char temp = str.charAt(i);
+			    if (str.charAt(i) == '-' &amp;&amp; i == 0) {
+				        fh = -1;
+				        i++;
+				        continue;
+			    }else if (str.charAt(i) == '+' &amp;&amp; i == 0) {
+                fh = 1;
+			          i++;
+			      	continue;
+			    }else if(temp &gt;= '0' &amp;&amp; temp &lt;= '9'){
+            int ctmp = Character.digit(str.chatAt(i),10);
+            if(Integer.MAX_VALUE/10 &lt; res || Integer.MAX_VALUE/10 == total &amp;&amp; Integer.MAX_VALUE %10 &lt; ctmp){
+              return fh == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            }else{
+              value =ctmp +value *10
+            }  
+          }else{
+            break;
+          }
+          i++;  
+        }
+        return fh*res;
+    }
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -217,17 +302,17 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/activiti-desigen-pattern/2017/08/13/activiti8/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(8)">
+                        <a href="/2019/08/12/day2-2/" data-toggle="tooltip" data-placement="top" title="LeetCode09">
                         Previous<br>
-                        <span>activiti和设计模式(8)</span>
+                        <span>LeetCode09</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/concurrent/2017/08/26/concurrent/" data-toggle="tooltip" data-placement="top" title="JDK并发框架的描述（一）">
+                        <a href="/2019/08/12/day2/" data-toggle="tooltip" data-placement="top" title="LeetCode10">
                         Next<br>
-                        <span>JDK并发框架的描述（一）</span>
+                        <span>LeetCode10</span>
                         </a>
                     </li>
                     
@@ -338,8 +423,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg";
-    var disqus_url = "http://localhost:4000/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/";
+    var disqus_identifier = "/2019/08/12/day2-3";
+    var disqus_url = "http://localhost:4000/2019/08/12/day2-3/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

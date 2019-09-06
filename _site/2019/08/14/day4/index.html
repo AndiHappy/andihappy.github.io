@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>编码编不下去了怎么办？ - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode18, 19 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/07/netty/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/14/day4/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#JDK" title="JDK">JDK</a>
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>编码编不下去了怎么办？</h1>
+                    <h1>LeetCode18, 19</h1>
                     
                     
-                    <h2 class="subheading">认知问题</h2>
+                    <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 7, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 14, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,55 +209,136 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>How to program when you don’t feel like it
-  不想干的时候怎么办？
-<!--more--></p>
+				<p>LeetCode 第18，19题的分析和总结</p>
 
-<p>I recently well and truly “hit the wall” when it came to coding.
-Every time I sat down to code, I felt stuck, like I wasn’t making any progress at all.
-I was tired, de-motivated and dealing with headaches.
-我很累，没有动力去处理头痛问题。
-Any will to code I had previously had seemed completely gone and
-when I finally got around to programming I only did the bare minimum.最低限度。</p>
+<!--more-->
 
-<p>Here I was on day 52 of my 100 days of code and I didn’t want to break my streak,
-but there was nothing but frustration every time I sat down to program.
-After a few days of this, I decided it wasn’t a sustainable solution, it was costing me more than than I was gaining.
-Something had to change.
-Here are some things that helped get me back on track.</p>
+<p>LeetCode 18. 4Sum</p>
 
-<p>If you find yourself completely and utterly stuck on whatever you’re working with, don’t try to force it.
-You’re more likely to produce a mess that you will dread having to work with next time and
-you end up in a self reinforcing loop of shitty days.</p>
+<p>描述：</p>
 
-<p>Maybe you’ve been putting off this cool tutorial or
-there’s a few easy challenges on websites such as hackerrank, codewars or kattis that you can do.
-It doesn’t really matter what you do, but it needs to be easy and quick.
-It will boost your confidence in your programming skills and give you some much needed wins.
-它将增强您对编程技巧的信心，并为您提供一些急需的胜利。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
 
-<p>You can also go back to the documentation or
-see if you can find some tutorials on your problem.
-Sometimes you need to go back to basic and maybe do a few exercises on the concepts involved in your project.
-回头查看教程或者基础的内容</p>
+Note:
 
-<p>Stay here until you feel comfortable cracking on with the thing that was causing you trouble.
-If you find yourself easily distracted, try using the pomodoro technique.
-It’s basically 25 min of focused work and a 5 minute break you repeat until you have reached your goal .
-可以尝试番茄工作法</p>
+The solution set must not contain duplicate quadruplets.
 
-<p>The most important thing is progress, especially if it is for something like 100DaysOfCode,
-but just learning in general.
-Not every day is going to be equally good, but you decide how bad a bad day is.
-So on bad days, stick to small achievable goals.
-Gain that confidence and motivation back.
-重要的是保持confidence和motivation</p>
+Example:
 
-<p>It took me a few days of solving progressively more difficult problems in the programming language I know best,
-before I felt like going back to my project. It took me 15 minutes to find and fix something that had caused me trouble for 3 days. 😅</p>
+Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
 
-<p>Hope some of these tips were helpful. Feel free to reach out on Twitter or comment with feedback, it’s much appreciated.
-Thank you for reading ❤️</p>
+A solution set is:
+[
+  [-1,  0, 0, 1],
+  [-2, -1, 1, 2],
+  [-2,  0, 0, 2]
+]
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，同一个思路
+</code></pre></div></div>
+
+<p>代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;List&lt;Integer&gt;&gt; fourSum(int[] nums, int target) {
+      List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;List&lt;Integer&gt;&gt;();
+    List&lt;Integer&gt; l;
+    Arrays.sort(nums);
+    int len = nums.length;
+    for (int i = 0; i &lt; len - 3; i++) {
+      // 相同直接返回
+      if (i != 0 &amp;&amp; nums[i] == nums[i - 1]) continue;
+      // 最小值如果大于target，直接的返回
+      if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] &gt; target) break;
+      // 此值和最大的三个值相加，小于target 直接的返回
+      if (nums[i] + nums[len - 1] + nums[len - 2] + nums[len - 2] &lt; target) continue;
+
+      for (int j = i + 1; j &lt; len - 2; j++) {
+        // 相同直接返回
+        if (j != i + 1 &amp;&amp; nums[j] == nums[j - 1]) continue;
+        // 最小值如果大于target，直接的返回
+        if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] &gt; target) break;
+        // 此值和最大的三个值相加，小于target 直接的返回
+        if (nums[i] + nums[j] + nums[len - 1] + nums[len - 2] &lt; target) continue;
+
+        int head = j + 1, end = len - 1;
+        while (head &lt; end) {
+          int tempt = nums[i] + nums[j] + nums[head] + nums[end];
+          if (tempt == target) {
+            l = new ArrayList&lt;Integer&gt;();
+            l.add(nums[i]);
+            l.add(nums[j]);
+            l.add(nums[head]);
+            l.add(nums[end]);
+            list.add(l);
+            head++;
+			end--;
+            while (head &lt; end &amp;&amp; nums[head] == nums[head - 1]) {
+              head++;
+            }
+			while (head &lt; end &amp;&amp; nums[end] == nums[end+1]) {
+              end--;
+            }
+          } else if (tempt &gt; target)
+            end--;
+          else
+            head++;
+        }
+      }
+    }
+    return list; 
+}
+</code></pre></div></div>
+
+<p>LeetCode 19. Remove Nth Node From End of List</p>
+
+<p>题目描述：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, remove the n-th node from the end of list and return its head.
+
+Example:
+
+Given linked list: 1-&gt;2-&gt;3-&gt;4-&gt;5, and n = 2.
+
+After removing the second node from the end, the linked list becomes 1-&gt;2-&gt;3-&gt;5.
+Note:
+
+Given n will always be valid.
+
+Follow up:
+
+Could you do this in one pass?
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单题目，注意链表的表头的处理，下标的处理
+</code></pre></div></div>
+
+<p>代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode removeNthFromEnd(ListNode head, int n) {
+    
+    ListNode start = new ListNode(0);
+    ListNode slow = start, fast = start;
+    slow.next = head;
+    
+    //Move fast in front so that the gap between slow and fast becomes n
+    for(int i=1; i&lt;=n+1; i++)   {
+        fast = fast.next;
+    }
+    //Move fast to the end, maintaining the gap
+    while(fast != null) {
+        slow = slow.next;
+        fast = fast.next;
+    }
+    //Skip the desired node
+    slow.next = slow.next.next;
+    return start.next;
+}
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -265,17 +346,17 @@ Thank you for reading ❤️</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/06/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码（五）红黑树的删除">
+                        <a href="/2019/08/13/day4/" data-toggle="tooltip" data-placement="top" title="LeetCode16，17">
                         Previous<br>
-                        <span>沉下心来分析HashMap的源码（五）红黑树的删除</span>
+                        <span>LeetCode16，17</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2019/08/09/datastruct/" data-toggle="tooltip" data-placement="top" title="树形数据结构">
+                        <a href="/2019/08/14/jdk-day1/" data-toggle="tooltip" data-placement="top" title="JDK7的新特性1 ForkJoinPool">
                         Next<br>
-                        <span>树形数据结构</span>
+                        <span>JDK7的新特性1 ForkJoinPool</span>
                         </a>
                     </li>
                     
@@ -386,8 +467,8 @@ Thank you for reading ❤️</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/07/netty";
-    var disqus_url = "http://localhost:4000/2019/08/07/netty/";
+    var disqus_identifier = "/2019/08/14/day4";
+    var disqus_url = "http://localhost:4000/2019/08/14/day4/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

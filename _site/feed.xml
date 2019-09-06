@@ -5,8 +5,8 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 06 Sep 2019 23:39:15 +0800</pubDate>
-    <lastBuildDate>Fri, 06 Sep 2019 23:39:15 +0800</lastBuildDate>
+    <pubDate>Sat, 07 Sep 2019 00:03:28 +0800</pubDate>
+    <lastBuildDate>Sat, 07 Sep 2019 00:03:28 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -21,6 +21,148 @@
         <guid isPermaLink="true">http://localhost:4000/2019/08/14/jdk-day1/</guid>
         
         <category>JDK</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode18, 19</title>
+        <description>&lt;p&gt;LeetCode 第18，19题的分析和总结&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 18. 4Sum&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
+
+Note:
+
+The solution set must not contain duplicate quadruplets.
+
+Example:
+
+Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
+
+A solution set is:
+[
+  [-1,  0, 0, 1],
+  [-2, -1, 1, 2],
+  [-2,  0, 0, 2]
+]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;3Sum 变形题目，同一个思路
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; fourSum(int[] nums, int target) {
+      List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; list = new ArrayList&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt;();
+    List&amp;lt;Integer&amp;gt; l;
+    Arrays.sort(nums);
+    int len = nums.length;
+    for (int i = 0; i &amp;lt; len - 3; i++) {
+      // 相同直接返回
+      if (i != 0 &amp;amp;&amp;amp; nums[i] == nums[i - 1]) continue;
+      // 最小值如果大于target，直接的返回
+      if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] &amp;gt; target) break;
+      // 此值和最大的三个值相加，小于target 直接的返回
+      if (nums[i] + nums[len - 1] + nums[len - 2] + nums[len - 2] &amp;lt; target) continue;
+
+      for (int j = i + 1; j &amp;lt; len - 2; j++) {
+        // 相同直接返回
+        if (j != i + 1 &amp;amp;&amp;amp; nums[j] == nums[j - 1]) continue;
+        // 最小值如果大于target，直接的返回
+        if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] &amp;gt; target) break;
+        // 此值和最大的三个值相加，小于target 直接的返回
+        if (nums[i] + nums[j] + nums[len - 1] + nums[len - 2] &amp;lt; target) continue;
+
+        int head = j + 1, end = len - 1;
+        while (head &amp;lt; end) {
+          int tempt = nums[i] + nums[j] + nums[head] + nums[end];
+          if (tempt == target) {
+            l = new ArrayList&amp;lt;Integer&amp;gt;();
+            l.add(nums[i]);
+            l.add(nums[j]);
+            l.add(nums[head]);
+            l.add(nums[end]);
+            list.add(l);
+            head++;
+			end--;
+            while (head &amp;lt; end &amp;amp;&amp;amp; nums[head] == nums[head - 1]) {
+              head++;
+            }
+			while (head &amp;lt; end &amp;amp;&amp;amp; nums[end] == nums[end+1]) {
+              end--;
+            }
+          } else if (tempt &amp;gt; target)
+            end--;
+          else
+            head++;
+        }
+      }
+    }
+    return list; 
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LeetCode 19. Remove Nth Node From End of List&lt;/p&gt;
+
+&lt;p&gt;题目描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a linked list, remove the n-th node from the end of list and return its head.
+
+Example:
+
+Given linked list: 1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;5, and n = 2.
+
+After removing the second node from the end, the linked list becomes 1-&amp;gt;2-&amp;gt;3-&amp;gt;5.
+Note:
+
+Given n will always be valid.
+
+Follow up:
+
+Could you do this in one pass?
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;简单题目，注意链表的表头的处理，下标的处理
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ListNode removeNthFromEnd(ListNode head, int n) {
+    
+    ListNode start = new ListNode(0);
+    ListNode slow = start, fast = start;
+    slow.next = head;
+    
+    //Move fast in front so that the gap between slow and fast becomes n
+    for(int i=1; i&amp;lt;=n+1; i++)   {
+        fast = fast.next;
+    }
+    //Move fast to the end, maintaining the gap
+    while(fast != null) {
+        slow = slow.next;
+        fast = fast.next;
+    }
+    //Skip the desired node
+    slow.next = slow.next.next;
+    return start.next;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Wed, 14 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/14/day4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/14/day4/</guid>
+        
+        <category>LeetCode</category>
         
         
       </item>
@@ -1115,29 +1257,6 @@ optional.ifPresent((s) -&amp;gt; System.out.println(s.charAt(0)));     // &quot;
         <pubDate>Sat, 10 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/10/jdk-day0/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/10/jdk-day0/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>树形数据结构</title>
-        <description>&lt;p&gt;B+，B树
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;The image below helps show the differences between B+ trees and B trees.
-Advantages of B+ trees:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Because B+ trees don’t have data associated with interior nodes, more keys can fit on a page of memory. Therefore, it will require fewer cache misses in order to access data that is on a leaf node.&lt;/li&gt;
-  &lt;li&gt;The leaf nodes of B+ trees are linked, so doing a full scan of all objects in a tree requires just one linear pass through all the leaf nodes. A B tree, on the other hand, would require a traversal of every level in the tree. This full-tree traversal will likely involve more cache misses than the linear traversal of B+ leaves.
-Advantage of B trees:&lt;/li&gt;
-  &lt;li&gt;Because B trees contain data with each key, frequently accessed nodes can lie closer to the root, and therefore can be accessed more quickly.&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Fri, 09 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/09/datastruct/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/09/datastruct/</guid>
         
         <category>JDK</category>
         

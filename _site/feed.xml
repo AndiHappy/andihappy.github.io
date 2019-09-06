@@ -5,9 +5,428 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 05 Sep 2019 10:26:27 +0800</pubDate>
-    <lastBuildDate>Thu, 05 Sep 2019 10:26:27 +0800</lastBuildDate>
+    <pubDate>Fri, 06 Sep 2019 20:38:24 +0800</pubDate>
+    <lastBuildDate>Fri, 06 Sep 2019 20:38:24 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>JDK7的新特性1 ForkJoinPool</title>
+        <description>&lt;p&gt;JDK7的一个新特性：ForkJoinPool 很值得一说。
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;ForkJoinPool&lt;/p&gt;
+</description>
+        <pubDate>Wed, 14 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/14/jdk-day1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/14/jdk-day1/</guid>
+        
+        <category>JDK</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode16，17</title>
+        <description>&lt;p&gt;LeetCode 第16，17题的分析和总结&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 16. 3Sum Closest&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
+Example:
+
+Given array nums = [-1, 2, 1, -4], and target = 1.
+
+The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;3Sum 变形题目，使用绝对值表示离目标值的远和近
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int threeSumClosest_copy(int[] num,int target) {
+	int result = num[0]+num[1]+num[num.length-1];
+	Arrays.parallelSort(num);
+	int small = num[0]+num[1]+num[2];
+	if(small &amp;gt;= target) return small;
+	int big = num[num.length-3]+num[num.length-2]+num[num.length-1];
+	if(big &amp;lt;= target) return big;
+
+	for (int i = 0; i &amp;lt; num.length - 2; i++) {
+    int start = i + 1, end = num.length - 1;
+    while (start &amp;lt; end) {
+        int sum = num[i] + num[start] + num[end];
+        if (sum &amp;gt; target) {
+            end--;
+        } else {
+            start++;
+        }
+        if (Math.abs(sum - target) &amp;lt; Math.abs(result - target)) {
+            result = sum;
+        }
+    }
+ }
+ return result;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LeetCode 17. Letter Combinations of a Phone Number&lt;/p&gt;
+
+&lt;p&gt;题目描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a string containing digits from 2-9 inclusive,
+return all possible letter combinations
+that the number could represent.
+
+A mapping of digit to letters
+(just like on the telephone buttons)
+is given below.
+ Note that 1 does not map to any letters.
+
+Example:
+
+Input: &quot;23&quot;
+Output: [&quot;ad&quot;, &quot;ae&quot;, &quot;af&quot;, &quot;bd&quot;,
+&quot;be&quot;, &quot;bf&quot;, &quot;cd&quot;, &quot;ce&quot;, &quot;cf&quot;].
+Note:
+
+Although the above answer is in lexicographical order, your answer could be in any order you want.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;集合和排序的变种
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;String&amp;gt; letterCombinations(String digits) {
+	LinkedList&amp;lt;String&amp;gt; ans = new LinkedList&amp;lt;String&amp;gt;();
+	if(digits.isEmpty()) return ans;
+	String[] mapping = new String[] {&quot;0&quot;, &quot;1&quot;, &quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;, &quot;jkl&quot;, &quot;mno&quot;, &quot;pqrs&quot;, &quot;tuv&quot;, &quot;wxyz&quot;};
+	ans.add(&quot;&quot;);
+	for(int i =0; i&amp;lt;digits.length();i++){
+		int x = Character.getNumericValue(digits.charAt(i));
+		while(ans.peek().length()==i){
+			String t = ans.remove();
+			for(char s : mapping[x].toCharArray())
+				ans.add(t+s);
+		}
+	}
+	return ans;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里使用了迭代的思路，但是用的非常的优雅，首先是遍历给出的digits每一位的数字，
+然后利用队列或者栈的先进先出的原则，循环的遍历已经组合完成的数组，添加上后来的数据，比较的巧妙和优雅。&lt;/p&gt;
+</description>
+        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/13/day4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day4/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode14,15</title>
+        <description>&lt;p&gt;LeetCode 第14,15题的分析和总结&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 14. Longest Common Prefix&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string &quot;&quot;.
+
+Example 1:
+
+Input: [&quot;flower&quot;,&quot;flow&quot;,&quot;flight&quot;]
+Output: &quot;fl&quot;
+Example 2:
+
+Input: [&quot;dog&quot;,&quot;racecar&quot;,&quot;car&quot;]
+Output: &quot;&quot;
+Explanation: There is no common prefix among the input strings.
+Note:
+
+All given inputs are in lowercase letters a-z.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;遍历寻找即可
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public String longestCommonPrefix_copy(String[] strs) {
+  if(strs == null || strs.length == 0) return &quot;&quot;;
+  if(strs.length == 1) return strs[0];
+  int from = 0;boolean flag = true;
+  int end = strs[0].length();
+  String tmp = strs[0];
+  for(;from &amp;lt; end &amp;amp;&amp;amp; flag;from++) {
+    for(int j = 1;j&amp;lt;strs.length;j++) {
+      if(from &amp;gt;= strs[j].length() || strs[j].charAt(from) != tmp.charAt(from)) {
+        flag=false;
+        from = from-1;
+        break;
+      }
+    }
+  }
+
+  return tmp.substring(0, from);
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LeetCode:15. 3Sum&lt;/p&gt;
+
+&lt;p&gt;题目描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+
+Note:
+
+The solution set must not contain duplicate triplets.
+
+Example:
+
+Given array nums = [-1, 0, 1, 2, -1, -4],
+
+A solution set is:
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先是排序，拍好了续，才能够使用“双指针的方法”，最后注意相等的值的处理
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/***
+ * 关键在于nums的先排序
+ * 然后两头堵的方式，from =0，end = length-1 ， 中间的sum = sumvalue- (from+end)
+ * 循环的条件是先确定匹配值i（0 到 length-1），然后去（i+1，i+2，。。。length-1 中寻找from 和 end）
+ */
+public List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; threeSum(int[] nums) {
+	List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; res = new ArrayList&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt;();
+	Arrays.sort(nums);
+	for (int i = 0; i &amp;lt; nums.length - 2; i++) {
+		if (i == 0 || (i &amp;gt; 0 &amp;amp;&amp;amp; nums[i] != nums[i - 1])) {
+			int from = i + 1;
+			int end = nums.length - 1;
+			int sumt = 0 - nums[i];
+			while (from &amp;lt; end) {
+				int temp = nums[from] + nums[end];
+				if (sumt == temp) {
+					res.add(Arrays.asList(nums[i], nums[from], nums[end]));
+
+					while (from &amp;lt; end &amp;amp;&amp;amp; from + 1 &amp;lt; nums.length &amp;amp;&amp;amp; nums[from] == nums[from + 1])
+						from++;
+					while (from &amp;lt; end &amp;amp;&amp;amp; end + 1 &amp;lt; nums.length &amp;amp;&amp;amp; nums[end] == nums[end + 1])
+						end--;
+
+					from++;
+					end--;
+				} else if (sumt &amp;lt; temp) {
+					end--;
+				} else {
+					from++;
+				}
+			}
+	}
+}
+	return res;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/13/day3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day3/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode12,13</title>
+        <description>&lt;p&gt;LeetCode 第12,13题的分析和总结&lt;/p&gt;
+
+&lt;!--more--&gt;
+&lt;p&gt;第12题目描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+
+Symbol       Value
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+
+Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+
+I can be placed before V (5) and X (10) to make 4 and 9.
+X can be placed before L (50) and C (100) to make 40 and 90.
+C can be placed before D (500) and M (1000) to make 400 and 900.
+Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
+
+Example 1:
+
+Input: 3
+Output: &quot;III&quot;
+Example 2:
+
+Input: 4
+Output: &quot;IV&quot;
+Example 3:
+
+Input: 9
+Output: &quot;IX&quot;
+Example 4:
+
+Input: 58
+Output: &quot;LVIII&quot;
+Explanation: L = 50, V = 5, III = 3.
+Example 5:
+
+Input: 1994
+Output: &quot;MCMXCIV&quot;
+Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;阿拉伯数字到古罗马数字的转化，最关键的是确定数字的范围，但是这里有一个小技巧，如果是100，那么M的值为0个，应该怎么在代码中优雅的表述尼？
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static String intToRoman(int num) {  
+
+        //1000-3000
+        String M[] = {&quot;&quot;, &quot;M&quot;, &quot;MM&quot;, &quot;MMM&quot;};
+        //100-900
+        String C[] = {&quot;&quot;, &quot;C&quot;, &quot;CC&quot;, &quot;CCC&quot;, &quot;CD&quot;, &quot;D&quot;, &quot;DC&quot;, &quot;DCC&quot;, &quot;DCCC&quot;, &quot;CM&quot;};
+        //10-90
+        String X[] = {&quot;&quot;, &quot;X&quot;, &quot;XX&quot;, &quot;XXX&quot;, &quot;XL&quot;, &quot;L&quot;, &quot;LX&quot;, &quot;LXX&quot;, &quot;LXXX&quot;, &quot;XC&quot;};
+        //0-9
+        String I[] = {&quot;&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III&quot;, &quot;IV&quot;, &quot;V&quot;, &quot;VI&quot;, &quot;VII&quot;, &quot;VIII&quot;, &quot;IX&quot;};
+        // is so beautiful
+        return M[num/1000] + C[(num%1000)/100] + X[(num%100)/10] + I[num%10];
+    }
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第13题目描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+
+Symbol       Value
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+
+Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+
+I can be placed before V (5) and X (10) to make 4 and 9.
+X can be placed before L (50) and C (100) to make 40 and 90.
+C can be placed before D (500) and M (1000) to make 400 and 900.
+Given a roman numeral, convert it to an integer. Input is guaranteed to be within the range from 1 to 3999.
+
+Example 1:
+
+Input: &quot;III&quot;
+Output: 3
+Example 2:
+
+Input: &quot;IV&quot;
+Output: 4
+Example 3:
+
+Input: &quot;IX&quot;
+Output: 9
+Example 4:
+
+Input: &quot;LVIII&quot;
+Output: 58
+Explanation: L = 50, V= 5, III = 3.
+Example 5:
+
+Input: &quot;MCMXCIV&quot;
+Output: 1994
+Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;古罗马数字到的阿拉伯数字转化
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int romanToInt(String s) {
+
+  if(s == null || s.length() == 0) return 0;
+	int len = s.length();
+	HashMap&amp;lt;Character,Integer&amp;gt; map = new HashMap&amp;lt;Character,Integer&amp;gt;();
+	 map.put('I',1);
+	 map.put('V',5);
+	 map.put('X',10);
+	 map.put('L',50);
+	 map.put('C',100);
+	 map.put('D',500);
+	 map.put('M',1000);
+
+	 int result = map.get(s.charAt(len -1));
+	 int pivot = result;
+	 for(int i = len -2; i&amp;gt;= 0;i--){
+			 int curr = map.get(s.charAt(i));
+			 if(curr &amp;gt;=  pivot){
+			      result += curr;
+			 }else{
+			       result -= curr;
+			 }
+	 		 pivot = curr;
+	 }
+	return result;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/13/day2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day2/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>LeetCode10</title>
@@ -133,92 +552,58 @@ Output: false
       </item>
     
       <item>
-        <title>LeetCode08</title>
-        <description>&lt;p&gt;LeetCode 第08题的分析和总结&lt;/p&gt;
+        <title>LeetCode11</title>
+        <description>&lt;p&gt;LeetCode 第11题的分析和总结&lt;/p&gt;
 
 &lt;!--more--&gt;
+
 &lt;p&gt;题目描述：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given n non-negative integers a1, a2, ..., an ,
+where each represents a point at coordinate (i, ai).
+n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0).
+Find two lines, which together with x-axis forms a container,
+ such that the container contains the most water.
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Implement atoi which converts a string to an integer.
+Note: You may not slant the container and n is at least 2.
 
-The function first discards as many whitespace characters as necessary until the first non-whitespace character is found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical digits as possible, and interprets them as a numerical value.
+The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7].
+In this case, the max area of water (blue section)
+the container can contain is 49.     
 
-The string can contain additional characters after those that form the integral number, which are ignored and have no effect on the behavior of this function.
-
-If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence exists because either str is empty or it contains only whitespace characters, no conversion is performed.
-
-If no valid conversion could be performed, a zero value is returned.
-
-Note:
-
-Only the space character ' ' is considered as whitespace character.
-Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. If the numerical value is out of the range of representable values, INT_MAX (231 − 1) or INT_MIN (−231) is returned.
-Example 1:
-
-Input: &quot;42&quot;
-Output: 42
-Example 2:
-
-Input: &quot;   -42&quot;
-Output: -42
-Explanation: The first non-whitespace character is '-', which is the minus sign.
-             Then take as many numerical digits as possible, which gets 42.
-Example 3:
-
-Input: &quot;4193 with words&quot;
-Output: 4193
-Explanation: Conversion stops at digit '3' as the next character is not a numerical digit.
-Example 4:
-
-Input: &quot;words and 987&quot;
-Output: 0
-Explanation: The first non-whitespace character is 'w', which is not a numerical
-             digit or a +/- sign. Therefore no valid conversion could be performed.
-Example 5:
-
-Input: &quot;-91283472332&quot;
-Output: -2147483648
-Explanation: The number &quot;-91283472332&quot; is out of the range of a 32-bit signed integer.
-             Thefore INT_MIN (−231) is returned.
+Example:
+Input: [1,8,6,2,5,4,8,3,7]
+Output: 49
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;思路：&lt;/p&gt;
+&lt;p&gt;思路清晰，这道题和原来的不同:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;注意异常情况的处理，注意越界
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+    y
+    ^
+    |
+    |     a2
+    |     |  a3          an
+    |  a1 |  |     a5    |
+    |  |  |  |  a4 |     |
+    |  |  |  |  |  | ..  |
+    ---------------------------&amp;gt;
+   0   1  2  3  4  5 ..  n     x
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;只是为了寻找两个位置i,j 组成的桶，能够形成一个最大的容器，而不是这个题目：https://leetcode.com/problems/trapping-rain-water/&lt;/p&gt;
+
+&lt;p&gt;这就是一个“双指针”移动的问题。&lt;/p&gt;
 
 &lt;p&gt;代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static int max(int[] A) {  
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public int myAtoi(String str) {
-        if(str == null || str.isEmpty()) return 0;
-        str = str.trim();
-        int index = 0;
-        int res = 0;
-        int fh = 1;
-        while(i &amp;lt; str.length()){
-          char temp = str.charAt(i);
-			    if (str.charAt(i) == '-' &amp;amp;&amp;amp; i == 0) {
-				        fh = -1;
-				        i++;
-				        continue;
-			    }else if (str.charAt(i) == '+' &amp;amp;&amp;amp; i == 0) {
-                fh = 1;
-			          i++;
-			      	continue;
-			    }else if(temp &amp;gt;= '0' &amp;amp;&amp;amp; temp &amp;lt;= '9'){
-            int ctmp = Character.digit(str.chatAt(i),10);
-            if(Integer.MAX_VALUE/10 &amp;lt; res || Integer.MAX_VALUE/10 == total &amp;amp;&amp;amp; Integer.MAX_VALUE %10 &amp;lt; ctmp){
-              return fh == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-            }else{
-              value =ctmp +value *10
-            }  
-          }else{
-            break;
-          }
-          i++;  
-        }
-        return fh*res;
+    int S = 0, i = 0, j = A.length -1;
+    while (i &amp;lt; j) {
+        S = Math.max(S, (j - i) * Math.min(A[i], A[j]));
+        if (A[i] &amp;lt; A[j]) i++; else j--;
     }
+    return S;
+}
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Mon, 12 Aug 2019 00:00:00 +0800</pubDate>
@@ -302,11 +687,53 @@ Coud you solve it without converting the integer to a string?
 
 &lt;!--more--&gt;
 &lt;p&gt;示例代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;int totalSalesFromNY
-    = txns.stream()
-          .filter(t -&amp;gt; t.getSeller().getAddr().getState().equals(&quot;NY&quot;))
-          .mapToInt(t -&amp;gt; t.getAmount())
-          .sum();
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;String&amp;gt; myList =
+    Arrays.asList(&quot;a1&quot;, &quot;a2&quot;, &quot;b1&quot;, &quot;c2&quot;, &quot;c1&quot;);
+
+myList
+    .stream()
+    .filter(s -&amp;gt; s.startsWith(&quot;c&quot;))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
+// C1
+// C2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Stream和其它集合类的区别在于：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;其它集合类主要关注与有限数量的数据的访问和有效管理(增删改)，而Stream并没有提供访问和管理元素的方式，而是通过声明数据源的方式，利用可计算的操作在数据源上执行，当然BaseStream.iterator() 和 BaseStream.spliterator()操作提供了遍历元素的方法。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;不知道如何的使用？&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Arrays.asList(&quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;)
+    .stream()
+    .findFirst()
+    .ifPresent(System.out::println);  // a1
+
+long sum = ints.stream().mapToInt(Integer::intValue).sum();;
+
+
+Stream.of(&quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;)
+    .map(s -&amp;gt; s.substring(1))
+    .mapToInt(Integer::parseInt)
+    .max()
+    .ifPresent(System.out::println);  // 3
+
+Stream.of(1.0, 2.0, 3.0)
+        .mapToInt(Double::intValue)
+        .mapToObj(i -&amp;gt; &quot;a&quot; + i)
+        .forEach(System.out::println);
+
+    // a1
+    // a2
+    // a3
+
+Stream.of(&quot;d2&quot;, &quot;a2&quot;, &quot;b1&quot;, &quot;b3&quot;, &quot;c&quot;)
+        .filter(s -&amp;gt; {
+            System.out.println(&quot;filter: &quot; + s);
+            return true;
+        });
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Aug 2019 00:00:00 +0800</pubDate>
@@ -472,8 +899,8 @@ optional.ifPresent((s) -&amp;gt; System.out.println(s.charAt(0)));     // &quot;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sat, 10 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/10/day0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/10/day0/</guid>
+        <link>http://localhost:4000/2019/08/10/jdk-day0/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/10/jdk-day0/</guid>
         
         <category>JDK</category>
         
@@ -497,528 +924,6 @@ Advantage of B trees:&lt;/li&gt;
         <pubDate>Fri, 09 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/09/datastruct/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/09/datastruct/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>编码编不下去了怎么办？</title>
-        <description>&lt;p&gt;How to program when you don’t feel like it
-  不想干的时候怎么办？
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;I recently well and truly “hit the wall” when it came to coding.
-Every time I sat down to code, I felt stuck, like I wasn’t making any progress at all.
-I was tired, de-motivated and dealing with headaches.
-我很累，没有动力去处理头痛问题。
-Any will to code I had previously had seemed completely gone and
-when I finally got around to programming I only did the bare minimum.最低限度。&lt;/p&gt;
-
-&lt;p&gt;Here I was on day 52 of my 100 days of code and I didn’t want to break my streak,
-but there was nothing but frustration every time I sat down to program.
-After a few days of this, I decided it wasn’t a sustainable solution, it was costing me more than than I was gaining.
-Something had to change.
-Here are some things that helped get me back on track.&lt;/p&gt;
-
-&lt;p&gt;If you find yourself completely and utterly stuck on whatever you’re working with, don’t try to force it.
-You’re more likely to produce a mess that you will dread having to work with next time and
-you end up in a self reinforcing loop of shitty days.&lt;/p&gt;
-
-&lt;p&gt;Maybe you’ve been putting off this cool tutorial or
-there’s a few easy challenges on websites such as hackerrank, codewars or kattis that you can do.
-It doesn’t really matter what you do, but it needs to be easy and quick.
-It will boost your confidence in your programming skills and give you some much needed wins.
-它将增强您对编程技巧的信心，并为您提供一些急需的胜利。&lt;/p&gt;
-
-&lt;p&gt;You can also go back to the documentation or
-see if you can find some tutorials on your problem.
-Sometimes you need to go back to basic and maybe do a few exercises on the concepts involved in your project.
-回头查看教程或者基础的内容&lt;/p&gt;
-
-&lt;p&gt;Stay here until you feel comfortable cracking on with the thing that was causing you trouble.
-If you find yourself easily distracted, try using the pomodoro technique.
-It’s basically 25 min of focused work and a 5 minute break you repeat until you have reached your goal .
-可以尝试番茄工作法&lt;/p&gt;
-
-&lt;p&gt;The most important thing is progress, especially if it is for something like 100DaysOfCode,
-but just learning in general.
-Not every day is going to be equally good, but you decide how bad a bad day is.
-So on bad days, stick to small achievable goals.
-Gain that confidence and motivation back.
-重要的是保持confidence和motivation&lt;/p&gt;
-
-&lt;p&gt;It took me a few days of solving progressively more difficult problems in the programming language I know best,
-before I felt like going back to my project. It took me 15 minutes to find and fix something that had caused me trouble for 3 days. 😅&lt;/p&gt;
-
-&lt;p&gt;Hope some of these tips were helpful. Feel free to reach out on Twitter or comment with feedback, it’s much appreciated.
-Thank you for reading ❤️&lt;/p&gt;
-</description>
-        <pubDate>Wed, 07 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/07/netty/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/07/netty/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>沉下心来分析HashMap的源码（五）红黑树的删除</title>
-        <description>&lt;p&gt;红黑树的删除逻辑和HashMap中的删除逻辑，是有不同的，因为在HashMap中需要维护next的属性，以便于在tree转为linkedlist的时候，比较的方便。&lt;/p&gt;
-
-&lt;p&gt;所以我们先从普通的红黑树的删除逻辑说起。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;红黑树的删除操作&quot;&gt;红黑树的删除操作&lt;/h3&gt;
-
-&lt;p&gt;删除操作首先需要做的也是BST（二叉搜索树）的删除操作，删除操作会删除对应的节点，如果是叶子节点就直接删除，如果是非叶子节点，会用对应的中序遍历的后继节点来顶替要删除节点的位置（当前节点右子树的最左节点）。删除后就需要做删除修复操作，使的树符合红黑树的定义，符合定义的红黑树高度是平衡的。&lt;/p&gt;
-
-&lt;p&gt;删除修复操作在遇到被删除的节点是红色节点（从2-3树的逻辑上面来看，红色节点直接删除即可，剩下的部分直接的补到红色节点相连的黑色节点即可）或者到达root节点时，修复操作完毕。&lt;/p&gt;
-
-&lt;p&gt;删除修复操作是针对删除黑色节点才有的，当黑色节点被删除后会让整个树不符合RBTree的定义的第四条（经过的黑色节点是一致的约束）。需要做的处理是从兄弟节点上借调黑色的节点过来，如果兄弟节点没有黑节点可以借调的话，就只能往上追溯，将每一级的黑节点数减去一个，使得整棵树符合红黑树的定义。&lt;/p&gt;
-
-&lt;p&gt;删除操作的总体思想是从&lt;strong&gt;兄弟节点借调黑色节点&lt;/strong&gt;使树保持局部的平衡，如果局部的平衡达到了，就看整体的树是否是平衡的，如果不平衡就接着向上追溯调整。&lt;/p&gt;
-
-&lt;p&gt;删除修复操作分为四种情况(删除黑节点后)：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;待删除的节点的兄弟节点是红色的节点。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;待删除的节点的兄弟节点是黑色的节点，且兄弟节点的子节点都是黑色的。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;待调整的节点的兄弟节点是黑色的节点，且兄弟节点的左子节点是红色的，右节点是黑色的(兄弟节点在右边)，如果兄弟节点在左边的话，就是兄弟节点的右子节点是红色的，左节点是黑色的。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;待调整的节点的兄弟节点是黑色的节点，且右子节点是是红色的(兄弟节点在右边)，如果兄弟节点在左边，则就是对应的就是左节点是红色的。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;情况1&quot;&gt;情况1&lt;/h4&gt;
-
-&lt;p&gt;case1 由于兄弟节点是红色节点的时候，无法借调黑节点，所以需要将兄弟节点提升到父节点，由于兄弟节点是红色的，根据RBTree的定义，兄弟节点的子节点是黑色的，就可以从它的子节点借调了。&lt;/p&gt;
-
-&lt;p&gt;case 1这样转换之后就会变成后面的case 2，case 3，或者case 4进行处理了。上升操作需要对C做一个左旋操作，如果是镜像结构的树只需要做对应的右旋操作即可。&lt;/p&gt;
-
-&lt;p&gt;之所以要做case 1操作是因为兄弟节点是红色的，无法借到一个黑节点来填补删除的黑节点。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;![图1](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/p1.jpg)&quot; alt=&quot;图1&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;情况2&quot;&gt;情况2&lt;/h4&gt;
-
-&lt;p&gt;case 2的删除操作是由于兄弟节点可以消除一个黑色节点，因为兄弟节点和兄弟节点的子节点都是黑色的，所以可以将兄弟节点变红，这样就可以保证树的局部的颜色符合定义了。这个时候需要将父节点A变成新的节点，继续向上调整，直到整颗树的颜色符合RBTree的定义为止。&lt;/p&gt;
-
-&lt;p&gt;case 2这种情况下之所以要将兄弟节点变红，是因为如果把兄弟节点借调过来，会导致兄弟的结构不符合RBTree的定义，这样的情况下只能是将兄弟节点也变成红色来达到颜色的平衡。当将兄弟节点也变红之后，达到了局部的平衡了，但是对于祖父节点来说是不符合定义4的。这样就需要回溯到父节点，接着进行修复操作。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;![图1](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/p2.jpg)&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;情况3&quot;&gt;情况3&lt;/h4&gt;
-
-&lt;p&gt;case 3的删除操作是一个中间步骤，它的目的是将左边的红色节点借调过来，这样就可以转换成case 4状态了，在case 4状态下可以将D，E节点都阶段过来，通过将两个节点变成黑色来保证红黑树的整体平衡。&lt;/p&gt;
-
-&lt;p&gt;之所以说case-3是一个中间状态，是因为根据红黑树的定义来说，下图并不是平衡的，他是通过case 2操作完后向上回溯出现的状态。之所以会出现case 3和后面的case 4的情况，是因为可以通过借用侄子节点的红色，变成黑色来符合红黑树定义4.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;![图1](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/p3.jpg)&quot; alt=&quot;图3&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;情况4&quot;&gt;情况4&lt;/h4&gt;
-
-&lt;p&gt;Case 4的操作是真正的节点借调操作，通过将兄弟节点以及兄弟节点的右节点借调过来，并将兄弟节点的右子节点变成红色来达到借调两个黑节点的目的，这样的话，整棵树还是符合RBTree的定义的。&lt;/p&gt;
-
-&lt;p&gt;Case 4这种情况的发生只有在待删除的节点的兄弟节点为黑，且子节点不全部为黑，才有可能借调到两个节点来做黑节点使用，从而保持整棵树都符合红黑树的定义。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;![图1](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/p4.jpg)&quot; alt=&quot;图4&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;删除操作的总结&quot;&gt;删除操作的总结&lt;/h4&gt;
-
-&lt;p&gt;红黑树的删除操作是最复杂的操作，复杂的地方就在于当删除了黑色节点的时候，如何从兄弟节点去借调节点，以保证树的颜色符合定义。由于红色的兄弟节点是没法借调出黑节点的，这样只能通过选择操作让他上升到父节点，而由于它是红节点，所以它的子节点就是黑的，可以借调。&lt;/p&gt;
-
-&lt;p&gt;对于兄弟节点是黑色节点的可以分成3种情况来处理，当所以的兄弟节点的子节点都是黑色节点时，可以直接将兄弟节点变红，这样局部的红黑树颜色是符合定义的。但是整颗树不一定是符合红黑树定义的，需要往上追溯继续调整。&lt;/p&gt;
-
-&lt;p&gt;对于兄弟节点的子节点为左红右黑或者 (全部为红，右红左黑)这两种情况，可以先将前面的情况通过选择转换为后一种情况，在后一种情况下，因为兄弟节点为黑，兄弟节点的右节点为红，可以借调出两个节点出来做黑节点，这样就可以保证删除了黑节点，整棵树还是符合红黑树的定义的，因为黑色节点的个数没有改变。&lt;/p&gt;
-
-&lt;p&gt;具体的代码为：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/** From CLR */
-	private void fixAfterDeletion(Node x) {
-		while (x != root &amp;amp;&amp;amp; colorOf(x) == BLACK) {
-			if (x == leftOf(parentOf(x))) {
-				Node uncle = rightOf(parentOf(x));
-
-				if (colorOf(uncle) == RED) {
-					setColor(uncle, BLACK);
-					setColor(parentOf(x), RED);
-					rotateLeft(parentOf(x));
-					uncle = rightOf(parentOf(x));
-				}
-
-				if (colorOf(leftOf(uncle)) == BLACK &amp;amp;&amp;amp; colorOf(rightOf(uncle)) == BLACK) {
-					setColor(uncle, RED);
-					x = parentOf(x);
-				} else {
-					if (colorOf(rightOf(uncle)) == BLACK) {
-						setColor(leftOf(uncle), BLACK);
-						setColor(uncle, RED);
-						rotateRight(uncle);
-						uncle = rightOf(parentOf(x));
-					}
-					setColor(uncle, colorOf(parentOf(x)));
-					setColor(parentOf(x), BLACK);
-					setColor(rightOf(uncle), BLACK);
-					rotateLeft(parentOf(x));
-					x = root;
-				}
-			} else { // symmetric
-				assert x == rightOf((parentOf(x)));
-				Node brother = leftOf(parentOf(x));
-
-				if (colorOf(brother) == RED) {
-					setColor(brother, BLACK);
-					setColor(parentOf(x), RED);
-					rotateRight(parentOf(x));
-					brother = leftOf(parentOf(x));
-				}
-
-				if (colorOf(rightOf(brother)) == BLACK &amp;amp;&amp;amp; colorOf(leftOf(brother)) == BLACK) {
-					setColor(brother, RED);
-					x = parentOf(x);
-				} else {
-					if (colorOf(leftOf(brother)) == BLACK) {
-						setColor(rightOf(brother), BLACK);
-						setColor(brother, RED);
-						rotateLeft(brother);
-						brother = leftOf(parentOf(x));
-					}
-					setColor(brother, colorOf(parentOf(x)));
-					setColor(parentOf(x), BLACK);
-					setColor(leftOf(brother), BLACK);
-					rotateRight(parentOf(x));
-					x = root;
-				}
-			}
-		}
-
-		setColor(x, BLACK);
-	}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Tue, 06 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/06/hashmap/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/06/hashmap/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>沉下心来分析HashMap的源码（四）红黑树的插入</title>
-        <description>&lt;p&gt;理解了2-3树和红黑树的对应的关系，再去梳理红黑树的插入和删除操作，就会更加的容易理解和记忆一点。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;红黑树的插入操作&quot;&gt;红黑树的插入操作&lt;/h3&gt;
-
-&lt;h4 id=&quot;情况1&quot;&gt;情况1&lt;/h4&gt;
-
-&lt;p&gt;当为Null树的时候，插入第一个节点：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;节点设置为根节点，设置为黑色，如下图所示：&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt1.jpg&quot; alt=&quot;图1&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;情况2&quot;&gt;情况2&lt;/h4&gt;
-&lt;p&gt;存在父节点的情况下，插入节点，分为两种情况：2-3树上面就是有2节点形成3节点的过程。
-  2.1 插入的是左节点，也就是比父节点要小，直接的插入即可,但是需要考虑着色的问题。如图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt2.jpg&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;2.2 如果插入的节点比父节点大，就需要变换顺序，外加改变颜色了，如下图：
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt3.jpg&quot; alt=&quot;图3&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;其中的坐旋转，使用文字描述为：&lt;/p&gt;
-
-&lt;p&gt;左旋： 右节点（right）和其父节点（right-parent）进行交换，交换的过程中，right-parent 的右分支被强制的叉开，所以把right的左孩子（right-left）放到了right-parent 的右分支，然后把right-parent 放到了right的左孩子上。&lt;/p&gt;
-
-&lt;p&gt;图片的描述为：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt4.jpg&quot; alt=&quot;图4&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;代码描述为：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
- *  旋转节点：为 p.right
- *  方法的输入的参数为 旋转子树的根节点，可以理解为图中的node节点
- * */&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateLeft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// p的右节点即是旋转上升的节点，然后旋转上升后，该节点的左节点为P，原来的左节点，这是为p的右节点&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// 设置循转节点的父节点，以及P原来父节点的指向的设置&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;//旋转节点为右节点，原来的左孩子设置为P&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;情况3&quot;&gt;情况3&lt;/h4&gt;
-&lt;p&gt;在父节点存在的情况下，如果左孩子的左孩子一直插入的情况下，如下图所示&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt5.jpg&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这个时候就是右旋的操作，具体的文字描述为：&lt;/p&gt;
-
-&lt;p&gt;右旋： 左节点（left）和其父节点（left-parent）进行交换，交换的过程中，left-parent 的左分支被强制的叉开，所以把left的右孩子（left-right）放到了left-parent 的左分支，然后把left-parent 放到了left的左孩子上。&lt;/p&gt;
-
-&lt;p&gt;具体的图示如下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt6.jpg&quot; alt=&quot;图6&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;具体的代码示例为：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** From CLR
-	 * 该方法的参数，并不是被旋转的节点，而是调整子树的根节点，可以理解为图中的node节点
-	 * */&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rotateRight&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;c1&quot;&gt;// p的左节点设置为 原来左节点的右子树&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-				&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-			&lt;span class=&quot;c1&quot;&gt;// 旋转过程中父节点的设置，上升节点的父节点以及原来父节点的指向的设置&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-				&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-				&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-			&lt;span class=&quot;c1&quot;&gt;// 最后右节点和p旋转后父节点的设置&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-		&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;情况4&quot;&gt;情况4：&lt;/h4&gt;
-&lt;p&gt;特殊的情况下，如：红色的右节点下插入左孩子，或者红色的左节点下，插入右孩子。
-具体的情况的一种如下图所示：
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt7.jpg&quot; alt=&quot;图7&quot; /&gt;
-针对这种情况，第一步我们可以通过一次左旋转，变成我们熟悉的情况3.具体的操作如下图所示：
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt8.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
-&lt;h3 id=&quot;插入的情况总结&quot;&gt;插入的情况总结&lt;/h3&gt;
-
-&lt;p&gt;具体的操作分为三种：左旋，右旋，变色
-具体的情况如下图所示：
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt9.jpg&quot; alt=&quot;图9&quot; /&gt;
-具体的代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int put(K key) {
-		Node t = root;
-		if (t == null) {
-			root = new Node(key, null);
-			size = 1;
-			modCount++;
-			return 1;
-		}
-
-		Node parent = findParent(key);
-		if (parent != null) {
-			int cmp = this.comparator != null ? this.comparator.compare(key, parent.key)
-					: ((Comparable&amp;lt;? super K&amp;gt;) key).compareTo(parent.key);
-			Node e = new Node(key, parent);
-			if (cmp &amp;lt; 0)
-				parent.left = e;
-			else
-				parent.right = e;
-			fixAfterInsertion(e);
-			size++;
-			modCount++;
-			return 1;
-		} else {
-			return -1;
-		}
-	}
-
-  private void fixAfterInsertion(Node x) {
-		x.color = RED;
-		// x 为null，x为root的第一个节点，直接的跳走
-		/**
-		 * 如果x parent 节点为黑，那么x 为红，直接的跳过即可。
-		 * */
-		while (x != null &amp;amp;&amp;amp; x != root &amp;amp;&amp;amp; x.parent.color == RED) {
-			if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
-				Node uncle = rightOf(parentOf(parentOf(x)));
-				if (colorOf(uncle) == RED) {
-					// 图三
-					setColor(parentOf(x), BLACK);
-					setColor(uncle, BLACK);
-					setColor(parentOf(parentOf(x)), RED);
-					x = parentOf(parentOf(x));
-				} else {
-					// uncle 节点为黑或者uncle 节点为null
-					if (x == rightOf(parentOf(x))) {
-						x = parentOf(x);
-						/**
-						 * 这个操作，非常的有意思，按照左旋方法的定义，参数应该是旋转子树的根节点，但是这个传入的是旋转节点
-						 * 然后，就变成了：x右节点和x交换位置，并且在交换位置的过程中，x有右节点变为了左节点。
-						 * 图②
-						 * */
-						rotateLeft(x);
-					}
-					// 调整颜色，当前节点为红色节点，是定死的。所以把父节点设为黑，爷节节点设置为红
-					setColor(parentOf(x), BLACK);
-					setColor(parentOf(parentOf(x)), RED);
-					// x 为left节点，进行右旋
-					// 图①
-					rotateRight(parentOf(parentOf(x)));
-				}
-			} else {
-				Node uncle = leftOf(parentOf(parentOf(x)));
-				if (colorOf(uncle) == RED) {
-					setColor(parentOf(x), BLACK);
-					setColor(uncle, BLACK);
-					setColor(parentOf(parentOf(x)), RED);
-					x = parentOf(parentOf(x));
-				} else {
-					if (x == leftOf(parentOf(x))) {
-						x = parentOf(x);
-						rotateRight(x);
-					}
-					setColor(parentOf(x), BLACK);
-					setColor(parentOf(parentOf(x)), RED);
-					rotateLeft(parentOf(parentOf(x)));
-				}
-			}
-		}
-		root.color = BLACK;
-	}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Mon, 05 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/05/hashmap/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/05/hashmap/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>沉下心来分析HashMap的源码（三）学习红黑树</title>
-        <description>&lt;p&gt;HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;每个节点或者是红色，或者是黑色&lt;/li&gt;
-  &lt;li&gt;根节点是黑色&lt;/li&gt;
-  &lt;li&gt;每一个叶子节点(最后的空节点)是黑色的&lt;/li&gt;
-  &lt;li&gt;如果一个节点是红色的，那么它的孩子节点都是黑色的&lt;/li&gt;
-  &lt;li&gt;从任意一个节点到叶子节点，经过的黑色节点是一样的&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;完全的不清楚为什么这么定义，以及这么定义的原因是什么。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;先导&quot;&gt;先导&lt;/h3&gt;
-
-&lt;p&gt;先说红黑树的由来，是为了查找的平衡，从二叉查找树说起。&lt;/p&gt;
-
-&lt;p&gt;二叉查找树：从根节点开始，左节点的值小于根节点，右节点的值大于右节点。并且每一颗子树都满足这个条件，所以便于查找：查找的时候，只需要比对就能够瞬速的找到所在子树，继而找到对应的节点。但是二叉查找树有一个缺点就是：容易偏向一侧，我们向往的二叉查找树是图一，结果却有很多图二的情况。
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t1.jpg&quot; alt=&quot;图1&quot; /&gt;
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t2.jpg&quot; alt=&quot;图2&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;平衡树2-3树&quot;&gt;平衡树：2-3树&lt;/h3&gt;
-&lt;p&gt;在这种需求下，平衡树的概念就应运而生了。红黑树就是一种平衡树，它可以保证二叉树基本符合我们预料的那种平衡的结构，但是理解红黑树之前，必须先了解另一种树，叫2-3树，红黑树背后的逻辑就是它。&lt;/p&gt;
-
-&lt;p&gt;2-3树：2-3树满足二分搜索树的性质。不同的是在2-3树中，存在两种节点。一种是有两个叶子节点的，我们称作“2节点” 如图3；另一种是有三个叶子节点的，我们称作“3节点”，如图4，图5展示的是一个完整的2-3 树，满足从根节点到任意一个叶子节点的高度都是相同的。
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t3.jpg&quot; alt=&quot;图3&quot; /&gt;
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t4.jpg&quot; alt=&quot;图4&quot; /&gt;
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t5.jpg&quot; alt=&quot;图5&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-3树如何保持平衡&quot;&gt;2-3树如何保持平衡&lt;/h3&gt;
-
-&lt;p&gt;2-3树平衡的保持，主要依赖两个操作：拆分和合并。其中拆分主要发生在3节点插入时候，如下图6，图7完整的展示可一个查分的过程：
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t6.jpg&quot; alt=&quot;图6&quot; /&gt;
-&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t7.jpg&quot; alt=&quot;图7&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），(4 7 9) 这个节点，然后通过4节点的中间状态查分为三个2节点. &lt;br /&gt;
-但是在图7的第二步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第三步。&lt;/p&gt;
-
-&lt;p&gt;如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t8.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-3树和红黑树的关系&quot;&gt;2-3树和红黑树的关系&lt;/h3&gt;
-
-&lt;p&gt;对于2-3树中的“2节点”，对应于红黑树中的“黑节点”，即相当于普通二分搜索树中的一个节点。&lt;/p&gt;
-
-&lt;p&gt;对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？&lt;/p&gt;
-
-&lt;p&gt;其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。&lt;/p&gt;
-
-&lt;p&gt;对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？&lt;/p&gt;
-
-&lt;p&gt;大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。&lt;/p&gt;
-
-&lt;p&gt;如下图所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t9.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后一颗2-3树的就可以转化为一颗红黑树了，如下图所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t10.jpg&quot; alt=&quot;图8&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;再次的分析红黑树的性质&quot;&gt;再次的分析红黑树的性质&lt;/h3&gt;
-
-&lt;p&gt;讨论了2-3树与红黑树之间的关系，我们再回过头来看一下红黑树的5条定义和性质，会发现很好理解了。&lt;/p&gt;
-
-&lt;p&gt;1.每个节点或者是红色，或者是黑色
-这条定义很好理解，在此不做解释。&lt;/p&gt;
-
-&lt;p&gt;2.根节点是黑色&lt;/p&gt;
-
-&lt;p&gt;根据之前说过的，红色的节点对应于2-3树中“3节点”中较小的那个节点，拆成两个“2节点”的话则是一个左子树的节点，即&lt;strong&gt;红色的节点总是可以和其父节点进行融合&lt;/strong&gt;，所以红色节点一定有父节点，显然根节点不能是红色，所以根节点是黑色。&lt;/p&gt;
-
-&lt;p&gt;3.每一个叶子节点(最后的空节点)是黑色的&lt;/p&gt;
-
-&lt;p&gt;这条性质和第2条是对应的。对于叶子节点（最后的空节点），一颗空树的根节点也为黑色，所以与其说第三条是一条性质，不如说也是一个定义。&lt;/p&gt;
-
-&lt;p&gt;4.如果一个节点是红色的，那么它的孩子节点都是黑色的&lt;/p&gt;
-
-&lt;p&gt;根据上面2-3树与红黑树两种节点的对比图，我们很容易看到，红色节点的两个子树，对应2-3树中的话，要么是一个“2节点”，要么是一个“3节点”，而不管是“2节点”还是“3节点”，相连的第一个节点都是黑色的，所以说红色节点的孩子节点都是黑色的。&lt;/p&gt;
-
-&lt;p&gt;5.从任意一个节点到叶子节点，经过的黑色节点是一样的&lt;/p&gt;
-
-&lt;p&gt;根据2-3树与红黑树的关系对比图，可以发现，红黑树中一个黑色节点对应2-3树中一整个节点（“2节点”或“3节点”），而2-3树是完全平衡的树，从根节点到任意路径的叶子节点，经过的节点个数都是相同的，对应红黑树中，即从任意节点到叶子节点，经过的黑色节点是一样的。&lt;/p&gt;
-
-&lt;p&gt;对比2-3树总结起来，其实也就两条。其中一条是关于着色的：每个节点都有颜色，非红即黑。根节点，叶子节点为黑色。红色节点的孩子节点为黑色。另外一条是关于2-3树的平衡性的。即是到每一个叶子节点是平衡的，对应的红黑树，也就是经过的黑色节点是一样的。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 04 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/04/hashmap0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/04/hashmap0/</guid>
         
         <category>JDK</category>
         

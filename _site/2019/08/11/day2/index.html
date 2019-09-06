@@ -219,11 +219,53 @@
 
 <!--more-->
 <p>示例代码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int totalSalesFromNY
-    = txns.stream()
-          .filter(t -&gt; t.getSeller().getAddr().getState().equals("NY"))
-          .mapToInt(t -&gt; t.getAmount())
-          .sum();
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
+
+myList
+    .stream()
+    .filter(s -&gt; s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
+// C1
+// C2
+</code></pre></div></div>
+<p>Stream和其它集合类的区别在于：</p>
+<blockquote>
+  <p>其它集合类主要关注与有限数量的数据的访问和有效管理(增删改)，而Stream并没有提供访问和管理元素的方式，而是通过声明数据源的方式，利用可计算的操作在数据源上执行，当然BaseStream.iterator() 和 BaseStream.spliterator()操作提供了遍历元素的方法。</p>
+</blockquote>
+
+<p>不知道如何的使用？</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Arrays.asList("a1", "a2", "a3")
+    .stream()
+    .findFirst()
+    .ifPresent(System.out::println);  // a1
+
+long sum = ints.stream().mapToInt(Integer::intValue).sum();;
+
+
+Stream.of("a1", "a2", "a3")
+    .map(s -&gt; s.substring(1))
+    .mapToInt(Integer::parseInt)
+    .max()
+    .ifPresent(System.out::println);  // 3
+
+Stream.of(1.0, 2.0, 3.0)
+        .mapToInt(Double::intValue)
+        .mapToObj(i -&gt; "a" + i)
+        .forEach(System.out::println);
+
+    // a1
+    // a2
+    // a3
+
+Stream.of("d2", "a2", "b1", "b3", "c")
+        .filter(s -&gt; {
+            System.out.println("filter: " + s);
+            return true;
+        });
 </code></pre></div></div>
 
 
@@ -232,7 +274,7 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/10/day0/" data-toggle="tooltip" data-placement="top" title="JDK8的新特性1">
+                        <a href="/2019/08/10/jdk-day0/" data-toggle="tooltip" data-placement="top" title="JDK8的新特性1">
                         Previous<br>
                         <span>JDK8的新特性1</span>
                         </a>
@@ -308,13 +350,13 @@
                             
         				
                             
-                				<a href="/tags/#JDK" title="JDK" rel="9">
+                				<a href="/tags/#JDK" title="JDK" rel="10">
                                     JDK
                                 </a>
                             
         				
                             
-                				<a href="/tags/#LeetCode" title="LeetCode" rel="3">
+                				<a href="/tags/#LeetCode" title="LeetCode" rel="6">
                                     LeetCode
                                 </a>
                             

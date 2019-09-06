@@ -441,28 +441,21 @@ In...
         <div class="post-content-preview">
         <p>JDK8的新特性：Stream</p>
 
-<p>第 1 部分: java.util.stream 库简介<br />
-第 2 部分: 使用流执行聚合<br />
-第 3 部分: Streams 的幕后原理<br />
-第 4 部分: 从并发到并行<br />
-第 5 部分: 并行流性能</p>
-
 
         </div>
         <!-- <div class="post-content-preview">
             JDK8的新特性：Stream
 
-第 1 部分: java.util.stream 库简介
-第 2 部分: 使用流执行聚合
-第 3 部分: Streams 的幕后原理
-第 4 部分: 从并发到并行
-第 5 部分: 并行流性能
-
 
 示例代码：
-
 List&lt;String&gt; myList =
-    Arrays.asList("a1", "a2", "b1", "c2", "c1")...
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
+
+myList
+    .stream()
+    .filter(s -&gt; s.startsWith("c"))
+    .map(String::toUpperCase)
+    ....
         </div> -->
     </a>
     <p class="post-meta">

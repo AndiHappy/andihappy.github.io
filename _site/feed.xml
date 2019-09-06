@@ -5,8 +5,8 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 06 Sep 2019 20:38:24 +0800</pubDate>
-    <lastBuildDate>Fri, 06 Sep 2019 20:38:24 +0800</lastBuildDate>
+    <pubDate>Fri, 06 Sep 2019 23:39:15 +0800</pubDate>
+    <lastBuildDate>Fri, 06 Sep 2019 23:39:15 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -679,15 +679,8 @@ Coud you solve it without converting the integer to a string?
         <title>JDK8的新特性2</title>
         <description>&lt;p&gt;JDK8的新特性：Stream&lt;/p&gt;
 
-&lt;p&gt;第 1 部分: java.util.stream 库简介&lt;br /&gt;
-第 2 部分: 使用流执行聚合&lt;br /&gt;
-第 3 部分: Streams 的幕后原理&lt;br /&gt;
-第 4 部分: 从并发到并行&lt;br /&gt;
-第 5 部分: 并行流性能&lt;/p&gt;
-
 &lt;!--more--&gt;
 &lt;p&gt;示例代码：&lt;/p&gt;
-
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;String&amp;gt; myList =
     Arrays.asList(&quot;a1&quot;, &quot;a2&quot;, &quot;b1&quot;, &quot;c2&quot;, &quot;c1&quot;);
 
@@ -700,40 +693,261 @@ myList
 // C1
 // C2
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;Stream和其它集合类的区别在于：&lt;/p&gt;
+&lt;h3 id=&quot;stream和其它集合类的区别在于&quot;&gt;Stream和其它集合类的区别在于：&lt;/h3&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;其它集合类主要关注与有限数量的数据的访问和有效管理(增删改)，而Stream并没有提供访问和管理元素的方式，而是通过声明数据源的方式，利用可计算的操作在数据源上执行，当然BaseStream.iterator() 和 BaseStream.spliterator()操作提供了遍历元素的方法。&lt;/p&gt;
+  &lt;p&gt;其它集合类主要关注与有限数量的数据的&lt;strong&gt;访问和有效管理&lt;/strong&gt;(增删改)，而Stream并没有提供访问和管理元素的方式，而是通过声明数据源的方式，利用可计算的操作在数据源上执行，当然BaseStream.iterator() 和 BaseStream.spliterator()操作提供了遍历元素的方法。&lt;/p&gt;
+
+  &lt;p&gt;集合关注的是有限元素的访问和管理，Stream关注的是数据源形成的操作&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;不知道如何的使用？&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Arrays.asList(&quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;)
-    .stream()
-    .findFirst()
-    .ifPresent(System.out::println);  // a1
+&lt;h3 id=&quot;stream的定义&quot;&gt;Stream的定义：&lt;/h3&gt;
 
-long sum = ints.stream().mapToInt(Integer::intValue).sum();;
+&lt;blockquote&gt;
+  &lt;p&gt;A sequence of elements supporting sequential and parallel aggregate operations.&lt;/p&gt;
+&lt;/blockquote&gt;
 
+&lt;h3 id=&quot;stream的使用&quot;&gt;Stream的使用&lt;/h3&gt;
 
-Stream.of(&quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;)
-    .map(s -&amp;gt; s.substring(1))
-    .mapToInt(Integer::parseInt)
-    .max()
-    .ifPresent(System.out::println);  // 3
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//Lists是Guava中的一个工具类
+List&amp;lt;Integer&amp;gt; nums = Lists.newArrayList(1,null,3,4,null,6);
+nums.stream().filter(num -&amp;gt; num != null).count();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-Stream.of(1.0, 2.0, 3.0)
-        .mapToInt(Double::intValue)
-        .mapToObj(i -&amp;gt; &quot;a&quot; + i)
-        .forEach(System.out::println);
+&lt;p&gt;针对上面的代码，进行Stream拆解：&lt;/p&gt;
 
-    // a1
-    // a2
-    // a3
+&lt;p&gt;&lt;img src=&quot;http://img04.taobaocdn.com/imgextra/i4/90219132/T2ycFgXQ8XXXXXXXXX_!!90219132.jpg&quot; alt=&quot;图片地址&quot; /&gt;&lt;/p&gt;
 
-Stream.of(&quot;d2&quot;, &quot;a2&quot;, &quot;b1&quot;, &quot;b3&quot;, &quot;c&quot;)
-        .filter(s -&amp;gt; {
-            System.out.println(&quot;filter: &quot; + s);
-            return true;
-        });
+&lt;p&gt;红色框中的语句是一个Stream的生命开始的地方，负责创建一个Stream实例； &lt;br /&gt;
+绿色框中的语句是赋予Stream灵魂的地方，把一个Stream转换成另外一个Stream，红框的语句生成的是一个包含所有nums变量的Stream，进过绿框的filter方法以后，重新生成了一个过滤掉原nums列表所有null以后的Stream； &lt;br /&gt;
+蓝色框中的语句是丰收的地方，把Stream的里面包含的内容按照某种算法来汇聚成一个值，例子中是获取Stream中包含的元素个数。&lt;/p&gt;
+
+&lt;h3 id=&quot;创建stream&quot;&gt;创建Stream&lt;/h3&gt;
+
+&lt;p&gt;最常用的创建Stream有两种途径：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;通过Stream接口的静态工厂方法（注意：Java8里接口可以带静态方法）；&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;通过Collection接口的默认方法（默认方法：Default method，也是Java8中的一个新特性，就是接口中的一个带有实现的方法, 前文中有说明）stream()，把一个Collection对象转换成Stream&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;另外使用Stream静态方法来创建Stream&lt;/p&gt;
+
+&lt;p&gt;of方法：有两个overload方法，一个接受变长参数，一个接口单一值，例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Stream&amp;lt;Integer&amp;gt; integerStream = Stream.of(1, 2, 3, 5);
+Stream&amp;lt;String&amp;gt; stringStream = Stream.of(&quot;taobao&quot;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;generator方法：生成一个无限长度的Stream，其元素的生成是通过给定的Supplier（这个接口可以看成一个对象的工厂，每次调用返回一个给定类型的对象）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   Stream.generate(new Supplier&amp;lt;Double&amp;gt;() {
+   	@Override
+   	public Double get() {
+		return Math.random();
+	}
+});
+Stream.generate(() -&amp;gt; Math.random());
+   Stream.generate(Math::random);
+   
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;iterate方法：也是生成无限长度的Stream，和generator不同的是，其元素的生成是重复对给定的种子值(seed)调用用户指定函数来生成的。其中包含的元素可以认为是：seed，f(seed),f(f(seed))无限循环。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Stream.iterate(1, item -&amp;gt; item + 1)
+      .limit(10)
+      .forEach(System.out::println);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;转换stream&quot;&gt;转换Stream&lt;/h3&gt;
+
+&lt;p&gt;从图中展示的我们知道，转换Stream主要是使用一些API。Stream接口中定义了几个常用的转换API，下面我们挑选几个常用的转换方法来解释。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;distinct: 对于Stream中包含的元素进行去重操作（去重逻辑依赖元素的equals方法）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;String&amp;gt; l = Stream.of(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;b&quot;).distinct()
+                       .collect(Collectors.toList());
+System.out.println(l); //[a, b, c]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;filter: 对于Stream中包含的元素使用给定的过滤函数进行过滤操作，新生成的Stream只包含符合条件的元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; l = IntStream.range(1,10)
+        .filter( i -&amp;gt; i % 2 == 0)
+        .boxed()
+        .collect(Collectors.toList());
+System.out.println(l); //[2, 4, 6, 8]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;map: 对于Stream中包含的元素使用给定的转换函数进行转换操作，新生成的Stream只包含转换生成的元素。这个方法有三个对于原始类型的变种方法，分别是：mapToInt，mapToLong和mapToDouble。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; l = Stream.of('a','b','c')
+        .map( c -&amp;gt; c.hashCode())
+        .collect(Collectors.toList());
+System.out.println(l); //[97, 98, 99]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;flatMap：和map类似，不同的是其每个元素转换得到的是Stream对象，会把子Stream中的元素压缩到父集合中。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; ins = Arrays.asList(
+				Arrays.asList(1, 2, 3, 4, 5), 
+				Arrays.asList(1, 2, 3, 4, 5), 
+				Arrays.asList(1, 2, 3, 4, 5));
+		Stream&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; paras = ins.stream();
+		IntStream value = paras.flatMapToInt(t-&amp;gt;{
+		 return	t.stream().mapToInt(Integer::intValue);
+		});
+System.out.println(value.sum());
+
+// 或者
+
+String poetry = &quot;Where, before me, are the ages that have gone?\n&quot; +
+        &quot;And where, behind me, are the coming generations?\n“;
+Stream&amp;lt;String&amp;gt; lines = Arrays.stream(poetry.split(&quot;\n&quot;));
+
+Stream&amp;lt;String&amp;gt; words = lines.flatMap(line -&amp;gt; Arrays.stream(line.split(&quot; &quot;)));
+List&amp;lt;String&amp;gt; l = words.map( w -&amp;gt; {
+    if (w.endsWith(&quot;,&quot;) || w.endsWith(&quot;.&quot;) || w.endsWith(&quot;?&quot;))
+        return w.substring(0,w.length() -1).trim().toLowerCase();
+    else
+        return w.trim().toLowerCase();
+}).distinct().sorted().collect(Collectors.toList());
+System.out.println(l);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;limit方法指定数量的元素的流。对于串行流，这个方法是有效的，这是因为它只需返回前n个元素即可，但是对于有序的并行流，它可能花费相对较长的时间，如果你不在意有序，可以将有序并行流转换为无序的，可以提高性能。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; l = IntStream.range(1,100).limit(5)
+        .boxed()
+        .collect(Collectors.toList());
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;peek方法方法会使用一个Consumer消费流中的元素，但是返回的流还是包含原来的流中的元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;String[] arr = new String[]{&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;};
+Arrays.stream(arr)
+        .peek(System.out::println) //a,b,c,d
+        .count();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;sorted()将流中的元素按照自然排序方式进行排序，如果元素没有实现Comparable，则终点操作执行时会抛出java.lang.ClassCastException异常。&lt;/li&gt;
+  &lt;li&gt;skip返回丢弃了前n个元素的流，如果流中的元素小于或者等于n，则返回空的流。&lt;/li&gt;
+  &lt;li&gt;count方法返回流中的元素的数量&lt;/li&gt;
+  &lt;li&gt;forEach遍历流的每一个元素，执行指定的action。它是一个终点操作，和peek方法不同。这个方法不担保按照流的encounter order顺序执行，如果对于有序流按照它的encounter order顺序执行，你可以使用forEachOrdered方法。
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Stream.of(1,2,3,4,5).forEach(System.out::println);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;findAny()返回任意一个元素，如果流为空，返回空的Optional，对于并行流来说，它只需要返回任意一个元素即可，所以性能可能要好于findFirst()，但是有可能多次执行的时候返回的结果不一样。
+findFirst()返回第一个元素，如果流为空，返回空的Optional。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;toArray() 将流中的元素放入到一个数组中。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;性能问题&quot;&gt;性能问题&lt;/h3&gt;
+
+&lt;p&gt;在对于一个Stream进行多次转换操作，每次都对Stream的每个元素进行转换，而且是执行多次，这样时间复杂度就是一个for循环里把所有操作都做掉的N（转换的次数）倍吗？&lt;/p&gt;
+
+&lt;p&gt;其实不是这样的，转换操作都是lazy的，多个转换操作只会在汇聚操作（见下节）的时候融合起来，一次循环完成。我们可以这样简单的理解，Stream里有个操作函数的集合，每次转换操作就是把转换函数放入这个集合中，在汇聚操作的时候循环Stream对应的集合，然后对每个元素执行所有的函数。&lt;/p&gt;
+
+&lt;h3 id=&quot;reduce-stream&quot;&gt;Reduce Stream&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A reduction operation (also called a fold) takes a sequence of input elements and combines them into a single summary result by repeated application of a combining operation, such as finding the sum or maximum of a set of numbers, or accumulating elements into a list. The streams classes have multiple forms of general reduction operations, called reduce() and collect(), as well as multiple specialized reduction forms such as sum(), max(), or count().&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;简单翻译一下：汇聚操作（也称为折叠）接受一个元素序列为输入，反复使用某个合并操作，把序列中的元素合并成一个汇总的结果。比如查找一个数字列表的总和或者最大值，或者把这些数字累积成一个List对象。Stream接口有一些通用的汇聚操作，比如reduce()和collect()；也有一些特定用途的汇聚操作，比如sum(),max()和count()。注意：sum方法不是所有的Stream对象都有的，只有IntStream、LongStream和DoubleStream是实例才有。&lt;/p&gt;
+
+&lt;p&gt;下面会分两部分来介绍汇聚操作：&lt;/p&gt;
+
+&lt;p&gt;可变汇聚：把输入的元素们累积到一个可变的容器中，比如Collection或者StringBuilder；&lt;/p&gt;
+
+&lt;p&gt;其他汇聚：除去可变汇聚剩下的，一般都不是通过反复修改某个可变对象，而是通过把前一次的汇聚结果当成下一次的入参，反复如此。比如reduce，count，allMatch；&lt;/p&gt;
+
+&lt;h4 id=&quot;可变汇聚&quot;&gt;可变汇聚&lt;/h4&gt;
+&lt;p&gt;可变汇聚对应的只有一个方法：collect，正如其名字显示的，它可以把Stream中的要有元素收集到一个结果容器中（比如Collection）。先看一下最通用的collect方法的定义（还有其他override方法）：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;R&amp;gt; R collect(
+    Supplier&amp;lt;R&amp;gt; supplier,
+    BiConsumer&amp;lt;R, ? super T&amp;gt; accumulator,
+    BiConsumer&amp;lt;R, R&amp;gt; combiner
+    );
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;先来看看这三个参数的含义：
+Supplier supplier是一个工厂函数，用来生成一个新的容器；
+BiConsumer accumulator也是一个函数，用来把Stream中的元素添加到结果容器中；
+BiConsumer combiner还是一个函数，用来把中间状态的多个结果容器合并成为一个（并发的时候会用到）。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; nums = Lists.newArrayList(1,1,null,2,3,4,null,5,6,7,8,9,10);
+
+List&amp;lt;Integer&amp;gt; numsWithoutNull = nums.stream()
+    .filter(num -&amp;gt; num != null)
+    .collect(() -&amp;gt; new ArrayList&amp;lt;Integer&amp;gt;(),
+            (list, item) -&amp;gt; list.add(item),
+            (list1, list2) -&amp;gt; list1.addAll(list2));
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面这段代码就是对一个元素是Integer类型的List，先过滤掉全部的null，然后把剩下的元素收集到一个新的List中。进一步看一下collect方法的三个参数，都是lambda形式的函数&lt;/p&gt;
+
+&lt;p&gt;第一个函数生成一个新的ArrayList实例；
+第二个函数接受两个参数，第一个是前面生成的ArrayList对象，二个是stream中包含的元素，函数体就是把stream中的元素加入ArrayList对象中。第二个函数被反复调用直到原stream的元素被消费完毕；
+第三个函数也是接受两个参数，这两个都是ArrayList类型的，函数体就是把第二个ArrayList全部加入到第一个中；&lt;/p&gt;
+
+&lt;p&gt;但是上面的collect方法调用也有点太复杂了，没关系！我们来看一下collect方法另外一个override的版本，其依赖&lt;a href=&quot;http://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html&quot;&gt;Collector&lt;/a&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;R, A&amp;gt; R collect(Collector&amp;lt;? super T, A, R&amp;gt; collector);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这样清爽多了！Java8还给我们提供了Collector的工具类–&lt;a href=&quot;http://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html&quot;&gt;Collectors&lt;/a&gt;，其中已经定义了一些静态工厂方法，比如：&lt;/p&gt;
+
+&lt;p&gt;Collectors.toCollection() 收集到Collection中, 
+Collectors.toList()收集到List中
+Collectors.toSet()收集到Set中。
+这样的静态方法还有很多，这里就不一一介绍了，大家可以直接去看JavaDoc。下面看看使用Collectors对于代码的简化：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; numsWithoutNull = nums.stream().filter(num -&amp;gt; num != null)
+                    .collect(Collectors.toList());
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;其他汇聚&quot;&gt;其他汇聚&lt;/h4&gt;
+
+&lt;p&gt;reduce方法：reduce方法非常的通用，后面介绍的count，sum等都可以使用其实现。reduce方法有三个override的方法，本文介绍两个最常用的.先来看reduce方法的第一种形式，其方法定义如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Optional&amp;lt;T&amp;gt; reduce(BinaryOperator&amp;lt;T&amp;gt; accumulator);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;接受一个BinaryOperator类型的参数，在使用的时候我们可以用lambda表达式来。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
+System.out.println(&quot;ints sum is:&quot; + ints.stream().reduce((sum, item) -&amp;gt; sum + item).get());
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以看到reduce方法接受一个函数，这个函数有两个参数，第一个参数是上次函数执行的返回值（也称为中间结果），第二个参数是stream中的元素，这个函数把这两个值相加，得到的和会被赋值给下次执行这个函数的第一个参数。要注意的是：&lt;strong&gt;第一次执行的时候第一个参数的值是Stream的第一个元素，第二个参数是Stream的第二个元素&lt;/strong&gt;。这个方法返回值类型是Optional，这是Java8防止出现NPE的一种可行方法，这里就简单的认为是一个容器，其中可能会包含0个或者1个对象。&lt;/p&gt;
+
+&lt;p&gt;reduce方法还有一个很常用的变种：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;T reduce(T identity, BinaryOperator&amp;lt;T&amp;gt; accumulator);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这个定义上上面已经介绍过的基本一致，不同的是：它允许用户提供一个循环计算的初始值，如果Stream为空，就直接返回该值。而且这个方法不会返回Optional，因为其不会出现null值。下面直接给出例子，就不再做说明了。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;Integer&amp;gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
+System.out.println(&quot;ints sum is:&quot; + ints.stream().reduce(0, (sum, item) -&amp;gt; sum + item));
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Aug 2019 00:00:00 +0800</pubDate>

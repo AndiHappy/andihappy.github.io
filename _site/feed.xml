@@ -5,9 +5,67 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 07 Sep 2019 11:20:51 +0800</pubDate>
-    <lastBuildDate>Sat, 07 Sep 2019 11:20:51 +0800</lastBuildDate>
+    <pubDate>Sat, 07 Sep 2019 11:42:49 +0800</pubDate>
+    <lastBuildDate>Sat, 07 Sep 2019 11:42:49 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>LeetCode21</title>
+        <description>&lt;p&gt;LeetCode 21题的分析和总结：Merge Two Sorted Lists
+链表的合并。
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;LeetCode 18. 4Sum&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Merge two sorted linked lists and
+return it as a new list. 
+The new list should be made 
+by splicing together the nodes of 
+the first two lists.
+
+Example:
+
+Input: 1-&amp;gt;2-&amp;gt;4, 1-&amp;gt;3-&amp;gt;4
+Output: 1-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;4
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;合并单链表
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+	ListNode head = new ListNode(-1);
+	ListNode tmp = head;
+	while (l1 != null || l2 != null) {
+		int l1v = l1 != null ? l1.val : Integer.MAX_VALUE;
+		int l2v = l2 != null ? l2.val : Integer.MAX_VALUE;
+		if (l1v &amp;lt; l2v) {
+			tmp.next = new ListNode(l1v);
+			l1 = l1.next;
+		} else {
+			tmp.next = new ListNode(l2v);
+			l2 = l2.next;
+		}
+		tmp = tmp.next;
+	}
+	return head.next;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Fri, 16 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/16/leetcode21/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode21/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>JDK7的新特性1 ForkJoinPool</title>
@@ -182,9 +240,9 @@ join()：等待该任务的处理线程处理完毕，获得返回值。&lt;/p&g
 在Java 8中, 新增加了一个包含50个方法左右的类: CompletableFuture，提供了非常强大的Future的扩展功能，可以帮助我们简化异步编程的复杂性，提供了函数式编程的能力，可以通过回调的方式处理计算结果，并且提供了转换和组合CompletableFuture的方法。&lt;/p&gt;
 
 </description>
-        <pubDate>Wed, 14 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/14/jdk-day1/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/14/jdk-day1/</guid>
+        <pubDate>Thu, 15 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/15/day5/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/15/day5/</guid>
         
         <category>JDK</category>
         
@@ -1355,168 +1413,6 @@ System.out.println(&quot;ints sum is:&quot; + ints.stream().reduce(0, (sum, item
         <pubDate>Sun, 11 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/11/day2/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/11/day2/</guid>
-        
-        <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>JDK8的新特性1</title>
-        <description>&lt;p&gt;JDK8的新特性：
-  1.Default Methods for Interfaces&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Lambda exxpressions&lt;/li&gt;
-  &lt;li&gt;一些常见的Lamdba的使用方式
-&lt;!--more--&gt;
-JDK8的第一个新特性，接口中可以通过default关键字来定义方法的默认行为。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;interface Formula {
-    double calculate(int a);
-    default double sqrt(int a) {
-        return Math.sqrt(a);
-    }
-}
-Formula formula = new Formula() {
-    @Override
-    public double calculate(int a) {
-        return sqrt(a * 100);
-    }
-};
-
-formula.calculate(100);     // 100.0
-formula.sqrt(16);// 4.0     
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;JDK8的第二个特性就是Lambda表达式。为了替换匿名的类，Java8支持了一个更加短的语法糖：lambda表达式。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List&amp;lt;String&amp;gt; names = Arrays.asList(&quot;peter&quot;, &quot;anna&quot;, &quot;mike&quot;, &quot;xenia&quot;);
-
-Collections.sort(names, new Comparator&amp;lt;String&amp;gt;() {
-    @Override
-    public int compare(String a, String b) {
-        return b.compareTo(a);
-    }
-});
-
-//lambda 表达式
-Collections.sort(names,(String a,String b)-&amp;gt;{
-  return b.compareTo(a);
-});
-
-// lambda short
-Collections.sort(names,(String a,String b)-&amp;gt; b.compareTo(a));
-
-//lambda shorter
-Collections.sort(names,(a,b)-&amp;gt; b.compareTo(a));
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;如图所示，那么什么是functional interface？
-functional interface 函数式接口，当然首先是一个接口，然后就是在这个接口里面只能有一个抽象方法。这种类型的接口也称为SAM接口，即Single Abstract Method interfaces。&lt;/p&gt;
-
-&lt;p&gt;1.函数式接口里允许定义默认方法：
-2.函数式接口里允许定义静态方法：
-3.函数式接口里允许定义java.lang.Object里的public方法，代码类似：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@FunctionalInterface
-	interface Converter&amp;lt;F, T&amp;gt; {
-	    T convert(F from);
-	    boolean equals(Object obj);
-
-	}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;4.函数式接口里允许子接口继承多个父接口，但每个父接口中都只能存在一个抽象方法，且必须的相同的抽象方法。代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;interface PConverter1&amp;lt;F, T&amp;gt; {
-   T convert(F from);
-}
-
-interface PConverter2&amp;lt;F, T&amp;gt; {
-   T convert(F from);
-}
-
-@FunctionalInterface
-interface Converter&amp;lt;F, T&amp;gt; extends PConverter1, PConverter2{
-    boolean equals(Object obj);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;另外，Java 8 enables you to pass references of methods or constructors via the :: keyword. The above example shows how to reference a static method. But we can also reference object methods:
-Java8 支持:: 操作，代表着一种对方法的调用&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//举例1：静态方法的使用
-Converter&amp;lt;String, Integer&amp;gt; converter = Integer::valueOf;
-Integer converted = converter.convert(&quot;123&quot;);
-System.out.println(converted);   // 123
-
-//举例2：普通方法的使用
-class Something {
-    String startsWith(String s) {
-        return String.valueOf(s.charAt(0));
-    }
-}
-Something something = new Something();
-Converter&amp;lt;String, String&amp;gt; converter = something::startsWith;
-String converted = converter.convert(&quot;Java&quot;);
-System.out.println(converted);    // &quot;J&quot;
-
-//举例3：new 方法的使用
-
-class Person {
-    String firstName;
-    Person() {}
-
-    Person(String firstName) {
-        this.firstName = firstName;
-    }
-}
-
-interface PersonFactory&amp;lt;P extends Person&amp;gt; {
-    P create(String firstName);
-}
-
-//总感觉这样写的话，会被打死！首先省掉了一个匿名的实现PersonFactory的匿名类，然后省掉了匿名类调用create的方法，最终直接写的是create方法的实现，Person的构建方法。
-
-PersonFactory&amp;lt;Person&amp;gt; personFactory = Person::new;
-Person person = personFactory.create(&quot;Peter&quot;);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;接触了Lamdba的使用方式，经常会在 Google Guava 的jar中使用的一些常见的lamdba用法如下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Predicate&amp;lt;String&amp;gt; predicate = (s) -&amp;gt; s.length() &amp;gt; 0;
-predicate.test(&quot;foo&quot;);              // true
-predicate.negate().test(&quot;foo&quot;);     // false
-Predicate&amp;lt;Boolean&amp;gt; nonNull = Objects::nonNull;
-Predicate&amp;lt;Boolean&amp;gt; isNull = Objects::isNull;
-Predicate&amp;lt;String&amp;gt; isEmpty = String::isEmpty;
-Predicate&amp;lt;String&amp;gt; isNotEmpty = isEmpty.negate();
-
-Function&amp;lt;String, Integer&amp;gt; toInteger = Integer::valueOf;
-Function&amp;lt;String, String&amp;gt; backToString = toInteger.andThen(String::valueOf);
-backToString.apply(&quot;123&quot;);     // &quot;123&quot;
-
-
-Supplier&amp;lt;Person&amp;gt; personSupplier = Person::new;
-personSupplier.get();   // new Person
-
-Consumer&amp;lt;Person&amp;gt; greeter = (p) -&amp;gt; System.out.println(&quot;Hello, &quot; + p.firstName);
-greeter.accept(new Person(&quot;Luke&quot;, &quot;Skywalker&quot;));
-
-Comparator&amp;lt;Person&amp;gt; comparator = (p1, p2) -&amp;gt; p1.firstName.compareTo(p2.firstName);
-Person p1 = new Person(&quot;John&quot;, &quot;Doe&quot;);
-Person p2 = new Person(&quot;Alice&quot;, &quot;Wonderland&quot;);
-comparator.compare(p1, p2);             // &amp;gt; 0
-comparator.reversed().compare(p1, p2);  // &amp;lt; 0
-
-
-Optional&amp;lt;String&amp;gt; optional = Optional.of(&quot;bam&quot;);
-optional.isPresent();           // true
-optional.get();                 // &quot;bam&quot;
-optional.orElse(&quot;fallback&quot;);    // &quot;bam&quot;
-optional.ifPresent((s) -&amp;gt; System.out.println(s.charAt(0)));     // &quot;b&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sat, 10 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/10/jdk-day0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/10/jdk-day0/</guid>
         
         <category>JDK</category>
         

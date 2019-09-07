@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>编码编不下去了怎么办？ - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode21 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/07/netty/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/16/leetcode21/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#JDK" title="JDK">JDK</a>
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>编码编不下去了怎么办？</h1>
+                    <h1>LeetCode21</h1>
                     
                     
-                    <h2 class="subheading">认知问题</h2>
+                    <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 7, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 16, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,55 +209,52 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>How to program when you don’t feel like it
-  不想干的时候怎么办？
+				<p>LeetCode 21题的分析和总结：Merge Two Sorted Lists
+链表的合并。
 <!--more--></p>
 
-<p>I recently well and truly “hit the wall” when it came to coding.
-Every time I sat down to code, I felt stuck, like I wasn’t making any progress at all.
-I was tired, de-motivated and dealing with headaches.
-我很累，没有动力去处理头痛问题。
-Any will to code I had previously had seemed completely gone and
-when I finally got around to programming I only did the bare minimum.最低限度。</p>
+<p>LeetCode 18. 4Sum</p>
 
-<p>Here I was on day 52 of my 100 days of code and I didn’t want to break my streak,
-but there was nothing but frustration every time I sat down to program.
-After a few days of this, I decided it wasn’t a sustainable solution, it was costing me more than than I was gaining.
-Something had to change.
-Here are some things that helped get me back on track.</p>
+<p>描述：</p>
 
-<p>If you find yourself completely and utterly stuck on whatever you’re working with, don’t try to force it.
-You’re more likely to produce a mess that you will dread having to work with next time and
-you end up in a self reinforcing loop of shitty days.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Merge two sorted linked lists and
+return it as a new list. 
+The new list should be made 
+by splicing together the nodes of 
+the first two lists.
 
-<p>Maybe you’ve been putting off this cool tutorial or
-there’s a few easy challenges on websites such as hackerrank, codewars or kattis that you can do.
-It doesn’t really matter what you do, but it needs to be easy and quick.
-It will boost your confidence in your programming skills and give you some much needed wins.
-它将增强您对编程技巧的信心，并为您提供一些急需的胜利。</p>
+Example:
 
-<p>You can also go back to the documentation or
-see if you can find some tutorials on your problem.
-Sometimes you need to go back to basic and maybe do a few exercises on the concepts involved in your project.
-回头查看教程或者基础的内容</p>
+Input: 1-&gt;2-&gt;4, 1-&gt;3-&gt;4
+Output: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4
 
-<p>Stay here until you feel comfortable cracking on with the thing that was causing you trouble.
-If you find yourself easily distracted, try using the pomodoro technique.
-It’s basically 25 min of focused work and a 5 minute break you repeat until you have reached your goal .
-可以尝试番茄工作法</p>
+</code></pre></div></div>
 
-<p>The most important thing is progress, especially if it is for something like 100DaysOfCode,
-but just learning in general.
-Not every day is going to be equally good, but you decide how bad a bad day is.
-So on bad days, stick to small achievable goals.
-Gain that confidence and motivation back.
-重要的是保持confidence和motivation</p>
+<p>思路：</p>
 
-<p>It took me a few days of solving progressively more difficult problems in the programming language I know best,
-before I felt like going back to my project. It took me 15 minutes to find and fix something that had caused me trouble for 3 days. 😅</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>合并单链表
+</code></pre></div></div>
 
-<p>Hope some of these tips were helpful. Feel free to reach out on Twitter or comment with feedback, it’s much appreciated.
-Thank you for reading ❤️</p>
+<p>代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+	ListNode head = new ListNode(-1);
+	ListNode tmp = head;
+	while (l1 != null || l2 != null) {
+		int l1v = l1 != null ? l1.val : Integer.MAX_VALUE;
+		int l2v = l2 != null ? l2.val : Integer.MAX_VALUE;
+		if (l1v &lt; l2v) {
+			tmp.next = new ListNode(l1v);
+			l1 = l1.next;
+		} else {
+			tmp.next = new ListNode(l2v);
+			l2 = l2.next;
+		}
+		tmp = tmp.next;
+	}
+	return head.next;
+}
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -265,19 +262,12 @@ Thank you for reading ❤️</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/06/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码（五）红黑树的删除">
+                        <a href="/2019/08/15/day5/" data-toggle="tooltip" data-placement="top" title="JDK7的新特性1 ForkJoinPool">
                         Previous<br>
-                        <span>沉下心来分析HashMap的源码（五）红黑树的删除</span>
+                        <span>JDK7的新特性1 ForkJoinPool</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/09/datastruct/" data-toggle="tooltip" data-placement="top" title="树形数据结构">
-                        Next<br>
-                        <span>树形数据结构</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -386,8 +376,8 @@ Thank you for reading ❤️</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/07/netty";
-    var disqus_url = "http://localhost:4000/2019/08/07/netty/";
+    var disqus_identifier = "/2019/08/16/ leetcode21";
+    var disqus_url = "http://localhost:4000/2019/08/16/leetcode21/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -5,9 +5,488 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 08 Sep 2019 10:14:29 +0800</pubDate>
-    <lastBuildDate>Sun, 08 Sep 2019 10:14:29 +0800</lastBuildDate>
+    <pubDate>Sun, 08 Sep 2019 17:29:13 +0800</pubDate>
+    <lastBuildDate>Sun, 08 Sep 2019 17:29:13 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>并发知识梳理：2. Lock</title>
+        <description>&lt;p&gt;java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;lock&quot;&gt;Lock&lt;/h2&gt;
+
+&lt;p&gt;Lock接口和Condition接口的均为锁相关的两个接口，具体的说明：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Lock implementations provide more extensive locking operations than can be obtained using synchronized methods and statements. They allow more flexible structuring, may have quite different properties, and may support multiple associated Condition objects.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A lock is a tool for controlling access to a shared resource by multiple threads. Commonly, a lock provides exclusive access to a shared resource: only one thread at a time can acquire the lock and all access to the shared resource requires that the lock be acquired first. However, some locks may allow concurrent access to a shared resource, such as the read lock of a ReadWriteLock.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;其声明的接口为：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface Lock {
+
+    void lock();
+    void lockInterruptibly() throws InterruptedException;
+    boolean tryLock();
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    void unlock();
+
+    /**
+     Returns a new Condition instance that is bound to this Lock instance.
+     Before waiting on the condition the lock must be held by the current thread.
+     A call to Condition.await() will atomically release the lock before waiting 
+     and re-acquire the lock before the wait returns.
+     */
+    Condition newCondition();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Condition的实例绑定在Lock实例上，只有当前的线程拿到了锁以后，才能够调用Condition的wait方法。调用了condition的await()方法，会自动的释放锁。wait结束以后，会重新的获得这个锁。类似synchronized里面 object.wait()方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;锁的实现的基础aqs&quot;&gt;锁的实现的基础：AQS&lt;/h2&gt;
+
+&lt;p&gt;说起来锁的实现就必须要说：AQS。AQS是用来构建锁和其他同步组件的基础框架，它也是Java三大并发工具类（CountDownLatch、CyclicBarrier、Semaphore）的基础。ReentrantLock，甚至BlockingQueue也是基于它的实现，可以说是非常重要了。&lt;/p&gt;
+
+&lt;p&gt;简单介绍一下，AQS其实就是一个类，全称是AbstractQueuedSynchronizer，队列同步器。&lt;/p&gt;
+
+&lt;p&gt;想要了解AQS，那就先仔细的阅读DOC。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Provides a framework for implementing blocking locks and related synchronizers (semaphores, events, etc) that rely on first-in-first-out (FIFO) wait queues. This class is designed to be a useful basis for most kinds of synchronizers that rely on a single atomic int value to represent state. Subclasses must define the protected methods that change this state, and which define what that state means in terms of this object being acquired or released. Given these, the other methods in this class carry out all queuing and blocking mechanics. Subclasses can maintain other state fields, but only the atomically updated int value manipulated using methods getState(), setState(int) and compareAndSetState(int, int) is tracked with respect to synchronization.
+依赖FIFO的等待队列，实现了一个针对阻塞锁和同步器的框架。
+使用一个 atomic int value 来标识状态。
+
+Subclasses should be defined as non-public internal helper classes that are used to implement the synchronization properties of their enclosing class. Class AbstractQueuedSynchronizer does not implement any synchronization interface. Instead it defines methods such as acquireInterruptibly(int) that can be invoked as appropriate by concrete locks and related synchronizers to implement their public methods.
+子类一般的采用非public的内部类的形式来实现需要满足同步特性的方法。
+
+This class supports either or both a default exclusive mode and a shared mode. When acquired in exclusive mode, attempted acquires by other threads cannot succeed. Shared mode acquires by multiple threads may (but need not) succeed. This class does not &quot;understand&quot; these differences except in the mechanical sense that when a shared mode acquire succeeds, the next waiting thread (if one exists) must also determine whether it can acquire as well. Threads waiting in the different modes share the same FIFO queue. Usually, implementation subclasses support only one of these modes, but both can come into play for example in a ReadWriteLock. Subclasses that support only exclusive or only shared modes need not define the methods supporting the unused mode.
+
+这个类提供了两种模式：独占和共享。一般来说子类只使用一种模式，
+但是ReadWriteLock是两种模式共存的。
+
+This class defines a nested AbstractQueuedSynchronizer.ConditionObject class that can be used as a Condition implementation by subclasses supporting exclusive mode for which method isHeldExclusively() reports whether synchronization is exclusively held with respect to the current thread, method release(int) invoked with the current getState() value fully releases this object, and acquire(int), given this saved state value, eventually restores this object to its previous acquired state. No AbstractQueuedSynchronizer method otherwise creates such a condition, so if this constraint cannot be met, do not use it. The behavior of AbstractQueuedSynchronizer.ConditionObject depends of course on the semantics of its synchronizer implementation.
+这个类还提供了一个Condition类。
+
+This class provides inspection, instrumentation, and monitoring methods for the internal queue, as well as similar methods for condition objects. These can be exported as desired into classes using an AbstractQueuedSynchronizer for their synchronization mechanics.
+
+Serialization of this class stores only the underlying atomic integer maintaining state, so deserialized objects have empty thread queues. Typical subclasses requiring serializability will define a readObject method that restores this to a known initial state upon deserialization.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;阅读了DOC有一个大致的了解，我们还是看源码比较的利索。AQS的成员变量有：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private transient volatile Node head;
+
+    private transient volatile Node tail;
+
+    private volatile int state;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;AQS中主要维护了state（锁状态的表示）和一个可阻塞的等待队列。
+state是临界资源，也是锁的描述。表示有多少线程已经获取了锁。&lt;/p&gt;
+
+&lt;p&gt;关于state有一个更改的CAS操作：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private static final Unsafe unsafe = Unsafe.getUnsafe();
+    private static final long stateOffset;
+
+    stateOffset = unsafe.objectFieldOffset
+                (AbstractQueuedSynchronizer.class.getDeclaredField(&quot;state&quot;));
+
+    protected final boolean compareAndSetState(int expect, int update) {
+        // See below for intrinsics setup to support this
+        return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;成员变量的head ， tail 标识的是等待队列（也称之为 CHL，同步队列）的头结点和尾节点。
+CHL队列主要有链表实现，以自旋的方式获取资源，是可阻塞的先进先出的双向队列。通过自旋才做来保证节点插入和移除的原子性。获取锁失败的线程，则会被添加到队尾。&lt;/p&gt;
+
+&lt;h3 id=&quot;aqs的内部类node&quot;&gt;AQS的内部类：Node&lt;/h3&gt;
+
+&lt;p&gt;该Node代表的是 Wait queue node class。 组织形式：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      +------+  prev +-----+       +-----+
+ head |      | &amp;lt;---- |     | &amp;lt;---- |     |  tail
+      +------+       +-----+       +-----+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Node有大段的注释，我们能够了解到：
+We instead use them for blocking synchronizers, 
+but use the same basic tactic of holding some of the control information about a thread in the predecessor of its node.&lt;/p&gt;
+
+&lt;p&gt;还有其他的内容，我们结合着代码进行说明。&lt;/p&gt;
+
+&lt;p&gt;AQS的工作模式分为独占模式和共享模式，记录在节点的信息中。它还使用了模板方法设计模式，定义一个操作中算法的骨架，而将一些步骤的实现延迟到子类中。比如获取资源的方法就能很好的品味模板模式。一般地，它的实现类只实现一种模式，ReentrantLock就实现了独占模式；但也有例外，ReentrantReadAndWriteLock实现了独占模式和共享模式。下面来看Node相关源码。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //当前节点处于共享模式的标记
+        static final Node SHARED = new Node();
+       
+        //当前节点处于独占模式的标记
+        static final Node EXCLUSIVE = null;
+
+        //线程被取消了
+        static final int CANCELLED =  1;
+        //释放资源后需唤醒后继节点
+        static final int SIGNAL    = -1;
+        //等待condition唤醒
+        static final int CONDITION = -2;
+        //工作于共享锁状态，需要向后传播，
+        //比如根据资源是否剩余，唤醒后继节点
+        static final int PROPAGATE = -3;
+
+        //等待状态，有1,0,-1,-2,-3五个值。分别对应上面的值
+        volatile int waitStatus;
+
+        //前驱节点
+        volatile Node prev;
+
+        //后继节点
+        volatile Node next;
+
+        //等待锁的线程
+        volatile Thread thread;
+
+        //等待条件的下一个节点，ConditonObject中用到
+        Node nextWaiter;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;状态说明：&lt;/p&gt;
+
+&lt;p&gt;CANCELLED
+作废状态，该节点的线程由于超时，中断等原因而处于作废状态。是不可逆的，一旦处于这个状态，说明应该将该节点移除了。&lt;/p&gt;
+
+&lt;p&gt;SIGNAL
+待唤醒后继状态，当前节点的线程处于此状态，后继节点会被挂起，当前节点释放锁或取消之后必须唤醒它的后继节点。&lt;/p&gt;
+
+&lt;p&gt;CONDITION
+等待状态，表明节点对应的线程因为不满足一个条件（Condition）而被阻塞。&lt;/p&gt;
+
+&lt;h3 id=&quot;获取资源锁&quot;&gt;获取资源（锁）&lt;/h3&gt;
+
+&lt;p&gt;获取释放资源其实都是对state变量的修改，有的文章会管他叫锁，笔者更喜欢叫资源。
+获取资源的方法有acquire()，acquiredShared()。先来看acquire()，该方法只工作于独占模式。&lt;/p&gt;
+
+&lt;h4 id=&quot;acquire独占模式获取资源&quot;&gt;acquire()–独占模式获取资源&lt;/h4&gt;
+
+&lt;p&gt;aquire()：以独占模式获取资源，忽略中断（ReentrantLock.lock()中调用了这个方法）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//Acquires in exclusive mode, ignoring interrupts. 
+//Implemented by invoking at least once tryAcquire, returning on success. Otherwise the thread is queued, possibly repeatedly blocking and unblocking, invoking tryAcquire until success. 
+public final void acquire(int arg) {
+    if (!tryAcquire(arg) &amp;amp;&amp;amp;
+
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+            selfInterrupt();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;之前也提到了AQS使用了模板方法模式，其实tryAcuire()方法就是一个钩子方法。在AQS中，此方法会抛出UnsupportedOperationException，所以需要子类去实现。tryAcquire(arg)返回false，其实就是获取锁失败的情况。这时候就调用：acquireQueued(addWaiter(Node.EXCLUSIVE), arg)&lt;/p&gt;
+
+&lt;p&gt;addWaiter()：将当前线程插入至队尾，返回在等待队列中的节点（就是处理了它的前驱后继）。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private Node addWaiter(Node mode) {
+        //把当前线程封装为node,指定资源访问模式
+        Node node = new Node(Thread.currentThread(), mode);
+
+        // Try the fast path of enq; backup to full enq on failure
+        Node pred = tail;
+        //如果tail不为空,把node插入末尾
+        if (pred != null) {
+            node.prev = pred;
+            //此时可能有其他线程插入,所以使用CAS重新判断tail
+            if (compareAndSetTail(pred, node)) {
+                pred.next = node;
+                return node;
+            }
+        }
+        //如果tail为空，说明队列还没有初始化，执行enq()
+        enq(node);
+        return node;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;CAS设置队尾：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long tailOffset;
+ tailOffset = unsafe.objectFieldOffset
+                (AbstractQueuedSynchronizer.class.getDeclaredField(&quot;tail&quot;));
+
+   /**
+     * CAS tail field. Used only by enq.
+     */
+    private final boolean compareAndSetTail(Node expect, Node update) {
+        return unsafe.compareAndSwapObject(this, tailOffset, expect, update);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Sat, 17 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/17/concurrent-3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/17/concurrent-3/</guid>
+        
+        <category>Concurrent</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>并发知识梳理：1. synchronized</title>
+        <description>&lt;p&gt;synchronized 关键字作为并发理念中，最最基础的部分，需要首先搞明白。&lt;/p&gt;
+
+&lt;p&gt;Volatile 关键字，又做了哪些工作和Synchronized 有什么不同？&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;首先还是实例代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class Producer extends Thread {
+	static final int MAXQUEUE = 5;
+	private Vector&amp;lt;String&amp;gt; messages = new Vector&amp;lt;String&amp;gt;();
+
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				putMessage();
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	private synchronized void putMessage() throws InterruptedException {
+		while (messages.size() == MAXQUEUE) {
+			wait();
+		}
+		messages.addElement(new java.util.Date().toString());
+		System.out.println(&quot;put message&quot;);
+		notify();
+		//Later, when the necessary event happens, the thread that is running it calls notify() from a block synchronized on the same object.
+	}
+
+	// Called by Consumer
+	public synchronized String getMessage() throws InterruptedException {
+		notify();
+		while (messages.size() == 0) {
+			wait();//By executing wait() from a synchronized block, a thread gives up its hold on the lock and goes to sleep.
+		}
+		String message = (String) messages.firstElement();
+		messages.removeElement(message);
+		return message;
+	}
+}
+
+class Consumer extends Thread {
+	Producer producer;
+
+	Consumer(Producer p) {
+		producer = p;
+	}
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				String message = producer.getMessage();
+				System.out.println(&quot;Got message: &quot; + message);
+				//sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String args[]) {
+		Producer producer = new Producer();
+		producer.start();
+		new Consumer(producer).start();
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Java虚拟机的运行时数据区中的堆和方法区是所有线程共享的区域，这个是加锁机制的基础：数据存储在一个公用的地方，这是为什么加锁的原因，也是可以加锁的基础。&lt;/p&gt;
+
+&lt;p&gt;Java虚拟机将锁与每个对象或类关联起来。锁就像一种特权，在任何时候只有一个线程可以“拥有”它。如果一个线程想要锁定一个特定的对象或类，它会请求JVM，在线程向JVM请求锁之后(如果锁未被持有可能很快，如果锁被持有也可能稍后，也可能永远不会)，JVM将锁提供给线程。当线程不再需要锁时，它将锁返回给JVM。&lt;/p&gt;
+
+&lt;p&gt;这个时候，就会有一个疑问，锁到底是什么？&lt;/p&gt;
+
+&lt;p&gt;对象锁：也就是类实例对象的锁。类锁实际上是作为对象锁实现的。当JVM加载类文件时，它会创建类java.lang.Class的实例。当锁定一个类时，实际上锁定了那个类的类对象。&lt;/p&gt;
+
+&lt;p&gt;在HotSpot虚拟机中，Java对象在内存中存储的布局分为3块区域：对象头、实例数据和对齐填充。对象头包含两部分，第一部分包含对象的HashCode、分代年龄、锁标志位、线程持有的锁、偏向线程ID等数据，这部分数据的长度在32位和64位虚拟机中分别为32bit和64bit，官方称为Mark World。考虑到虚拟机的空间效率，Mark World内部的数据结构是非固定的，也就是说对象头中存储的内容是不固定的，下图展示了不同状态下，对象头中存储的内容：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://7cmppq.ch.files.1drv.com/y4mH5bJLLrgVmBTfUJ_z3-ynrSM39knd9mcDHzpSE4DTGZIJdjeh48UFstIs1JD0Qat9LMxaRStoRoKtVMSw-qLqL0a-Dr4RLsjImgiP76b5so_lNdw-mpZLMR-3yR2iFfSDopIKyO_yyV5msy15_qstR5RGrln5VY-oyBEY1sQWfxMqChGvLaJM4amyaDlu_9PElfbphfFStlPpLQylV-LcQ?width=1376&amp;amp;height=372&amp;amp;cropmode=none&quot; alt=&quot;对象头存储的内容&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;当使用synchronized修饰方法或修饰语句块时(即获取对象锁或类锁时)，对象(类实例对象或类的类对象)的对象头中锁状态处于重量级锁，此时锁标志位为10，其余30bit用于存储指向互斥量(重量级锁)的指针，这里的指针，笔者理解为monitor对象的地址。&lt;/p&gt;
+
+&lt;p&gt;Java虚拟机中，synchronized支持的同步方法和同步语句都是使用monitor来实现的。&lt;strong&gt;每个对象都与一个monitor相关联，当一个线程执行到一个monitor监视下的代码块中的第一个指令时，该线程必须在引用的对象上获得一个锁，这个锁是monitor实现的&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;在HotSpot虚拟机中，monitor是由ObjectMonitor实现，使用C++编写实现，具体代码在HotSpot虚拟机源码ObjectMonitor.hpp文件中。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ObjectMonitor() {
+    _header       = NULL;
+    _count        = 0;    // 记录该线程获取锁的次数
+    _waiters      = 0,
+    _recursions   = 0;    // 锁的重入次数
+    _object       = NULL;
+    _owner        = NULL; // 指向持有ObjectMonitor对象的线程
+    _WaitSet      = NULL; // 处于wait状态的线程集合
+    _WaitSetLock  = 0 ;
+    _Responsible  = NULL ;
+    _succ         = NULL ;
+    _cxq          = NULL ;
+    FreeNext      = NULL ;
+    _EntryList    = NULL ; // 处于等待锁block状态的线程队列
+    _SpinFreq     = 0 ;
+    _SpinClock    = 0 ;
+    OwnerIsThread = 0 ;
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;当并发线程执行synchronized修饰的方法或语句块时，先进入_EntryList中，当某个线程获取到对象的monitor后，把monitor对象中的_owner变量设置为当前线程，同时monitor对象中的计数器_count加1，当前线程获取同步锁成功。&lt;/p&gt;
+
+&lt;p&gt;当synchronized修饰的方法或语句块中的线程调用wait()方法时，&lt;strong&gt;当前线程将释放持有的monitor对象，monitor对象中的_owner变量赋值为null，同时，monitor对象中的_count值减1，然后当前线程进入_WaitSet集合中等待被唤醒。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;一个线程可以多次锁定同一个对象。对于每个对象，JVM维护对象被锁定的次数的计数。未加锁的对象的计数为零。当线程第一次获得锁时，计数将增加到1。每次线程获取同一个对象上的锁时，都会增加一个计数。每次线程释放锁时，计数将被递减。当计数达到0时，锁被释放，此时其它线程可以继续请求获取锁。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;锁提供了两种主要特性：互斥（mutual exclusion） 和可见性（visibility）。互斥即一次只允许一个线程持有某个特定的锁，因此可使用该特性实现对共享数据的协调访问协议，这样，一次就只有一个线程能够使用该共享数据。&lt;/p&gt;
+
+&lt;p&gt;可见性要更加复杂一些，它必须确保释放锁之前对共享数据做出的更改对于随后获得该锁的另一个线程是可见的 —— 如果没有同步机制提供的这种可见性保证，线程看到的共享变量可能是修改前的值或不一致的值，这将会引发许多严重问题。&lt;/p&gt;
+
+&lt;p&gt;Volatile 变量具有 synchronized 的可见性特性，但是不具备原子特性。这就是说线程能够自动发现 volatile 变量的最新值。&lt;/p&gt;
+
+&lt;p&gt;一旦一个共享变量（类的成员变量、 类的静态成员变量） 被 volatile 修饰之后， 那么就具备了两层语义：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;保证了不同线程对这个变量进行读取时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。 (volatile 解决了线程间共享变量的可见性问题)。&lt;/li&gt;
+  &lt;li&gt;禁止进行指令重排序， 阻止编译器对代码的优化。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;内存可见性&quot;&gt;内存可见性&lt;/h3&gt;
+
+&lt;p&gt;要说内存的可见性，就得知道JMM（JVM的内存模型）和硬件内存架构大致的样子。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://7cocvg.ch.files.1drv.com/y4mYFPEo_uZaGWDzyWpvKyK1cUSkgtVrZucLl-Av_44-1w-HpwewW0YmxQvi689NZHYqZAe1lAj-Knv5RFl_v2kDpH9aKskfWJ8jxN74aAWOqbveBiKXkaAMklt9OQ2M_lt43LGbiMzOLbPcf2DJqae2Uj1iBE8AcLFCf5icVBuOCuB1QWTTRPkhBcZ912vHYb3gX9bYgMpnVztL1ruKbf-Ig?width=920&amp;amp;height=766&amp;amp;cropmode=none&quot; alt=&quot;JVM的内存模型&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://7cmdmw.ch.files.1drv.com/y4mHUqHQZ0hbKJDhqqpbWPeq7tSuN0mvwCEUDESuo4xDk0KAjSTvKMGDOD0kFoA-woavXsOasaKMwk3kW0OddjwYblSZ_YX8SK-CDX55xtdSOFluvjiJ8f-8ASPpc2y2nEDF2uvyxd1djcuYom2p5DUknCBUkrzNCS19Hi10dA68F2h9ETe1hCoE41Jw721mg44qvPdRfyrtxx5G41AmNzolQ?width=443&amp;amp;height=382&amp;amp;cropmode=none&quot; alt=&quot;内存模型&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://sjmzpw.ch.files.1drv.com/y4mBwlQrTVdfTSw8wqIo5KR9F9k33dsYh6vg2S3PbSHDmgx3MUCaD9CiaUmgfdUbd3UHO_s-6aDbiBSYTSwVK0jUQFrTNJcGZeDdnpGKO6qGAOZ0ORjmKT0LgF-SZ3siEr35GpyT0-zmAuL5F2E_XObf9618_o5_sEmv4rS89Mo8ZwMt6rzrxKG-qYmUFhCJzHaw7APSn_zqZF7iZRHVdUOig?width=1330&amp;amp;height=614&amp;amp;cropmode=none&quot; alt=&quot;映射&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从抽象的角度来看，JMM定义了线程和主内存之间的抽象关系：&lt;/p&gt;
+
+&lt;p&gt;线程之间的共享变量存储在主内存（Main Memory）中
+每个线程都有一个私有的本地内存（Local Memory），本地内存是JMM的一个抽象概念，并不真实存在，它涵盖了缓存、写缓冲区、寄存器以及其他的硬件和编译器优化。本地内存中存储了该线程以读/写共享变量的拷贝副本。&lt;/p&gt;
+
+&lt;p&gt;从更低的层次来说，主内存就是硬件的内存，而为了获取更好的运行速度，虚拟机及硬件系统可能会让工作内存优先存储于寄存器和高速缓存中。&lt;/p&gt;
+
+&lt;p&gt;Java内存模型中的线程的工作内存（working memory）是cpu的寄存器和高速缓存的抽象描述。而JVM的静态内存储模型（JVM内存模型）只是一种对内存的物理划分而已，它只局限在内存，而且只局限在JVM的内存。&lt;/p&gt;
+
+&lt;p&gt;说完了内存的模型以后，就必须的说一个协议：
+&lt;img src=&quot;https://sjo0gw.ch.files.1drv.com/y4muaDk9g7Gq1j1knYF4XPVM4hj37ZuZUikoecn7FIVgp6Uf8XTamzDK0961iu_1croUQaiikNAZHhzvcerDo-MfvVoCPObZyi5tJM0d6NX6tWq0xeYUnpNhLeTmH1QFIndiX7t5h7irWi2kEKbUYM0KY7YPoo2qSFHbCYwnhZAZYroabYzaaKGobjpRXhS52b6W8CvPT1JhsDk6XYjDwpgCQ?width=1412&amp;amp;height=976&amp;amp;cropmode=none&quot; alt=&quot;缓存一致性协议&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;说完了这么多的以后，Volatile是如何实现的内存可见性？
+深入来说:通过加入内存屏障和禁止重排序优化来实现的&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;对volatile变量执行写操作时,会在&lt;strong&gt;写操作后加入一条store屏障指令&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;对volatile变量执行读操作时,会在&lt;strong&gt;读操作前加入一条load屏障指令&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;通俗地讲:volatile变量在每次被线程访问时,都强迫从主内存中重读该变量的值,而当该变量发生变化时,又会强迫将最新的值刷新到主内存,这样任何时刻,不同的线程总能看到该变量的最新值&lt;/p&gt;
+
+&lt;p&gt;volatile不能保证volatile变量复合操作的原子性,解决方案如下:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;使用synchronized关键字&lt;/li&gt;
+  &lt;li&gt;使用ReentrantLock关键字(java.util.concurrent.locks包下)&lt;/li&gt;
+  &lt;li&gt;使用AtomicInterger(java.util.concurrent.atomic包下)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;但是Volatile的主要用法也不是符合操作，而是：&lt;/p&gt;
+
+&lt;p&gt;模式 #1：状态标志
+模式 #2：一次性安全发布（one-time safe publication）
+模式 #3：独立观察（independent observation）
+模式 #4：“volatile bean” 模式
+模式 #5：开销较低的读－写锁策略（存疑）&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 17 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/17/concurrent-2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/17/concurrent-2/</guid>
+        
+        <category>Concurrent</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>并发知识梳理：概述</title>
+        <description>&lt;p&gt;梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;并发的东西，涉及的比较的多，自己只能从自己所知的角度来说明，来复习。&lt;/p&gt;
+
+&lt;p&gt;从是否设计到一个JVM，还是多个JVM的角度划分：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;单机版本的并发&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;多机版本的并发&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我们首先说单机版本的并发支持，这个主要就是JDK支持的并发模型了。JDK的并发的模型：&lt;strong&gt;java.util.concurrent&lt;/strong&gt; 首先列一下需要关注的内容，然后，一个一个的梳理。&lt;/p&gt;
+
+&lt;h3 id=&quot;0-synchronizedvolatile关键字-和其相关联的waitnotify机制&quot;&gt;0. synchronized,Volatile关键字 和其相关联的wait，notify机制。&lt;/h3&gt;
+
+&lt;h3 id=&quot;1-javautilconcurrentlocks&quot;&gt;1. java.util.concurrent.locks&lt;/h3&gt;
+
+&lt;p&gt;Lock 锁，读写锁，可重入锁，Condition以及他们的实现的机制，具体的原理。&lt;/p&gt;
+
+&lt;h3 id=&quot;2-javautilconcurrentatomic&quot;&gt;2. java.util.concurrent.atomic&lt;/h3&gt;
+
+&lt;p&gt;AtomicInteger，AtomicLong，AtomicReference，AtomicIntegerArray，AtomicLongArray 等相关的内容，运用的方式，原理性的内容。&lt;/p&gt;
+
+&lt;h3 id=&quot;3-javautilconcurrentblockingqueue&quot;&gt;3. java.util.concurrent.BlockingQueue&lt;E&gt;&lt;/E&gt;&lt;/h3&gt;
+
+&lt;p&gt;在其上的ArrayBlockingQueue，ConcurrentLinkedQueue Deque等等的实现的方式&lt;/p&gt;
+
+&lt;h3 id=&quot;4-javautilconcurrentconcurrentmap&quot;&gt;4. java.util.concurrent.ConcurrentMap&lt;/h3&gt;
+
+&lt;p&gt;ConcurrentHashMap，ConcurrentSkipListMap，等等二元的数据结构&lt;/p&gt;
+
+&lt;h3 id=&quot;5-countdownlatchcyclicbarrierexchanger&quot;&gt;5. CountDownLatch，CyclicBarrier，Exchanger&lt;/h3&gt;
+
+&lt;p&gt;比较经典的并发场景&lt;/p&gt;
+
+&lt;h3 id=&quot;4-javautilconcurrentabstractexecutorservice&quot;&gt;4. java.util.concurrent.AbstractExecutorService&lt;/h3&gt;
+
+&lt;p&gt;在其上的线程池的原理：&lt;/p&gt;
+
+&lt;p&gt;java.util.concurrent.ForkJoinPool，&lt;/p&gt;
+
+&lt;p&gt;java.util.concurrent.ScheduledExecutorService，&lt;/p&gt;
+
+&lt;p&gt;java.util.concurrent.ThreadPoolExecutor  以及其关联的 Callable，Thread，CompletionService等&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 17 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/17/concurrent-1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/17/concurrent-1/</guid>
+        
+        <category>Concurrent</category>
+        
+        
+      </item>
     
       <item>
         <title>LeetCode25</title>
@@ -929,409 +1408,6 @@ public boolean isValid(String s) {
         <pubDate>Wed, 14 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/14/day4/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/14/day4/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode16，17</title>
-        <description>&lt;p&gt;LeetCode 第16，17题的分析和总结&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 16. 3Sum Closest&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
-
-Example:
-
-Given array nums = [-1, 2, 1, -4], and target = 1.
-
-The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;3Sum 变形题目，使用绝对值表示离目标值的远和近
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int threeSumClosest_copy(int[] num,int target) {
-	int result = num[0]+num[1]+num[num.length-1];
-	Arrays.parallelSort(num);
-	int small = num[0]+num[1]+num[2];
-	if(small &amp;gt;= target) return small;
-	int big = num[num.length-3]+num[num.length-2]+num[num.length-1];
-	if(big &amp;lt;= target) return big;
-
-	for (int i = 0; i &amp;lt; num.length - 2; i++) {
-    int start = i + 1, end = num.length - 1;
-    while (start &amp;lt; end) {
-        int sum = num[i] + num[start] + num[end];
-        if (sum &amp;gt; target) {
-            end--;
-        } else {
-            start++;
-        }
-        if (Math.abs(sum - target) &amp;lt; Math.abs(result - target)) {
-            result = sum;
-        }
-    }
- }
- return result;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LeetCode 17. Letter Combinations of a Phone Number&lt;/p&gt;
-
-&lt;p&gt;题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a string containing digits from 2-9 inclusive,
-return all possible letter combinations
-that the number could represent.
-
-A mapping of digit to letters
-(just like on the telephone buttons)
-is given below.
- Note that 1 does not map to any letters.
-
-Example:
-
-Input: &quot;23&quot;
-Output: [&quot;ad&quot;, &quot;ae&quot;, &quot;af&quot;, &quot;bd&quot;,
-&quot;be&quot;, &quot;bf&quot;, &quot;cd&quot;, &quot;ce&quot;, &quot;cf&quot;].
-Note:
-
-Although the above answer is in lexicographical order, your answer could be in any order you want.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;集合和排序的变种
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;String&amp;gt; letterCombinations(String digits) {
-	LinkedList&amp;lt;String&amp;gt; ans = new LinkedList&amp;lt;String&amp;gt;();
-	if(digits.isEmpty()) return ans;
-	String[] mapping = new String[] {&quot;0&quot;, &quot;1&quot;, &quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;, &quot;jkl&quot;, &quot;mno&quot;, &quot;pqrs&quot;, &quot;tuv&quot;, &quot;wxyz&quot;};
-	ans.add(&quot;&quot;);
-	for(int i =0; i&amp;lt;digits.length();i++){
-		int x = Character.getNumericValue(digits.charAt(i));
-		while(ans.peek().length()==i){
-			String t = ans.remove();
-			for(char s : mapping[x].toCharArray())
-				ans.add(t+s);
-		}
-	}
-	return ans;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里使用了迭代的思路，但是用的非常的优雅，首先是遍历给出的digits每一位的数字，
-然后利用队列或者栈的先进先出的原则，循环的遍历已经组合完成的数组，添加上后来的数据，比较的巧妙和优雅。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/13/day4/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day4/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode14,15</title>
-        <description>&lt;p&gt;LeetCode 第14,15题的分析和总结&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 14. Longest Common Prefix&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Write a function to find the longest common prefix string amongst an array of strings.
-
-If there is no common prefix, return an empty string &quot;&quot;.
-
-Example 1:
-
-Input: [&quot;flower&quot;,&quot;flow&quot;,&quot;flight&quot;]
-Output: &quot;fl&quot;
-Example 2:
-
-Input: [&quot;dog&quot;,&quot;racecar&quot;,&quot;car&quot;]
-Output: &quot;&quot;
-Explanation: There is no common prefix among the input strings.
-Note:
-
-All given inputs are in lowercase letters a-z.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;遍历寻找即可
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public String longestCommonPrefix_copy(String[] strs) {
-  if(strs == null || strs.length == 0) return &quot;&quot;;
-  if(strs.length == 1) return strs[0];
-  int from = 0;boolean flag = true;
-  int end = strs[0].length();
-  String tmp = strs[0];
-  for(;from &amp;lt; end &amp;amp;&amp;amp; flag;from++) {
-    for(int j = 1;j&amp;lt;strs.length;j++) {
-      if(from &amp;gt;= strs[j].length() || strs[j].charAt(from) != tmp.charAt(from)) {
-        flag=false;
-        from = from-1;
-        break;
-      }
-    }
-  }
-
-  return tmp.substring(0, from);
-}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LeetCode:15. 3Sum&lt;/p&gt;
-
-&lt;p&gt;题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
-
-Note:
-
-The solution set must not contain duplicate triplets.
-
-Example:
-
-Given array nums = [-1, 0, 1, 2, -1, -4],
-
-A solution set is:
-[
-  [-1, 0, 1],
-  [-1, -1, 2]
-]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先是排序，拍好了续，才能够使用“双指针的方法”，最后注意相等的值的处理
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/***
- * 关键在于nums的先排序
- * 然后两头堵的方式，from =0，end = length-1 ， 中间的sum = sumvalue- (from+end)
- * 循环的条件是先确定匹配值i（0 到 length-1），然后去（i+1，i+2，。。。length-1 中寻找from 和 end）
- */
-public List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; threeSum(int[] nums) {
-	List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; res = new ArrayList&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt;();
-	Arrays.sort(nums);
-	for (int i = 0; i &amp;lt; nums.length - 2; i++) {
-		if (i == 0 || (i &amp;gt; 0 &amp;amp;&amp;amp; nums[i] != nums[i - 1])) {
-			int from = i + 1;
-			int end = nums.length - 1;
-			int sumt = 0 - nums[i];
-			while (from &amp;lt; end) {
-				int temp = nums[from] + nums[end];
-				if (sumt == temp) {
-					res.add(Arrays.asList(nums[i], nums[from], nums[end]));
-
-					while (from &amp;lt; end &amp;amp;&amp;amp; from + 1 &amp;lt; nums.length &amp;amp;&amp;amp; nums[from] == nums[from + 1])
-						from++;
-					while (from &amp;lt; end &amp;amp;&amp;amp; end + 1 &amp;lt; nums.length &amp;amp;&amp;amp; nums[end] == nums[end + 1])
-						end--;
-
-					from++;
-					end--;
-				} else if (sumt &amp;lt; temp) {
-					end--;
-				} else {
-					from++;
-				}
-			}
-	}
-}
-	return res;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/13/day3/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day3/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode12,13</title>
-        <description>&lt;p&gt;LeetCode 第12,13题的分析和总结&lt;/p&gt;
-
-&lt;!--more--&gt;
-&lt;p&gt;第12题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
-
-Symbol       Value
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
-
-Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
-
-I can be placed before V (5) and X (10) to make 4 and 9.
-X can be placed before L (50) and C (100) to make 40 and 90.
-C can be placed before D (500) and M (1000) to make 400 and 900.
-Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
-
-Example 1:
-
-Input: 3
-Output: &quot;III&quot;
-Example 2:
-
-Input: 4
-Output: &quot;IV&quot;
-Example 3:
-
-Input: 9
-Output: &quot;IX&quot;
-Example 4:
-
-Input: 58
-Output: &quot;LVIII&quot;
-Explanation: L = 50, V = 5, III = 3.
-Example 5:
-
-Input: 1994
-Output: &quot;MCMXCIV&quot;
-Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;阿拉伯数字到古罗马数字的转化，最关键的是确定数字的范围，但是这里有一个小技巧，如果是100，那么M的值为0个，应该怎么在代码中优雅的表述尼？
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static String intToRoman(int num) {  
-
-        //1000-3000
-        String M[] = {&quot;&quot;, &quot;M&quot;, &quot;MM&quot;, &quot;MMM&quot;};
-        //100-900
-        String C[] = {&quot;&quot;, &quot;C&quot;, &quot;CC&quot;, &quot;CCC&quot;, &quot;CD&quot;, &quot;D&quot;, &quot;DC&quot;, &quot;DCC&quot;, &quot;DCCC&quot;, &quot;CM&quot;};
-        //10-90
-        String X[] = {&quot;&quot;, &quot;X&quot;, &quot;XX&quot;, &quot;XXX&quot;, &quot;XL&quot;, &quot;L&quot;, &quot;LX&quot;, &quot;LXX&quot;, &quot;LXXX&quot;, &quot;XC&quot;};
-        //0-9
-        String I[] = {&quot;&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III&quot;, &quot;IV&quot;, &quot;V&quot;, &quot;VI&quot;, &quot;VII&quot;, &quot;VIII&quot;, &quot;IX&quot;};
-        // is so beautiful
-        return M[num/1000] + C[(num%1000)/100] + X[(num%100)/10] + I[num%10];
-    }
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;第13题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
-
-Symbol       Value
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
-
-Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
-
-I can be placed before V (5) and X (10) to make 4 and 9.
-X can be placed before L (50) and C (100) to make 40 and 90.
-C can be placed before D (500) and M (1000) to make 400 and 900.
-Given a roman numeral, convert it to an integer. Input is guaranteed to be within the range from 1 to 3999.
-
-Example 1:
-
-Input: &quot;III&quot;
-Output: 3
-Example 2:
-
-Input: &quot;IV&quot;
-Output: 4
-Example 3:
-
-Input: &quot;IX&quot;
-Output: 9
-Example 4:
-
-Input: &quot;LVIII&quot;
-Output: 58
-Explanation: L = 50, V= 5, III = 3.
-Example 5:
-
-Input: &quot;MCMXCIV&quot;
-Output: 1994
-Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;古罗马数字到的阿拉伯数字转化
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int romanToInt(String s) {
-
-  if(s == null || s.length() == 0) return 0;
-	int len = s.length();
-	HashMap&amp;lt;Character,Integer&amp;gt; map = new HashMap&amp;lt;Character,Integer&amp;gt;();
-	 map.put('I',1);
-	 map.put('V',5);
-	 map.put('X',10);
-	 map.put('L',50);
-	 map.put('C',100);
-	 map.put('D',500);
-	 map.put('M',1000);
-
-	 int result = map.get(s.charAt(len -1));
-	 int pivot = result;
-	 for(int i = len -2; i&amp;gt;= 0;i--){
-			 int curr = map.get(s.charAt(i));
-			 if(curr &amp;gt;=  pivot){
-			      result += curr;
-			 }else{
-			       result -= curr;
-			 }
-	 		 pivot = curr;
-	 }
-	return result;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Tue, 13 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/13/day2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/13/day2/</guid>
         
         <category>LeetCode</category>
         

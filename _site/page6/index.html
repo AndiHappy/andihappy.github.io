@@ -193,6 +193,113 @@
             ">
     			
 <div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/10/activit20/">
+        <h2 class="post-title">
+            activiti和设计模式(2.1)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti的每一个Command执行过程中的设计模式
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：<strong>Interpreter pattern</strong>.</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：Interpreter pattern.
+
+
+首先是启动的代码：
+//调用方：
+ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variablesObject);      
+
+...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 10, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/08/activit2/">
+        <h2 class="post-title">
+            activiti和设计模式(2)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中server的实现包含的设计模式
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。
+
+
+
+activity服务的实现，很有自己的特色，show code:
+
+public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
+  public ProcessInsta...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 8, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/02/activit1/">
+        <h2 class="post-title">
+            activiti和设计模式(1)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            通过学习activiti的源码，从设计模式这个角度去分析这个框架，熟悉源码，学习其中的设计思想
+        </h3>
+        
+        <div class="post-content-preview">
+        <ol>
+  <li>activiti的源码的主要的架构</li>
+  <li>activiti前两层包含的设计模式</li>
+</ol>
+
+<p>从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   <br />
+一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！</p>
+
+<p>另外的一个原因，在于activiti的主设计人员已经经历了一次设计jbpmn，可能被坑过一次了，所以在第二次设计的时候，更加的完善。</p>
+
+<p>至于为什么选择了从设计模式分析activiti，主要是想提供一个另外的角度，看看能不能学到点大神设计框架的精髓。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            
+  activiti的源码的主要的架构
+  activiti前两层包含的设计模式
+
+
+从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   
+一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！
+
+另外的一个原因，在于activi...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 2, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/">
         <h2 class="post-title">
             再次出发
@@ -296,6 +403,12 @@
                             
                                 <a href="/tags/#LeetCode" title="LeetCode" rel="12">
                                     LeetCode
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#Concurrent" title="Concurrent" rel="3">
+                                    Concurrent
                                 </a>
                             
                         

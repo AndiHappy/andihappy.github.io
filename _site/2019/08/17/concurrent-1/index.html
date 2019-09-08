@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode12,13 - 飞翔的面包 | FlyBread Blog</title>
+    <title>并发知识梳理：概述 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/13/day2/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/17/concurrent-1/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
+                        <a class="tag" href="/tags/#Concurrent" title="Concurrent">Concurrent</a>
                         
                     </div>
-                    <h1>LeetCode12,13</h1>
+                    <h1>并发知识梳理：概述</h1>
                     
                     
-                    <h2 class="subheading">算法分析和总结</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by zhailzh on August 13, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 17, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,156 +209,60 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 第12,13题的分析和总结</p>
+				<p>梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。</p>
 
 <!--more-->
-<p>第12题目描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+<p>并发的东西，涉及的比较的多，自己只能从自己所知的角度来说明，来复习。</p>
 
-Symbol       Value
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+<p>从是否设计到一个JVM，还是多个JVM的角度划分：</p>
 
-Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+<blockquote>
+  <ol>
+    <li>单机版本的并发</li>
+  </ol>
+</blockquote>
 
-I can be placed before V (5) and X (10) to make 4 and 9.
-X can be placed before L (50) and C (100) to make 40 and 90.
-C can be placed before D (500) and M (1000) to make 400 and 900.
-Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
+<blockquote>
+  <ol>
+    <li>多机版本的并发</li>
+  </ol>
+</blockquote>
 
-Example 1:
+<p>我们首先说单机版本的并发支持，这个主要就是JDK支持的并发模型了。JDK的并发的模型：<strong>java.util.concurrent</strong> 首先列一下需要关注的内容，然后，一个一个的梳理。</p>
 
-Input: 3
-Output: "III"
-Example 2:
+<h3 id="0-synchronizedvolatile关键字-和其相关联的waitnotify机制">0. synchronized,Volatile关键字 和其相关联的wait，notify机制。</h3>
 
-Input: 4
-Output: "IV"
-Example 3:
+<h3 id="1-javautilconcurrentlocks">1. java.util.concurrent.locks</h3>
 
-Input: 9
-Output: "IX"
-Example 4:
+<p>Lock 锁，读写锁，可重入锁，Condition以及他们的实现的机制，具体的原理。</p>
 
-Input: 58
-Output: "LVIII"
-Explanation: L = 50, V = 5, III = 3.
-Example 5:
+<h3 id="2-javautilconcurrentatomic">2. java.util.concurrent.atomic</h3>
 
-Input: 1994
-Output: "MCMXCIV"
-Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
-</code></pre></div></div>
+<p>AtomicInteger，AtomicLong，AtomicReference，AtomicIntegerArray，AtomicLongArray 等相关的内容，运用的方式，原理性的内容。</p>
 
-<p>思路：</p>
+<h3 id="3-javautilconcurrentblockingqueue">3. java.util.concurrent.BlockingQueue<E></E></h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>阿拉伯数字到古罗马数字的转化，最关键的是确定数字的范围，但是这里有一个小技巧，如果是100，那么M的值为0个，应该怎么在代码中优雅的表述尼？
-</code></pre></div></div>
+<p>在其上的ArrayBlockingQueue，ConcurrentLinkedQueue Deque等等的实现的方式</p>
 
-<p>代码：</p>
+<h3 id="4-javautilconcurrentconcurrentmap">4. java.util.concurrent.ConcurrentMap</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static String intToRoman(int num) {  
+<p>ConcurrentHashMap，ConcurrentSkipListMap，等等二元的数据结构</p>
 
-        //1000-3000
-        String M[] = {"", "M", "MM", "MMM"};
-        //100-900
-        String C[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
-        //10-90
-        String X[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
-        //0-9
-        String I[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
-        // is so beautiful
-        return M[num/1000] + C[(num%1000)/100] + X[(num%100)/10] + I[num%10];
-    }
+<h3 id="5-countdownlatchcyclicbarrierexchanger">5. CountDownLatch，CyclicBarrier，Exchanger</h3>
 
-</code></pre></div></div>
+<p>比较经典的并发场景</p>
 
-<p>第13题目描述：</p>
+<h3 id="4-javautilconcurrentabstractexecutorservice">4. java.util.concurrent.AbstractExecutorService</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+<p>在其上的线程池的原理：</p>
 
-Symbol       Value
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+<p>java.util.concurrent.ForkJoinPool，</p>
 
-Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+<p>java.util.concurrent.ScheduledExecutorService，</p>
 
-I can be placed before V (5) and X (10) to make 4 and 9.
-X can be placed before L (50) and C (100) to make 40 and 90.
-C can be placed before D (500) and M (1000) to make 400 and 900.
-Given a roman numeral, convert it to an integer. Input is guaranteed to be within the range from 1 to 3999.
+<p>java.util.concurrent.ThreadPoolExecutor  以及其关联的 Callable，Thread，CompletionService等</p>
 
-Example 1:
-
-Input: "III"
-Output: 3
-Example 2:
-
-Input: "IV"
-Output: 4
-Example 3:
-
-Input: "IX"
-Output: 9
-Example 4:
-
-Input: "LVIII"
-Output: 58
-Explanation: L = 50, V= 5, III = 3.
-Example 5:
-
-Input: "MCMXCIV"
-Output: 1994
-Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
-</code></pre></div></div>
-
-<p>思路：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>古罗马数字到的阿拉伯数字转化
-</code></pre></div></div>
-
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int romanToInt(String s) {
-
-  if(s == null || s.length() == 0) return 0;
-	int len = s.length();
-	HashMap&lt;Character,Integer&gt; map = new HashMap&lt;Character,Integer&gt;();
-	 map.put('I',1);
-	 map.put('V',5);
-	 map.put('X',10);
-	 map.put('L',50);
-	 map.put('C',100);
-	 map.put('D',500);
-	 map.put('M',1000);
-
-	 int result = map.get(s.charAt(len -1));
-	 int pivot = result;
-	 for(int i = len -2; i&gt;= 0;i--){
-			 int curr = map.get(s.charAt(i));
-			 if(curr &gt;=  pivot){
-			      result += curr;
-			 }else{
-			       result -= curr;
-			 }
-	 		 pivot = curr;
-	 }
-	return result;
-}
-</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -366,17 +270,17 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/12/day2/" data-toggle="tooltip" data-placement="top" title="LeetCode10">
+                        <a href="/2019/08/16/leetcode25/" data-toggle="tooltip" data-placement="top" title="LeetCode25">
                         Previous<br>
-                        <span>LeetCode10</span>
+                        <span>LeetCode25</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2019/08/13/day3/" data-toggle="tooltip" data-placement="top" title="LeetCode14,15">
+                        <a href="/2019/08/17/concurrent-2/" data-toggle="tooltip" data-placement="top" title="并发知识梳理：1. synchronized">
                         Next<br>
-                        <span>LeetCode14,15</span>
+                        <span>并发知识梳理：1. synchronized</span>
                         </a>
                     </li>
                     
@@ -493,8 +397,8 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/13/day2";
-    var disqus_url = "http://localhost:4000/2019/08/13/day2/";
+    var disqus_identifier = "/2019/08/17/concurrent-1";
+    var disqus_url = "http://localhost:4000/2019/08/17/concurrent-1/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

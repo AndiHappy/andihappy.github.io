@@ -324,6 +324,8 @@ join()：等待该任务的处理线程处理完毕，获得返回值。</p>
 
 <p>submit() 和 fork() 其实没有本质区别，只是提交对象变成了 submitting queue 而已（还有一些同步，初始化的操作）。submitting queue 和其他 work queue 一样，是工作线程”窃取“的对象，因此当其中的任务被一个工作线程成功窃取时，就意味着提交的任务真正开始进入执行阶段。</p>
 
+<p>更加详细的研究：http://gee.cs.oswego.edu/dl/papers/fj.pdf</p>
+
 <h3 id="forkjoinpool与threadpoolexecutor区别">ForkJoinPool与ThreadPoolExecutor区别：</h3>
 
 <p>1.ForkJoinPool中的每个线程都会有一个队列，而ThreadPoolExecutor只有一个队列，并根据queue类型不同，细分出各种线程池</p>
@@ -468,7 +470,7 @@ join()：等待该任务的处理线程处理完毕，获得返回值。</p>
                             
         				
                             
-                				<a href="/tags/#LeetCode" title="LeetCode" rel="8">
+                				<a href="/tags/#LeetCode" title="LeetCode" rel="10">
                                     LeetCode
                                 </a>
                             

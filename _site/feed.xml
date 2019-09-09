@@ -5,9 +5,239 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 09 Sep 2019 09:30:09 +0800</pubDate>
-    <lastBuildDate>Mon, 09 Sep 2019 09:30:09 +0800</lastBuildDate>
+    <pubDate>Mon, 09 Sep 2019 21:26:20 +0800</pubDate>
+    <lastBuildDate>Mon, 09 Sep 2019 21:26:20 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>LeetCode28   Implement strStr()</title>
+        <description>&lt;p&gt;LeetCode 28 题的分析和总结：  Implement strStr()&lt;/p&gt;
+
+&lt;p&gt;字符串操作&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 28. Implement strStr()&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Implement strStr().
+
+Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+
+Example 1:
+
+Input: haystack = &quot;hello&quot;, needle = &quot;ll&quot;
+Output: 2
+Example 2:
+
+Input: haystack = &quot;aaaaa&quot;, needle = &quot;bba&quot;
+Output: -1
+Clarification:
+
+What should we return when needle is an empty string? This is a great question to ask during an interview.
+
+For the purpose of this problem, we will return 0 when needle is an empty string. This is consistent to C's strstr() and Java's indexOf().
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;needle 为null的时候，返回的是0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int strStr(String haystack, String needle) {
+		if (needle == null || &quot;&quot;.equals(needle))
+			return 0;
+		char[] haystackc = haystack.toCharArray();
+		char[] neddlec = needle.toCharArray();
+		for (int i = 0; i &amp;lt; haystackc.length - neddlec.length + 1; i++) {
+			char hc = haystackc[i];
+			if (hc == neddlec[0]) {
+				if (meetCondition(haystackc, i + 1, neddlec, 1)) {
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+private boolean meetCondition(char[] haystackc, int i, char[] neddlec, int j) {
+	for (; j &amp;lt; neddlec.length &amp;amp;&amp;amp; i &amp;lt; haystackc.length; j++, i++) {
+		if (neddlec[j] != haystackc[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;JAVA 的JDK里面的 String的API方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int indexOf(String str) {
+        return indexOf(str, 0);
+    }
+
+	public int indexOf(String str, int fromIndex) {
+        return indexOf(value, 0, value.length,
+                str.value, 0, str.value.length, fromIndex);
+    }
+
+	 /**
+     * Code shared by String and StringBuffer to do searches. The
+     * source is the character array being searched, and the target
+     * is the string being searched for.
+     *
+     * @param   source       the characters being searched.
+     * @param   sourceOffset offset of the source string.
+     * @param   sourceCount  count of the source string.
+     * @param   target       the characters being searched for.
+     * @param   targetOffset offset of the target string.
+     * @param   targetCount  count of the target string.
+     * @param   fromIndex    the index to begin searching from.
+     */
+    static int indexOf(char[] source, int sourceOffset, int sourceCount,
+            char[] target, int targetOffset, int targetCount,
+            int fromIndex) {
+        if (fromIndex &amp;gt;= sourceCount) {
+            return (targetCount == 0 ? sourceCount : -1);
+        }
+        if (fromIndex &amp;lt; 0) {
+            fromIndex = 0;
+        }
+        if (targetCount == 0) {
+            return fromIndex;
+        }
+
+        char first = target[targetOffset];
+        int max = sourceOffset + (sourceCount - targetCount);
+
+        for (int i = sourceOffset + fromIndex; i &amp;lt;= max; i++) {
+            /* Look for first character. */
+            if (source[i] != first) {
+                while (++i &amp;lt;= max &amp;amp;&amp;amp; source[i] != first);
+            }
+
+            /* Found first character, now look at the rest of v2 */
+            if (i &amp;lt;= max) {
+                int j = i + 1;
+                int end = j + targetCount - 1;
+                for (int k = targetOffset + 1; j &amp;lt; end &amp;amp;&amp;amp; source[j]
+                        == target[k]; j++, k++);
+
+                if (j == end) {
+                    /* Found whole string. */
+                    return i - sourceOffset;
+                }
+            }
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;总感觉JDK的代码写的比较的优雅一些，到底是哪里比较好尼？
+首先是参数名称的定义：
+char[] source 
+char[] target 
+这两个就不说了，关键是sourceOffset，sourceCount，targetOffset，targetCount和fromIndex 定义的比较的赏心悦目。
+另外就是整个算法的逻辑比较清晰，首先异常处理，然后确定首次的匹配开始i，然后i之后的判断。还有一点就是缩写的使用：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; while (++i &amp;lt;= max &amp;amp;&amp;amp; source[i] != first);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for (int k = targetOffset + 1; j &amp;lt; end &amp;amp;&amp;amp; source[j]== target[k]; j++, k++);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/18/leetcode28/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode28/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode27  Remove Element</title>
+        <description>&lt;p&gt;LeetCode 27 题的分析和总结： Remove Element&lt;/p&gt;
+
+&lt;p&gt;数组操作&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 26.  Remove Element&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums and a value val, remove all instances of that value in-place and return the new length.
+
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+
+The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+
+Example 1:
+
+Given nums = [3,2,2,3], val = 3,
+
+Your function should return length = 2, with the first two elements of nums being 2.
+
+It doesn't matter what you leave beyond the returned length.
+Example 2:
+
+Given nums = [0,1,2,2,3,0,4,2], val = 2,
+
+Your function should return length = 5, with the first five elements of nums containing 0, 1, 3, 0, and 4.
+
+Note that the order of those five elements can be arbitrary.
+
+It doesn't matter what values are set beyond the returned length.
+Clarification:
+
+Confused why the returned value is an integer but your answer is an array?
+
+Note that the input array is passed in by reference, which means modification to the input array will be known to the caller as well.
+
+Internally you can think of this:
+
+// nums is passed in by reference. (i.e., without making a copy)
+int len = removeElement(nums, val);
+
+// any modification to nums in your function would be known by the caller.
+// using the length returned by your function, it prints the first len elements.
+for (int i = 0; i &amp;lt; len; i++) {
+    print(nums[i]);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;看明白题目的意思，即可。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	public int removeElement(int[] nums, int val) {
+		int m = 0;
+		for (int i : nums) {
+			if (i != val) {
+				nums[m] = i;
+				m++;
+			}
+		}
+		return m;
+	}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/18/leetcode27/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode27/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>LeetCode26  Remove Duplicates from Sorted Array</title>
@@ -267,7 +497,7 @@ but use the same basic tactic of holding some of the control information about a
 //Implemented by invoking at least once tryAcquire, returning on success. Otherwise the thread is queued, possibly repeatedly blocking and unblocking, invoking tryAcquire until success. 
 public final void acquire(int arg) {
     if (!tryAcquire(arg) &amp;amp;&amp;amp;
-
+            // addWaiter 是采用CAS的操作，把独占的节点加入等待队列
             acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
             selfInterrupt();
     }
@@ -303,14 +533,583 @@ private static final long tailOffset;
  tailOffset = unsafe.objectFieldOffset
                 (AbstractQueuedSynchronizer.class.getDeclaredField(&quot;tail&quot;));
 
-   /**
-     * CAS tail field. Used only by enq.
-     */
     private final boolean compareAndSetTail(Node expect, Node update) {
         return unsafe.compareAndSwapObject(this, tailOffset, expect, update);
     }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
+&lt;p&gt;enq()：将节点插入队尾，失败则自旋，直到成功。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private Node enq(final Node node) {
+        for (;;) {
+            Node t = tail;
+            if (t == null) { // Must initialize
+                if (compareAndSetHead(new Node()))// tail=new Node()
+                	 //初始化竟然是一个new Node()
+                    tail = head;
+            } else {
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {//tail = node;
+                    t.next = node; // t 这个时候还是原来的那个代表tail的节点
+                    return t;
+                }
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;addWorker 分析完毕后，就是acquireQueued。&lt;/p&gt;
+
+&lt;p&gt;acquireQueued()：自旋方式获取资源并判断是否需要被挂起。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final boolean acquireQueued(final Node node, int arg) {
+        boolean failed = true;
+        try {
+            boolean interrupted = false;
+            //还是自旋尝试获取锁资源
+            for (;;) {
+                final Node p = node.predecessor();
+                //如果节点的前驱是队列的头节点并且能拿到资源
+                //成功后则返回中断位结束
+                if (p == head &amp;amp;&amp;amp; tryAcquire(arg)) {
+                    setHead(node);
+                    p.next = null; // help GC
+                    failed = false;
+                    return interrupted;
+                }
+                //shouldParkAfterFailedAcquire(Node, Node)检测当前节点是否应该park()
+                //parkAndCheckInterrupt()用于中断当前节点中的线程
+                if (shouldParkAfterFailedAcquire(p, node) &amp;amp;&amp;amp;
+                    parkAndCheckInterrupt())
+                    interrupted = true;
+            }
+        } finally {
+            if (failed)
+                cancelAcquire(node);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;shouldParkAfterFailedAcquire()：判断当前节点是否应该被挂起。下面涉及到的等待状态，这里再回忆一下，CANCELLED =1，SIGNAL =-1，CONDITION = -2，PROPAGATE = -3，0&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+        int ws = pred.waitStatus;
+        if (ws == Node.SIGNAL)
+            //前驱节点的状态是SIGNAL，说明前驱节点释放资源后会通知自己
+            //此时当前节点可以安全的park()，因此返回true
+            return true;
+        if (ws &amp;gt; 0) {
+            //前驱节点的状态是CANCLLED，说明前置节点已经放弃获取资源了
+            //此时一直往前找，直到找到最近的一个处于正常等待状态的节点
+            //并排在它后面，返回false
+            do {
+                node.prev = pred = pred.prev;
+            } while (pred.waitStatus &amp;gt; 0);
+            pred.next = node;
+        } else {
+            //前驱节点的状态是0或PROPGATE，则利用CAS将前置节点的状态置
+            //为SIGNAL，让它释放资源后通知自己
+            //如果前置节点刚释放资源，状态就不是SIGNAL了，这时就会失败
+            // 返回false
+            compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+        }
+        return false;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;parkAndCheckInterrupt()：若确定有必要park，才会执行此方法。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private final boolean parkAndCheckInterrupt() {
+        //使用LockSupport，挂起当前线程
+        LockSupport.park(this);
+        return Thread.interrupted();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;selfInterrupt()：对当前线程产生一个中断请求。能走到这个方法，说明acquireQueued()返回true，就进行自我中断。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    static void selfInterrupt() {
+        Thread.currentThread().interrupt();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;到这里，获取资源的流程就走完了，接下来总结一下。
+aquire的步骤：
+1）tryAcquire()尝试获取资源。&lt;/p&gt;
+
+&lt;p&gt;2）如果获取失败，则通过addWaiter(Node.EXCLUSIVE), arg)方法把当前线程添加到等待队列队尾，并标记为独占模式。&lt;/p&gt;
+
+&lt;p&gt;3）插入等待队列后，并没有放弃获取资源，acquireQueued()自旋尝试获取资源。根据前置节点状态状态判断是否应该继续获取资源。如果前驱是头结点，继续尝试获取资源；&lt;/p&gt;
+
+&lt;p&gt;4）在每一次自旋获取资源过程中，失败后调用shouldParkAfterFailedAcquire(Node, Node)检测当前节点是否应该park()。若返回true，则调用parkAndCheckInterrupt()中断当前节点中的线程。若返回false，则接着自旋获取资源。当acquireQueued(Node,int)返回true，则将当前线程中断；false则说明拿到资源了。&lt;/p&gt;
+
+&lt;p&gt;5）在进行是否需要挂起的判断中，如果前置节点是SIGNAL状态，就挂起，返回true。如果前置节点状态为CANCELLED，就一直往前找，直到找到最近的一个处于正常等待状态的节点，并排在它后面，返回false，acquireQueed()接着自旋尝试，回到3）。&lt;/p&gt;
+
+&lt;p&gt;6）前置节点处于其他状态，利用CAS将前置节点状态置为SIGNAL。当前置节点刚释放资源，状态就不是SIGNAL了，导致失败，返回false。但凡返回false，就导致acquireQueed()接着自旋尝试。&lt;/p&gt;
+
+&lt;p&gt;7）最终当tryAcquire(int)返回false，acquireQueued(Node,int)返回true，调用selfInterrupt()，中断当前线程。&lt;/p&gt;
+
+&lt;p&gt;上面的步骤说的不够清晰，需要一张图来进行表示，但是没有趁手的工具啊。&lt;/p&gt;
+
+&lt;p&gt;tryAcquire 比较好理解，addWorker也容易理解，关键在于acquireQueued，排队等待的worker，并不是一直等待着，而是无限的循环去抢锁：抢到了则退出，抢不到，需要更新状态，park，这个逻辑就是shouldParkAfterFailedAcquire(Node, Node)。&lt;/p&gt;
+
+&lt;p&gt;3.2 acquireShared()–共享模式获取资源
+接下来简单说下共享模式下获取资源的流程。
+acquireShared()：以共享模式获取对象，忽略中断。先是tryAcquireShared(int)尝试直接去获取资源，如果成功，acquireShared(int)就结束了；否则，调用doAcquireShared(Node)将线程加入等待队列，直到获取到资源为止。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void acquireShared(int arg) {
+    //模板方法模式，tryAcquireShared由子类实现
+    //想看的话推荐读写锁的源码，这里就不细述了
+    if (tryAcquireShared(arg) &amp;lt; 0)
+        doAcquireShared(arg);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;doAcquireShared()：实现上和acquire()方法差不多，就是多判断了是否还有剩余资源，唤醒后继节点。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void doAcquireShared(int arg) {
+    //将线程加入等待队列，设置为共享模式
+    final Node node = addWaiter(Node.SHARED);
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        //自旋尝试获取资源
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head) {
+                int r = tryAcquireShared(arg);
+                if (r &amp;gt;= 0) {
+                    //设置头节点，且如果还有剩余资源，唤醒后继节点获取资源
+                    setHeadAndPropagate(node, r);
+                    p.next = null; // help GC
+                    if (interrupted)
+                        selfInterrupt();
+                    failed = false;
+                    return;
+                }
+            }
+            //是否需要被挂起
+            if (shouldParkAfterFailedAcquire(p, node) &amp;amp;&amp;amp;
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3.3 hasQueuedPredecessors()–公平锁在tryAqcuire()时调用
+这里补充一个方法，ReentrantLock如果是公平锁的话，会调用AQS中的这个方法，算是后续文章的铺垫吧。&lt;/p&gt;
+
+&lt;p&gt;boolean hasQueuedPredecessors()：判断当前线程是否位于CLH同步队列中的第一个。如果是则返回flase，否则返回true。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean hasQueuedPredecessors() {
+    //判断当前节点在等待队列中是否为头节点的后继节点（头节点不存储数据），
+    //如果不是，则说明有线程比当前线程更早的请求资源，
+    //根据公平性，当前线程请求资源失败。
+    //如果当前节点没有前驱节点的话，才有做后面的逻辑判断的必要性
+    Node t = tail; // Read fields in reverse initialization order
+    Node h = head;
+    Node s;
+    return h != t &amp;amp;&amp;amp;
+        ((s = h.next) == null || s.thread != Thread.currentThread());
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3.4 doAcquireNanos()–独占模式下在规定时间内获取锁
+这个方法在ReentrantLock.tryLock()过程中被调用。&lt;/p&gt;
+
+&lt;p&gt;doAcquireNanos()：这个方法只工作于独占模式，自旋获取资源超时后则返回false；如果有必要挂起且未超时则挂起。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private boolean doAcquireNanos(int arg, long nanosTimeout)
+        throws InterruptedException {
+    if (nanosTimeout &amp;lt;= 0L)
+        return false;
+    //计算截至时间
+    final long deadline = System.nanoTime() + nanosTimeout;
+    final Node node = addWaiter(Node.EXCLUSIVE);
+    boolean failed = true;
+    try {
+        for (;;) {
+            final Node p = node.predecessor();
+            //获取锁成功后，出队
+            if (p == head &amp;amp;&amp;amp; tryAcquire(arg)) {
+                setHead(node);
+                p.next = null; 
+                failed = false;
+                return true;
+            }
+            //重新计算超时时间
+            nanosTimeout = deadline - System.nanoTime();
+            //超时则返回false
+            if (nanosTimeout &amp;lt;= 0L)
+                return false;
+            //否则判断是否需要被阻塞，阻塞规定时间
+            if (shouldParkAfterFailedAcquire(p, node) &amp;amp;&amp;amp;
+                nanosTimeout &amp;gt; spinForTimeoutThreshold)
+                LockSupport.parkNanos(this, nanosTimeout);
+            if (Thread.interrupted())
+                throw new InterruptedException();
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3.5 doAcquireInterruptibly–获取锁时响应中断&lt;/p&gt;
+
+&lt;p&gt;这个方法在ReentrantLock.lockInterruptibly()过程中被调用。
+doAcquireInterruptibly()：独占模式下在获取锁时会阻塞，但是能响应中断请求。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void doAcquireInterruptibly(int arg)
+    throws InterruptedException {
+    //添加到等待队列，包装成Node
+    final Node node = addWaiter(Node.EXCLUSIVE);
+    boolean failed = true;
+    try {
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head &amp;amp;&amp;amp; tryAcquire(arg)) {
+                setHead(node);
+                p.next = null; // help GC
+                failed = false;
+                return;
+            }
+            //自旋，直到前驱节点等待状态为SIGNAL，检查中断标志
+            //符合条件则阻塞当前线程
+            if (shouldParkAfterFailedAcquire(p, node) &amp;amp;&amp;amp;
+                parkAndCheckInterrupt())
+                //当前线程被阻塞后，会中断
+                throw new InterruptedException();
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;四、释放资源（锁）
+同样的，释放资源也分为释放独占锁资源（release()）和共享锁(releaseShared())资源。
+先来看对于独占锁的释放。&lt;/p&gt;
+
+&lt;p&gt;4.1 release()–独占模式释放资源&lt;/p&gt;
+
+&lt;p&gt;release()：工作于独占模式，首先调用子类的tryRelease()方法释放锁,然后唤醒后继节点,在唤醒的过程中,需要判断后继节点是否满足情况,如果后继节点不为空且不是作废状态,则唤醒这个后继节点,否则从tail节点向前寻找合适的节点,如果找到,则唤醒。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        if (h != null &amp;amp;&amp;amp; h.waitStatus != 0)
+            unparkSuccessor(h);
+        return true;
+    }
+    return false;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;unparkSuccessor()：尝试找到下一位继承人，就是确定下一个获取资源的线程，唤醒指定节点的后继节点。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void unparkSuccessor(Node node) {
+    //如果状态为负说明是除CANCEL以外的状态，
+    //尝试在等待信号时清除。
+    int ws = node.waitStatus;
+    if (ws &amp;lt; 0)
+        compareAndSetWaitStatus(node, ws, 0);
+
+    Node s = node.next;
+    //下一个节点为空或CANCELLED状态
+    //则从队尾往前找，找到正常状态的节点作为之后的继承人
+    //也就是下一个能拿到资源的节点
+    if (s == null || s.waitStatus &amp;gt; 0) {
+        s = null;
+        for (Node t = tail; t != null &amp;amp;&amp;amp; t != node; t = t.prev)
+            if (t.waitStatus &amp;lt;= 0)
+                s = t;
+    }
+    //此时找到继承人了，那么就唤醒它
+    if (s != null)
+        LockSupport.unpark(s.thread);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;4.2 releaseShared()–共享模式释放资源
+releaseShared()：在释放一部分资源后就可以通知其他线程获取资源。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean releaseShared(int arg) {
+    if (tryReleaseShared(arg)) {
+        doReleaseShared();
+        return true;
+    }
+    return false;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;doReleaseShared()：把当前结点的状态由SIGNAL设置为PROPAGATE状态。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void doReleaseShared() {
+
+    for (;;) {
+        Node h = head;
+        if (h != null &amp;amp;&amp;amp; h != tail) {
+            int ws = h.waitStatus;
+            if (ws == Node.SIGNAL) {
+                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                    //将自旋尝试修改等待状态为0
+                    continue;
+                //唤醒下一个被阻塞的节点
+                unparkSuccessor(h);
+            }
+            else if (ws == 0 &amp;amp;&amp;amp;
+                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+                //设置为PROPAGATE状态
+                continue;               
+        }
+        //上面代码块执行过程中如果head变更了，就接着循环尝试
+        if (h == head)
+            break;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;五、内部类-ConditionObject&lt;/p&gt;
+
+&lt;p&gt;ConditionObject实现了Condition接口。用于线程间的通信，能够把锁粒度减小。重点是await()和signal()。这个内部类还维护了一个condition队列，而且Node.nextWaiter就是用来将condition连接起来的。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //condition队头
+    private transient Node firstWaiter;
+    //condition队尾
+    private transient Node lastWaiter;
+    //发生了中断，但在后续不抛出中断异常，而是“补上”这次中断
+    private static final int REINTERRUPT =  1;
+    //发生了中断，且在后续需要抛出中断异常
+    private static final int THROW_IE    = -1;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;5.1 await()–阻塞等待方法&lt;/p&gt;
+
+&lt;p&gt;5.1.1 await的流程&lt;/p&gt;
+
+&lt;p&gt;await()：当前线程处于阻塞状态，直到调用signal()或中断才能被唤醒。&lt;/p&gt;
+
+&lt;p&gt;1）将当前线程封装成node且等待状态为CONDITION。
+2）释放当前线程持有的所有资源，让下一个线程能获取资源。
+3）加入到条件队列后，则阻塞当前线程，等待被唤醒。
+4）如果是因signal被唤醒，则节点会从条件队列转移到等待队列；如果是因中断被唤醒，则记录中断状态。两种情况都会跳出循环。
+5）若是因signal被唤醒，就自旋获取资源；否则处理中断异常。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public final void await() throws InterruptedException {
+        //如果被中断，就处理中断异常
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        //初始化链表的功能，设置当前线程为链尾
+        Node node = addConditionWaiter();
+        //释放当前节点持有的所有资源
+        int savedState = fullyRelease(node);
+        int interruptMode = 0;
+        //如果当前线程不在等待队列中，
+        //说明此时一定在条件队列里，将其阻塞。
+        while (!isOnSyncQueue(node)) {
+            LockSupport.park(this);
+            //说明中断状态发生变化
+            if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+                break;
+        }
+        //当前线程执行了signal方法会经过这个，也就是重新将当前线程加入同步队列中
+        if (acquireQueued(node, savedState) &amp;amp;&amp;amp; interruptMode != THROW_IE)
+            interruptMode = REINTERRUPT;
+        //删除条件队列中不满足要求的元素
+        if (node.nextWaiter != null) 
+            unlinkCancelledWaiters();
+        //处理被中断的情况
+        if (interruptMode != 0)
+            //这里是个难点，具体的实现我自己也有点不理解
+            //就把知道的都写出来
+            //如果是THROW_IE，说明signal之前发生中断
+            //如果是REINTERRUPT，signal之后中断，
+            //所以成功获取资源后会调用selfInterrupt()
+            reportInterruptAfterWait(interruptMode);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;addConditionWaiter()：将当前线程封装成节点，添加到条件队列尾部，并返回当前节点。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private Node addConditionWaiter() {
+        Node t = lastWaiter;
+        // 判断队尾元素，如果非条件等待状态则清理出去
+        if (t != null &amp;amp;&amp;amp; t.waitStatus != Node.CONDITION) {
+            unlinkCancelledWaiters();
+            //可能t之前引用的节点被删除了，所以要重新引用
+            t = lastWaiter;
+        }
+        //这个节点就表示当前线程
+        Node node = new Node(Thread.currentThread(), Node.CONDITION);
+        //说明条件按队列中没有元素
+        if (t == null)
+            firstWaiter = node;
+        else
+            t.nextWaiter = node;
+        lastWaiter = node;
+        return node;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;unlinkCancelledWaiters()：遍历一遍条件队列，删除非CONDITION状态的节点。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void unlinkCancelledWaiters() {
+        Node t = firstWaiter;
+        //记录在循环中上一个waitStatus有效的节点
+        Node trail = null;
+        while (t != null) {
+            Node next = t.nextWaiter;
+            //再次判断等待状态，保证节点都是CONDITION状态
+            //确保当前节点无效后删除引用
+            if (t.waitStatus != Node.CONDITION) {
+                t.nextWaiter = null;
+                if (trail == null)
+                    firstWaiter = next;
+                else
+                    //否则就直接加到队尾的后面
+                    trail.nextWaiter = next;
+                if (next == null)
+                    lastWaiter = trail;
+            }
+            else
+                //记录有效的节点并向后遍历
+                trail = t;
+            t = next;
+        }
+    } 5.1.2 await中关于中断的处理
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;通过对上面代码的观察，我们知道await()调用了checkInterruptWhileWaiting()。
+关于中断这一块，我自己看的也比较迷，就把一些自己能理解的地方标注一下。
+checkInterruptWhileWaiting()：判断在阻塞过程中是否被中断。如果返回THROW_IE，则表示线程在调用signal()之前中断的；如果返回REINTERRUPT，则表明线程在调用signal()之后中断；如果返回0则表示没有被中断。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private int checkInterruptWhileWaiting(Node node) {
+        return Thread.interrupted() ?
+            (transferAfterCancelledWait(node) ? THROW_IE : REINTERRUPT) :
+            0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;transferAfterCancelledWait()：线程是否因为中断从park中唤醒。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final boolean transferAfterCancelledWait(Node node) {
+    //如果修改成功，暂且认为中断发生后，signal()被调用
+    if (compareAndSetWaitStatus(node, Node.CONDITION, 0)) {
+        enq(node);
+        //true表示中断先于signal发生
+        return true;
+    }
+    //~~不理解~~
+    while (!isOnSyncQueue(node))
+        Thread.yield();
+    return false;
+} 5.2.1 signal()--唤醒condition队列中的线程
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;signal()：唤醒一个被阻塞的线程。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public final void signal() {
+        //判断当前线程是否为资源的持有者
+        //这也是必须在lock()与unlock()代码中间执行的原因
+        if (!isHeldExclusively())
+            throw new IllegalMonitorStateException();
+        //开始唤醒条件队列的第一个节点
+        Node first = firstWaiter;
+        if (first != null)
+            doSignal(first);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;doSignal()：将条件队列的头节点从条件队列转移到等待队列，并且，将该节点从条件队列删除。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void doSignal(Node first) {
+        do {
+            //后续的等待条件为空，说明condition队列中只有一个节点
+            if ( (firstWaiter = first.nextWaiter) == null)
+                lastWaiter = null;
+            first.nextWaiter = null;
+            //transferForSignal()是真正唤醒头节点的地方
+        } while (!transferForSignal(first) &amp;amp;&amp;amp;
+                 (first = firstWaiter) != null);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;transferForSignal()：将节点放入等待队列并唤醒。并不需要在条件队列中移除，因为条件队列每次插入时都会把状态不为CONDITION的节点清理出去。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final boolean transferForSignal(Node node) {
+    //当前节点等待状态改变失败，则说明当前节点不是CONDITION
+    //状态，那就不能进行接下来的操作，返回false
+    //0是正常状态
+    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+        return false;
+
+    //放入等待队列队尾中，并返回之前队列的前一个节点
+    Node p = enq(node);
+    int ws = p.waitStatus;
+    //如果节点没有被取消，或更改状态失败，则唤醒被阻塞的线程
+    if (ws &amp;gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        LockSupport.unpark(node.thread);
+    return true;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;5.2.2 signalAll()–唤醒condition队列中所有线程
+signalAll()本质上还是调用了doSignalAll()
+doSignalAll()：遍历条件队列，插入到等待队列中。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void doSignalAll(Node first) {
+        lastWaiter = firstWaiter = null;
+        do {
+            Node next = first.nextWaiter;
+            first.nextWaiter = null;
+            transferForSignal(first);
+            first = next;
+        } while (first != null);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;5.3 awaitNanos()–超时机制
+这里补充一个方法awaitNanos()，是我看阻塞队列源码中遇到的。
+awaitNanos()：轮询检查线程是否在同步线程上，如果在则退出自旋。否则检查是否已超过解除挂起时间，如果超过，则退出挂起，否则继续挂起线程到等待解除挂起。退出挂起之后，采用自旋的方式竞争锁。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public final long awaitNanos(long nanosTimeout)
+            throws InterruptedException {
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        Node node = addConditionWaiter();
+        int savedState = fullyRelease(node);
+        final long deadline = System.nanoTime() + nanosTimeout;
+        int interruptMode = 0;
+        //采用自旋的方式检查是否已在等待队列当中
+        while (!isOnSyncQueue(node)) {
+            //如果挂起超过一定的时间，则退出
+            if (nanosTimeout &amp;lt;= 0L) {
+                transferAfterCancelledWait(node);
+                break;
+            }
+            //继续挂起线程
+            if (nanosTimeout &amp;gt;= spinForTimeoutThreshold)
+                LockSupport.parkNanos(this, nanosTimeout);
+            if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+                break;
+            nanosTimeout = deadline - System.nanoTime();
+        }
+        //采用自旋的方式竞争锁
+        if (acquireQueued(node, savedState) &amp;amp;&amp;amp; interruptMode != THROW_IE)
+            interruptMode = REINTERRUPT;
+        if (node.nextWaiter != null)
+            unlinkCancelledWaiters();
+        if (interruptMode != 0)
+            reportInterruptAfterWait(interruptMode);
+        return deadline - System.nanoTime();
+    } 总结 关于AQS我觉得比较重要的就是获取资源和释放资源的方法，里面用到了大量的CAS操作和自旋。AQS里面维护了两个队列，一个是等待队列（CHL），还有一个是条件队列（condition）。 acquire()尝试获取资源，如果获取失败，将线程插入等待队列。插入后，并没有放弃获取资源，而是根据前置节点状态状态判断是否应该继续获取资源。如果前置节点是头结点，继续尝试获取资源；如果前置节点是SIGNAL状态，就中断当前线程，否则继续尝试获取资源。直到当前线程被阻塞或者获取到资源，结束。 release()释放资源，需要唤醒后继节点,判断后继节点是否满足情况。如果后继节点不为空且不是作废状态,则唤醒这个后继节点；否则从尾部往前面找适合的节点，找到则唤醒。 调用await()，线程会进入条件队列，等待被唤醒，唤醒后以自旋方式获取资源或处理中断异常；调用signal()，线程会插入到等待队列，唤醒被阻塞的线程。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如有不当之处，欢迎指出~&lt;/p&gt;
 </description>
         <pubDate>Sat, 17 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/17/concurrent-3/</link>
@@ -1023,248 +1822,6 @@ For example, given n = 3, a solution set is:
         <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode22/</guid>
         
         <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode21</title>
-        <description>&lt;p&gt;LeetCode 21题的分析和总结：Merge Two Sorted Lists
-链表的合并。
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;LeetCode 21. Merge Two Sorted Lists&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Merge two sorted linked lists and
-return it as a new list. 
-The new list should be made 
-by splicing together the nodes of 
-the first two lists.
-
-Example:
-
-Input: 1-&amp;gt;2-&amp;gt;4, 1-&amp;gt;3-&amp;gt;4
-Output: 1-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;4
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;合并单链表
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-	ListNode head = new ListNode(-1);
-	ListNode tmp = head;
-	while (l1 != null || l2 != null) {
-		int l1v = l1 != null ? l1.val : Integer.MAX_VALUE;
-		int l2v = l2 != null ? l2.val : Integer.MAX_VALUE;
-		if (l1v &amp;lt; l2v) {
-			tmp.next = new ListNode(l1v);
-			l1 = l1.next;
-		} else {
-			tmp.next = new ListNode(l2v);
-			l2 = l2.next;
-		}
-		tmp = tmp.next;
-	}
-	return head.next;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Fri, 16 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/16/leetcode21/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode21/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>JDK7的新特性1 ForkJoinPool</title>
-        <description>&lt;p&gt;JDK7的一个新特性：ForkJoinPool 很值得一说。
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;ForkJoinPool，首先上代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//计算 π 的值有一个通过多项式方法，即：π = 4 * (1 - 1/3 + 1/5 - 1/7 + 1/9 - ……)，而且多项式的项数越多，计算出的 π 的值越精确
-	static class PiEstimateTask extends RecursiveTask&amp;lt;Double&amp;gt; {
-		private static final long serialVersionUID = 1L;
-		private final long begin;
-    private final long end;
-    private final long threshold; // 分割任务的临界值
-
-    public PiEstimateTask(long begin, long end, long threshold) {
-        this.begin = begin;
-        this.end = end;
-        this.threshold = threshold;
-    }
-
-    @Override
-    protected Double compute() {  // 实现 compute 方法
-        if (end - begin &amp;lt;= threshold) {  // 临界值之下，不再分割，直接计算
-
-            int sign; // 符号，多项式中偶数位取 1，奇数位取 -1（位置从 0 开始）
-            double result = 0.0;
-            for (long i = begin; i &amp;lt; end; i++) {
-                sign = (i &amp;amp; 1) == 0 ? 1 : -1;
-                result += sign / (i * 2.0 + 1);
-            }
-            System.out.println(Thread.currentThread()+ &quot; From: &quot;+ begin + &quot; End: &quot;+ end);
-            return result * 4;
-        }
-
-        // 分割任务
-        long middle = (begin + end) / 2;
-        PiEstimateTask leftTask = new PiEstimateTask(begin, middle, threshold);
-        PiEstimateTask rightTask = new PiEstimateTask(middle, end, threshold);
-
-        leftTask.fork();  // 异步执行 leftTask
-        rightTask.fork(); // 异步执行 rightTask
-
-        double leftResult = leftTask.join();   // 阻塞，直到 leftTask 执行完毕返回结果
-        double rightResult = rightTask.join(); // 阻塞，直到 rightTask 执行完毕返回结果
-
-        return leftResult + rightResult; // 合并结果
-    }
-
-}
-	
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		ForkJoinPool pool = new ForkJoinPool();
-		pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		PiEstimateTask task = new PiEstimateTask(0, 1_000_000_000, 10_000_00);
-		pool.execute(task);
-		System.out.println(task.get());
-	}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;从上面的代码中，我们可以看到ForkJoinPool，适用的一类业务：
-把一个任务拆分成多个“小任务”，把多个“小任务”放到多个处理器核心上并行执行；当多个“小任务”执行完成之后，再将这些执行结果合并起来即可。&lt;/p&gt;
-
-&lt;p&gt;ForkJoinPool支持的任务大类有两种，一类是：Runnable ，类似于ExecutorService。一类是ForkJoinTask。&lt;/p&gt;
-
-&lt;p&gt;其中的ForkJoinTask代表一个可以并行、合并的任务。ForkJoinTask是一个抽象类，它还有两个抽象子类：RecusiveAction和RecusiveTask。其中RecusiveTask代表有返回值的任务，而RecusiveAction代表没有返回值的任务。&lt;/p&gt;
-
-&lt;h3 id=&quot;代码分析&quot;&gt;代码分析&lt;/h3&gt;
-
-&lt;p&gt;根据上面的示例代码，可以看出 fork() 和 join() 是 Fork/Join Framework “魔法”的关键。我们可以根据函数名假设一下 fork() 和 join() 的作用：&lt;/p&gt;
-
-&lt;p&gt;fork()：开启一个新线程（或是重用线程池内的空闲线程），将任务交给该线程处理。
-join()：等待该任务的处理线程处理完毕，获得返回值。&lt;/p&gt;
-
-&lt;p&gt;并不是每个 fork() 都会促成一个新线程被创建，而每个 join() 也不是一定会造成线程被阻塞。&lt;/p&gt;
-
-&lt;p&gt;具体的数据结构如下图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://7cn0ma.ch.files.1drv.com/y4mNHOHsW33XQdE-_tAVdUXXxwQ_eW58g3q3bzMm1EyjfJdSLcqE_9iW-a-1xdrlxMpChFZauhFFLvOzHja9ZJvzkdNTjnOnaB1lGCace0GRpTQXS-eh0rGn02i6mjSw1o4aSEILUwDCP4AJF_yDvxE8QuQ_4wZl9jkH7OmCBTMsJpgKFCz_p45Mj6O9l3cgQWZS0_FjaxTwKfLYIIrt5sVzg?width=1848&amp;amp;height=1505&amp;amp;cropmode=none&quot; alt=&quot;数据结构&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Fork/Join Framework 的实现算法并不是那么“显然”，而是一个更加复杂的算法——这个算法的名字就叫做 work stealing 算法。&lt;/p&gt;
-
-&lt;p&gt;ForkJoinPool 的&lt;strong&gt;每个工作线程都维护着一个工作队列（WorkQueue），这是一个双端队列（Deque），里面存放的对象是任务（ForkJoinTask）&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;每个工作线程在运行中产生新的任务（通常是因为调用了 fork()）时，会放入工作队列的队尾，并且工作线程在处理自己的工作队列时，使用的是 LIFO 方式，也就是说每次从队尾取出任务来执行。&lt;/p&gt;
-
-&lt;p&gt;每个工作线程在处理自己的工作队列同时，会尝试窃取一个任务（或是来自于刚刚提交到 pool 的任务，或是来自于其他工作线程的工作队列），窃取的任务位于其他线程的工作队列的队首，也就是说工作线程在窃取其他工作线程的任务时，使用的是 FIFO 方式。
-在遇到 join() 时，如果需要 join 的任务尚未完成，则会先处理其他任务，并等待其完成。&lt;/p&gt;
-
-&lt;p&gt;在既没有自己的任务，也没有可以窃取的任务时，进入休眠。&lt;/p&gt;
-
-&lt;h3 id=&quot;fork-&quot;&gt;fork() ：&lt;/h3&gt;
-
-&lt;p&gt;做的工作只有一件事，既是把任务推入当前工作线程的工作队列里。&lt;/p&gt;
-&lt;h3 id=&quot;join-&quot;&gt;join() ：&lt;/h3&gt;
-
-&lt;p&gt;工作则复杂得多，也是 join() 可以使得线程免于被阻塞的原因——不像同名的 Thread.join()。&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;检查调用 join() 的线程是否是 ForkJoinThread 线程。如果不是（例如 main 线程），则阻塞当前线程，等待任务完成。如果是，则不阻塞。&lt;/li&gt;
-  &lt;li&gt;查看任务的完成状态，如果已经完成，直接返回结果。&lt;/li&gt;
-  &lt;li&gt;如果任务尚未完成，但处于自己的工作队列内，则完成它。&lt;/li&gt;
-  &lt;li&gt;如果任务已经被其他的工作线程偷走，则窃取这个小偷的工作队列内的任务（以 FIFO 方式），执行，以期帮助它早日完成欲 join 的任务。&lt;/li&gt;
-  &lt;li&gt;如果偷走任务的小偷也已经把自己的任务全部做完，正在等待需要 join 的任务时，则找到小偷的小偷，帮助它完成它的任务。
-递归地执行第5步。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;所谓work-stealing模式，即每个工作线程都会有自己的任务队列。当工作线程完成了自己所有的工作后，就会去“偷”别的工作线程的任务。&lt;/p&gt;
-
-&lt;p&gt;假如我们需要做一个比较大的任务，我们可以把这个任务分割为若干互不依赖的子任务，为了减少线程间的竞争，于是把这些子任务分别放到不同的队列里，并为每个队列创建一个单独的线程来执行队列里的任务，线程和队列一一对应，比如A线程负责处理A队列里的任务。但是有的线程会先把自己队列里的任务干完，而其他线程对应的队列里还有任务等待处理。干完活的线程与其等着，不如去帮其他线程干活，于是它就去其他线程的队列里窃取一个任务来执行。而在这时它们会访问同一个队列，所以&lt;strong&gt;为了减少窃取任务线程和被窃取任务线程之间的竞争，通常会使用双端队列，被窃取任务线程永远从双端队列的头部拿任务执行，而窃取任务的线程永远从双端队列的尾部拿任务执行。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;submit&quot;&gt;submit():&lt;/h3&gt;
-
-&lt;p&gt;其实除了前面介绍过的每个工作线程自己拥有的工作队列以外，ForkJoinPool 自身也拥有工作队列，这些工作队列的作用是用来接收由外部线程（非 ForkJoinThread 线程）提交过来的任务，而这些工作队列被称为 submitting queue 。&lt;/p&gt;
-
-&lt;p&gt;submit() 和 fork() 其实没有本质区别，只是提交对象变成了 submitting queue 而已（还有一些同步，初始化的操作）。submitting queue 和其他 work queue 一样，是工作线程”窃取“的对象，因此当其中的任务被一个工作线程成功窃取时，就意味着提交的任务真正开始进入执行阶段。&lt;/p&gt;
-
-&lt;p&gt;更加详细的研究：http://gee.cs.oswego.edu/dl/papers/fj.pdf&lt;/p&gt;
-
-&lt;h3 id=&quot;forkjoinpool与threadpoolexecutor区别&quot;&gt;ForkJoinPool与ThreadPoolExecutor区别：&lt;/h3&gt;
-
-&lt;p&gt;1.ForkJoinPool中的每个线程都会有一个队列，而ThreadPoolExecutor只有一个队列，并根据queue类型不同，细分出各种线程池&lt;/p&gt;
-
-&lt;p&gt;2.ForkJoinPool能够使用数量有限的线程来完成非常多的具有父子关系的任务,ThreadPoolExecutor中根本没有什么父子关系任务&lt;/p&gt;
-
-&lt;p&gt;3.ForkJoinPool在使用过程中，会创建大量的子任务，会进行大量的gc，但是ThreadPoolExecutor不需要，因此单线程（或者任务分配平均）&lt;/p&gt;
-
-&lt;p&gt;4.ForkJoinPool在多任务，且任务分配不均是有优势，但是在单线程或者任务分配均匀的情况下，效率没有ThreadPoolExecutor高，毕竟要进行大量gc子任务&lt;/p&gt;
-
-&lt;p&gt;ForkJoinPool在多线程情况下，能够实现工作窃取(Work Stealing)，在该线程池的每个线程中会维护一个队列来存放需要被执行的任务。当线程自身队列中的任务都执行完毕后，它会从别的线程中拿到未被执行的任务并帮助它执行。&lt;/p&gt;
-
-&lt;p&gt;ThreadPoolExecutor因为它其中的线程并不会关注每个任务之间任务量的差异。当执行任务量最小的任务的线程执行完毕后，它就会处于空闲的状态(Idle)，等待任务量最大的任务执行完毕。&lt;/p&gt;
-
-&lt;p&gt;因此多任务在多线程中分配不均时，ForkJoinPool效率高。&lt;/p&gt;
-
-&lt;h3 id=&quot;stream中应用forkjoinpool&quot;&gt;stream中应用ForkJoinPool&lt;/h3&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; Arrays.asList(&quot;a1&quot;, &quot;a2&quot;, &quot;b1&quot;, &quot;c2&quot;, &quot;c1&quot;)
-                .parallelStream()
-                .filter(s -&amp;gt; {
-                    System.out.format(&quot;filter: %s [%s]\n&quot;,
-                            s, Thread.currentThread().getName());
-                    return true;
-                })
-                .map(s -&amp;gt; {
-                    System.out.format(&quot;map: %s [%s]\n&quot;,
-                            s, Thread.currentThread().getName());
-                    return s.toUpperCase();
-                })
-                .sorted((s1, s2) -&amp;gt; {
-                    System.out.format(&quot;sort: %s &amp;lt;&amp;gt; %s [%s]\n&quot;,
-                            s1, s2, Thread.currentThread().getName());
-                    return s1.compareTo(s2);
-                })
-                .forEach(s -&amp;gt; System.out.format(&quot;forEach: %s [%s]\n&quot;,
-                        s, Thread.currentThread().getName()));
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;parallelStream让部分Java代码自动地以并行的方式执行&lt;/p&gt;
-
-&lt;p&gt;最后：&lt;/p&gt;
-
-&lt;p&gt;有一点要注意，就是手动设置ForkJoinPool的线程数量时，实际线程数为设置的线程数+1，因为还有一个main主线程&lt;/p&gt;
-
-&lt;p&gt;即使将ForkJoinPool的通用线程池的线程数量设置为1，实际上也会有2个工作线程。因此线程数为1的ForkJoinPool通用线程池和线程数为2的ThreadPoolExecutor是等价的。&lt;/p&gt;
-
-&lt;p&gt;与ForkJoinPool对应的是CompletableFuture&lt;/p&gt;
-
-&lt;p&gt;Future以及相关使用方法提供了异步执行任务的能力，但是对于结果的获取却是很不方便，只能通过阻塞或者轮询的方式得到任务的结果。
-阻塞的方式显然和我们的异步编程的初衷相违背，轮询的方式又会耗费无谓的CPU资源，而且也不能及时地得到计算结果&lt;/p&gt;
-
-&lt;p&gt;CompletableFuture就是利用观察者设计模式当计算结果完成及时通知监听者
-在Java 8中, 新增加了一个包含50个方法左右的类: CompletableFuture，提供了非常强大的Future的扩展功能，可以帮助我们简化异步编程的复杂性，提供了函数式编程的能力，可以通过回调的方式处理计算结果，并且提供了转换和组合CompletableFuture的方法。&lt;/p&gt;
-
-</description>
-        <pubDate>Thu, 15 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/15/day5/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/15/day5/</guid>
-        
-        <category>JDK</category>
         
         
       </item>

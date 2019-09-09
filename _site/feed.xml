@@ -5,9 +5,101 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 08 Sep 2019 17:29:13 +0800</pubDate>
-    <lastBuildDate>Sun, 08 Sep 2019 17:29:13 +0800</lastBuildDate>
+    <pubDate>Mon, 09 Sep 2019 09:30:09 +0800</pubDate>
+    <lastBuildDate>Mon, 09 Sep 2019 09:30:09 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>LeetCode26  Remove Duplicates from Sorted Array</title>
+        <description>&lt;p&gt;LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array&lt;/p&gt;
+
+&lt;p&gt;数组操作&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 26.  Remove Duplicates from Sorted Array&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
+
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+
+Example 1:
+
+Given nums = [1,1,2],
+
+Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively.
+
+It doesn't matter what you leave beyond the returned length.
+Example 2:
+
+Given nums = [0,0,1,1,1,2,2,3,3,4],
+
+Your function should return length = 5, with the first five elements of nums being modified to 0, 1, 2, 3, and 4 respectively.
+
+It doesn't matter what values are set beyond the returned length.
+Clarification:
+
+Confused why the returned value is an integer but your answer is an array?
+
+Note that the input array is passed in by reference, which means modification to the input array will be known to the caller as well.
+
+Internally you can think of this:
+
+// nums is passed in by reference. (i.e., without making a copy)
+int len = removeDuplicates(nums);
+
+// any modification to nums in your function would be known by the caller.
+// using the length returned by your function, it prints the first len elements.
+for (int i = 0; i &amp;lt; len; i++) {
+    print(nums[i]);
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;关键在于 in-place 操作，但是反过来想， in-place 操作也是算法提示的一种。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int removeDuplicates(int[] nums) {
+
+	public int removeDuplicates(int[] nums) {
+		if(nums == null || nums.length &amp;lt;2) return nums.length;
+		int key = nums[0],cur = 1;
+		for (int current = 1; current &amp;lt; nums.length; current++) {
+			if(nums[current] != key){
+				nums[cur] = nums[current];
+				++cur;
+				key = nums[current];
+			}
+		}
+		return cur;
+	}     
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在比较一下标准的简练答案：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int removeDuplicates(int[] A) {
+    if (A.length&amp;lt;=1) return nums.length;
+    int j=0;
+    for (int i=0; i&amp;lt;A.length; i++)
+        if (A[i]!=A[j]) A[++j]=A[i];
+    return ++j;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/18/leetcode26/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode26/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>并发知识梳理：2. Lock</title>
@@ -206,7 +298,6 @@ public final void acquire(int arg) {
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;CAS设置队尾：&lt;/p&gt;
-
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private static final Unsafe unsafe = Unsafe.getUnsafe();
 private static final long tailOffset;
  tailOffset = unsafe.objectFieldOffset
@@ -1174,242 +1265,6 @@ join()：等待该任务的处理线程处理完毕，获得返回值。&lt;/p&g
         <guid isPermaLink="true">http://localhost:4000/2019/08/15/day5/</guid>
         
         <category>JDK</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode18, 19，20</title>
-        <description>&lt;p&gt;LeetCode 第18，19，20题的分析和总结&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 18. 4Sum&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
-
-Note:
-
-The solution set must not contain duplicate quadruplets.
-
-Example:
-
-Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
-
-A solution set is:
-[
-  [-1,  0, 0, 1],
-  [-2, -1, 1, 2],
-  [-2,  0, 0, 2]
-]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;3Sum 变形题目，同一个思路
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; fourSum(int[] nums, int target) {
-      List&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; list = new ArrayList&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt;();
-    List&amp;lt;Integer&amp;gt; l;
-    Arrays.sort(nums);
-    int len = nums.length;
-    for (int i = 0; i &amp;lt; len - 3; i++) {
-      // 相同直接返回
-      if (i != 0 &amp;amp;&amp;amp; nums[i] == nums[i - 1]) continue;
-      // 最小值如果大于target，直接的返回
-      if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] &amp;gt; target) break;
-      // 此值和最大的三个值相加，小于target 直接的返回
-      if (nums[i] + nums[len - 1] + nums[len - 2] + nums[len - 2] &amp;lt; target) continue;
-
-      for (int j = i + 1; j &amp;lt; len - 2; j++) {
-        // 相同直接返回
-        if (j != i + 1 &amp;amp;&amp;amp; nums[j] == nums[j - 1]) continue;
-        // 最小值如果大于target，直接的返回
-        if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] &amp;gt; target) break;
-        // 此值和最大的三个值相加，小于target 直接的返回
-        if (nums[i] + nums[j] + nums[len - 1] + nums[len - 2] &amp;lt; target) continue;
-
-        int head = j + 1, end = len - 1;
-        while (head &amp;lt; end) {
-          int tempt = nums[i] + nums[j] + nums[head] + nums[end];
-          if (tempt == target) {
-            l = new ArrayList&amp;lt;Integer&amp;gt;();
-            l.add(nums[i]);
-            l.add(nums[j]);
-            l.add(nums[head]);
-            l.add(nums[end]);
-            list.add(l);
-            head++;
-			end--;
-            while (head &amp;lt; end &amp;amp;&amp;amp; nums[head] == nums[head - 1]) {
-              head++;
-            }
-			while (head &amp;lt; end &amp;amp;&amp;amp; nums[end] == nums[end+1]) {
-              end--;
-            }
-          } else if (tempt &amp;gt; target)
-            end--;
-          else
-            head++;
-        }
-      }
-    }
-    return list; 
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LeetCode 19. Remove Nth Node From End of List&lt;/p&gt;
-
-&lt;p&gt;题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a linked list, remove the n-th node from the end of list and return its head.
-
-Example:
-
-Given linked list: 1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;5, and n = 2.
-
-After removing the second node from the end, the linked list becomes 1-&amp;gt;2-&amp;gt;3-&amp;gt;5.
-Note:
-
-Given n will always be valid.
-
-Follow up:
-
-Could you do this in one pass?
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;简单题目，注意链表的表头的处理，下标的处理
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ListNode removeNthFromEnd_copy(ListNode head, int n) {
-	ListNode tmp = new ListNode(-1);
-	ListNode first = tmp;ListNode second = tmp;
-	tmp.next = head;
-	for(int i = 1 ; i&amp;lt;=n+1;i++) {
-		first = first.next;
-	}
-	while(first != null) {
-		first = first.next;
-		second = second.next;
-	}
-		
-	second.next = second.next.next;
-		
-	return tmp.next;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LeetCode 20. Valid Parentheses&lt;/p&gt;
-
-&lt;p&gt;题目描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a string containing just the characters 
-'(', ')', '{', '}', '[' and ']', 
-determine if the input string is valid.
-
-An input string is valid if:
-
-Open brackets must be closed by the same type of brackets.
-Open brackets must be closed in the correct order.
-Note that an empty string is also considered valid.
-
-Example 1:
-
-Input: &quot;()&quot;
-Output: true
-Example 2:
-
-Input: &quot;()[]{}&quot;
-Output: true
-Example 3:
-
-Input: &quot;(]&quot;
-Output: false
-Example 4:
-
-Input: &quot;([)]&quot;
-Output: false
-Example 5:
-
-Input: &quot;{[]}&quot;
-Output: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;典型的栈的应用，但是有两种不同的思路。
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//正常的思路
-public boolean isValid(String s) {
-	if(s == null || s.length() &amp;lt;= 0){
-   		return true;
-   	}
-   	Stack&amp;lt;Character&amp;gt; stack = new Stack&amp;lt;Character&amp;gt;();
-   	for (int i = 0; i &amp;lt; s.length(); i++) {
-   		char cha = s.charAt(i);
-		switch (cha) {
-		case '(':
-		case '{':
-		case '[':
-			stack.push(cha);
-			break;
-		case ')':
-			if(stack.isEmpty() || stack.pop() != '(' ){
-				return false;
-			}
-			break;
-		case '}':
-			if(stack.isEmpty() || stack.pop()!= '{' ){
-				return false;
-			}
-			break;
-		case ']':
-			if(stack.isEmpty() || stack.pop() != '[' ){
-			return false;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-   	return stack.isEmpty();
-}
-
-//匹配的思路
-
-public boolean isValid(String s) {
-	Stack&amp;lt;Character&amp;gt; stack = new Stack&amp;lt;Character&amp;gt;();
-	for (char c : s.toCharArray()) {
-		if (c == '(')
-			stack.push(')');
-		else if (c == '{')
-			stack.push('}');
-		else if (c == '[')
-			stack.push(']');
-		else if (stack.isEmpty() || stack.pop() != c)
-			return false;
-	}
-	return stack.isEmpty();
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Wed, 14 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/14/day4/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/14/day4/</guid>
-        
-        <category>LeetCode</category>
         
         
       </item>

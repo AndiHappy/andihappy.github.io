@@ -207,20 +207,38 @@ private Node addWaiter(Node mode) {
     }
 ~~~
 
-CAS设置队尾：
 
+CAS设置队尾：
 ~~~
 private static final Unsafe unsafe = Unsafe.getUnsafe();
 private static final long tailOffset;
  tailOffset = unsafe.objectFieldOffset
                 (AbstractQueuedSynchronizer.class.getDeclaredField("tail"));
 
-   /**
-     * CAS tail field. Used only by enq.
-     */
     private final boolean compareAndSetTail(Node expect, Node update) {
         return unsafe.compareAndSwapObject(this, tailOffset, expect, update);
     }
 ~~~
+
+enq()：将节点插入队尾，失败则自旋，直到成功。
+~~~
+private Node enq(final Node node) {
+        for (;;) {
+            Node t = tail;
+            if (t == null) { // Must initialize
+                if (compareAndSetHead(new Node()))
+                    tail = head;
+            } else {
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {
+                    t.next = node;
+                    return t;
+                }
+            }
+        }
+    }
+~~~
+
+
 
 

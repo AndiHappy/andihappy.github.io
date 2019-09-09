@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>怎么读书 - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode26  Remove Duplicates from Sorted Array - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/07/01/readingbook/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/18/leetcode26/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -164,13 +164,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg1.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg1.jpg')
+        background-image: url('/img/post-bg-2015.jpg')
     }
 
     
@@ -183,13 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
+                        
                     </div>
-                    <h1>怎么读书</h1>
+                    <h1>LeetCode26  Remove Duplicates from Sorted Array</h1>
                     
                     
-                    <h2 class="subheading"></h2>
+                    <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by 飞翔的面包 on July 1, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 18, 2019</span>
                 </div>
             </div>
         </div>
@@ -207,121 +209,86 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>It’s not about how many books you read, it’s about how much you retain from what you read. <br />
+				<p>LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array</p>
+
+<p>数组操作</p>
+
 <!--more-->
-Most people I talk to don’t have a reading strategy. They just pick up something and start reading. I used to be like that. But now, that’s unthinkable to me. Sure, you might read a novel for entertainment.</p>
 
-<p>But think about it; why do you even read a non-fiction(虚构的) book in the first place?
- Exactly, you want to get something out of it.
-You want to learn things that you can apply in your life to grow.
-That’s the whole point.
-I’m often asked: “How do you remember information you read in books?”
-In this post, I’ll explain my system.</p>
+<p>LeetCode 26.  Remove Duplicates from Sorted Array</p>
 
-<ol>
-  <li>Have A Purpose
-Before I even think about which books I’m going to read, I think about what I’m trying to achieve.
- I strongly believe that the content of books should align（） with what’s going on in your life.
-I’ll give you an example.</li>
-</ol>
+<p>描述：</p>
 
-<p>But back in 2011, that kind of stuff wasn’t on my mind.
-I had just finished my degree and started a business.
-I was hustling（忙碌） like a moron（笨蛋）（我像个白痴一样忙碌着） and only thinking about growing our business.
-That’s why you need a purpose to read.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
 
-<p>Only read books that teach you how to overcome your current challenges.</p>
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
 
-<ol>
-  <li>See Yourself As A Teacher
-Knowledge is only good if you apply it, right? But here’s one thing a lot of people don’t consider:
- Sharing knowledge is a great application. （分享知识是一个很好的应用）
-You might not be a teacher, but if you act like one, you’re already applying knowledge.
-All it takes is a mindset shift.（心态的转变）</li>
-</ol>
+Example 1:
 
-<p>Don’t just ‘read’ a book. No, devour （如饥似渴）a book and talk about it with others.</p>
+Given nums = [1,1,2],
 
-<p>Say to yourself: “I must focus on the book at hand because I’m going to share everything I learned with others. I better know my shit.”</p>
+Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively.
 
-<ol>
-  <li>Highlight &amp; Make Mental Connections</li>
-</ol>
+It doesn't matter what you leave beyond the returned length.
+Example 2:
 
-<p>The more connections you make between pieces of information in your brain, the better you remember it.</p>
+Given nums = [0,0,1,1,1,2,2,3,3,4],
 
-<p>I do that by making a lot of notes.</p>
+Your function should return length = 5, with the first five elements of nums being modified to 0, 1, 2, 3, and 4 respectively.
 
-<p>If you think books are sacred（神圣的） and shouldn’t be highlighted and written on,
-you will never retain a lot from books. Making notes, folding pages, and highlighting text is simple and practical.</p>
+It doesn't matter what values are set beyond the returned length.
+Clarification:
 
-<p>That’s why I always keep a highlighter and pen with me.
-If you read digitally, you only need your finger
-— just don’t forget to highlight interesting passages.</p>
+Confused why the returned value is an integer but your answer is an array?
 
-<p>Here are some other tips that help me to make better connections between information:</p>
+Note that the input array is passed in by reference, which means modification to the input array will be known to the caller as well.
 
-<p>I have a separate “Book Notes” folder in my note-taking app.
-When I highlight something very important, I take a picture of that page and upload it to my Book Notes.
-Then, I immediately write WHY it’s important and how I can use it.</p>
+Internally you can think of this:
 
-<p>I use this process because I often highlight things, and when I look back, I think: “Why did I highlight this?”</p>
+// nums is passed in by reference. (i.e., without making a copy)
+int len = removeDuplicates(nums);
 
-<p>如何安排会看，是非常重要的：具体可行的建议</p>
+// any modification to nums in your function would be known by the caller.
+// using the length returned by your function, it prints the first len elements.
+for (int i = 0; i &lt; len; i++) {
+    print(nums[i]);
+}
 
-<p>So always write down why you highlighted something. You don’t have to do it for every highlight. Just do it for sections that you immediately have an application for. I often write down how I can use a piece of advice in my business. And when I get an idea for an article, I think of a title and attach a picture of the text that I highlighted.</p>
+</code></pre></div></div>
 
-<ol>
-  <li>Visualize &amp; Imagine</li>
-</ol>
+<p>思路：</p>
 
-<p>Another great way to make connections in your mind is by visualizing（使形象化） what you’re learning.
-We’re visual learners, and our memories are also visual.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>关键在于 in-place 操作，但是反过来想， in-place 操作也是算法提示的一种。
+</code></pre></div></div>
 
-<p>What I like to do when I read is to have imaginary conversations about the stuff that I’m reading. I imagine myself sitting together with a friend and talking about the subject. Or, when I read a piece of useful advice, I visualize myself actually doing that thing.</p>
+<p>代码：</p>
 
-<p>I remember vividly when I read How To Win Friends And Influence Peopleby Dale Carnegie for the first time. One of the pieces of advice Carnegie gives, is to become genuinely（真诚的） interested in people.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] nums) {
 
-<p>So I visualized myself having a conversation with a stranger and being genuinely interested in what that person had to say. When you visualize something, it’s almost like the real thing.</p>
+	public int removeDuplicates(int[] nums) {
+		if(nums == null || nums.length &lt;2) return nums.length;
+		int key = nums[0],cur = 1;
+		for (int current = 1; current &lt; nums.length; current++) {
+			if(nums[current] != key){
+				nums[cur] = nums[current];
+				++cur;
+				key = nums[current];
+			}
+		}
+		return cur;
+	}     
+}
+</code></pre></div></div>
 
-<p>Visualization is also a common self-improvement tool that’s been used many top-performers. Recently retired NBA-player Paul Pierce once explained how he uses it before a game:</p>
-
-<p>“I probably visualize myself, the shots I’m going to get in the game, how I’m going to play defense, what we have to do to stop the other team’s best player, what it’s going to take out of me, the whole aspect of the game.”</p>
-
-<ol>
-  <li>Immediately Apply One Piece Of New Knowledge</li>
-</ol>
-
-<p>Look at your life. Ask yourself: How can I grow? That can be personally, financially 经济上的 or spiritually 精神上的.</p>
-
-<p>Understand that growth doesn’t happen by itself. Learning new skills, earning more money, having a great relationship — it all takes hard work.
-But you can make that growth a lot easier if you apply the things you learn in books.</p>
-
-<p>Remember: Knowledge alone is completely useless.</p>
-
-<p>There’s nothing sadder 可悲的 than a well-read person who holds himself captive by the four walls of his room.</p>
-
-<p>You must go out there and apply things you learn.
-Once you do that, you will grow.
-No doubt about it. So always ask yourself this after you finish a book:</p>
-
-<p>“What’s the one thing I’m going to apply after reading this book?”</p>
-
-<p>You see, it’s about what you do with your knowledge, not about how much you have.</p>
-
-<p>Don’t read more. Read smarter.
-Also, apply this strategy to everything you read. Even something little like this article.
-So let’s do a little exercise to close this off:</p>
-
-<p>What’s the one thing you’re going to apply after reading this article?
-Answer (and visualize) that, and I’ll bet you’ll retain more from this article than any other thing you’ve read today.</p>
-
-<ol>
-  <li>带有目的的去读书，把自己当做老师</li>
-  <li>读书笔记，怎么样去做读书笔记，以自我为中心</li>
-  <li>视觉化知识，记录。功利化的读书，作用于自身</li>
-  <li>立刻的去实践，只存储在自己脑子里面的知识是没有用处的。</li>
-</ol>
+<p>在比较一下标准的简练答案：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] A) {
+    if (A.length&lt;=1) return nums.length;
+    int j=0;
+    for (int i=0; i&lt;A.length; i++)
+        if (A[i]!=A[j]) A[++j]=A[i];
+    return ++j;
+}
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -329,19 +296,12 @@ Answer (and visualize) that, and I’ll bet you’ll retain more from this artic
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/04/15/remotework/" data-toggle="tooltip" data-placement="top" title="远程工作language的选择">
+                        <a href="/2019/08/17/concurrent-3/" data-toggle="tooltip" data-placement="top" title="并发知识梳理：2. Lock">
                         Previous<br>
-                        <span>远程工作language的选择</span>
+                        <span>并发知识梳理：2. Lock</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/02/hashmap/" data-toggle="tooltip" data-placement="top" title="沉下心来分析HashMap的源码">
-                        Next<br>
-                        <span>沉下心来分析HashMap的源码</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -362,6 +322,20 @@ Answer (and visualize) that, and I’ll bet you’ll retain more from this artic
             </div>
 
     <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
         
 
     <!-- Sidebar Container -->
@@ -442,8 +416,8 @@ Answer (and visualize) that, and I’ll bet you’ll retain more from this artic
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/07/01/readingbook";
-    var disqus_url = "http://localhost:4000/2019/07/01/readingbook/";
+    var disqus_identifier = "/2019/08/18/ leetcode26";
+    var disqus_url = "http://localhost:4000/2019/08/18/leetcode26/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -604,6 +578,50 @@ Answer (and visualize) that, and I’ll bet you’ll retain more from this artic
 
 
 <!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+        var P = $('div.post-container'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
 
 
 

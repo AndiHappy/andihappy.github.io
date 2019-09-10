@@ -5,9 +5,240 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 09 Sep 2019 21:26:20 +0800</pubDate>
-    <lastBuildDate>Mon, 09 Sep 2019 21:26:20 +0800</lastBuildDate>
+    <pubDate>Tue, 10 Sep 2019 23:28:23 +0800</pubDate>
+    <lastBuildDate>Tue, 10 Sep 2019 23:28:23 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>LeetCode 30. Substring with Concatenation of All Words</title>
+        <description>&lt;p&gt;LeetCode 29 题的分析和总结：  30. Substring with Concatenation of All Words&lt;/p&gt;
+
+&lt;p&gt;hard&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 30. Substring with Concatenation of All Words&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
+
+Example 1:
+
+Input:
+  s = &quot;barfoothefoobarman&quot;,
+  words = [&quot;foo&quot;,&quot;bar&quot;]
+Output: [0,9]
+Explanation: Substrings starting at index 0 and 9 are &quot;barfoor&quot; and &quot;foobar&quot; respectively.
+The output order does not matter, returning [9,0] is fine too.
+Example 2:
+
+Input:
+  s = &quot;wordgoodgoodgoodbestword&quot;,
+  words = [&quot;word&quot;,&quot;good&quot;,&quot;best&quot;,&quot;word&quot;]
+Output: []
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先是words的定长，这个在匹配的时候，
+肯定更加的好判断一点，还有就是题目中没有明确说明的重复出现的单词的现象，
+需要考虑一下。可以采用Map的数据结构存储，key为单词，value为单词出现的
+次数。
+
+对于匹配的元素，再次的采用map数据记录。
+根据匹配的个数是否与words的length值相等来判断是否，匹配成功。
+
+对字符串进行遍历操作，每次的i，都要进行words的匹配的校验
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;Integer&amp;gt; findSubstring(String s, String[] words) {
+        final Map&amp;lt;String, Integer&amp;gt; counts = new HashMap&amp;lt;&amp;gt;();
+        for (final String word : words) {
+            counts.put(word, counts.getOrDefault(word, 0) + 1);
+        }
+
+        final List&amp;lt;Integer&amp;gt; indexes = new ArrayList&amp;lt;&amp;gt;();
+        final int n = s.length(), num = words.length, len = words[0].length();
+        for (int i = 0; i &amp;lt; n - num * len + 1; i++) {
+            final Map&amp;lt;String, Integer&amp;gt; seen = new HashMap&amp;lt;&amp;gt;();
+            int j = 0;
+            while (j &amp;lt; num) {
+                final String word = s.substring(i + j * len, i + (j + 1) * len);
+                if (counts.containsKey(word)) {
+                    seen.put(word, seen.getOrDefault(word, 0) + 1);
+                    if (seen.get(word) &amp;gt; counts.getOrDefault(word, 0)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                j++;
+            }
+            if (j == num) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
+    }	
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Mon, 19 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/19/leetcode30/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/19/leetcode30/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>LeetCode 29. Divide Two Integers</title>
+        <description>&lt;p&gt;LeetCode 29 题的分析和总结：  29. Divide Two Integers&lt;/p&gt;
+
+&lt;p&gt;迭代循环&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;LeetCode 29. Divide Two Integers&lt;/p&gt;
+
+&lt;p&gt;描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+
+Return the quotient after dividing dividend by divisor.
+
+The integer division should truncate toward zero.
+
+Example 1:
+
+Input: dividend = 10, divisor = 3
+Output: 3
+Example 2:
+
+Input: dividend = 7, divisor = -3
+Output: -2
+Note:
+
+Both dividend and divisor will be 32-bit signed integers.
+The divisor will never be 0.
+Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose of this problem, assume that your function returns 231 − 1 when the division result overflows.
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;迭代逻辑，不使用乘除，取余的计算，我们还可以使用加法，位移运算等。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	public int divide_copy(int dividend, int divisor) {
+    if (dividend == Integer.MIN_VALUE &amp;amp;&amp;amp; divisor == -1) {
+        return Integer.MAX_VALUE;
+    }
+
+    if (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) {
+        return divideHelper(-dividend, -divisor);
+    } else if (dividend &amp;gt; 0) {
+        return -divideHelper(-dividend, divisor);
+    }
+    else if(divisor &amp;gt; 0) {
+        return -divideHelper(dividend, -divisor);
+    }
+    else {
+        return divideHelper(dividend, divisor);
+    }
+}
+
+private int divideHelper(int dividend, int divisor){
+    int res = 0;
+    int currentDivisor = divisor;
+    while(dividend&amp;lt;=divisor){    // abs(divisor) &amp;lt;= abs(dividend)
+    	
+        int temp = 1;  
+        //test max temp for: temp * abs(divisor) &amp;lt;= abs(dividend), while temp = 2^n
+        while( (currentDivisor &amp;lt;&amp;lt; 1) &amp;gt;=dividend &amp;amp;&amp;amp; (currentDivisor &amp;lt;&amp;lt; 1) &amp;lt;0 ){  
+            temp &amp;lt;&amp;lt;=1;
+            currentDivisor &amp;lt;&amp;lt;=1;
+        }
+        
+        dividend -= currentDivisor;  
+        res += temp;    
+        currentDivisor = divisor;
+    }       
+    return res;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;本来还有一个采用加法循环res的值，但是如果是除以1的话，会有超时的问题，所以才有了位移的操作。关于这个为什么是负数的操作，下面有一个正数的操作，但是报错了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	public int divide(int dividend, int divisor) {
+		//首先判定符号的问题
+		boolean flag = (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) || (dividend &amp;lt; 0 &amp;amp;&amp;amp; divisor &amp;lt; 0);
+		int dividends = 0;
+		int divisors = 0;
+		if (dividend == Integer.MIN_VALUE) dividend = Integer.MAX_VALUE;
+		if (divisor == Integer.MIN_VALUE) divisor = Integer.MAX_VALUE;
+		
+		dividends = dividend &amp;gt; 0 ? dividend : -dividend;
+		divisors = divisor &amp;gt; 0 ? divisor : -divisor;
+		
+		int res = 0;int curdivisors = divisors;
+		while (dividends - divisors &amp;gt;= 0) {
+			int tmp = 1;
+			while( (divisors &amp;lt;&amp;lt; 1 &amp;lt;= dividends) &amp;amp;&amp;amp; (divisors &amp;lt;&amp;lt; 1) &amp;gt; 0 ) {
+				tmp &amp;lt;&amp;lt;=1;
+				divisors &amp;lt;&amp;lt;=1;
+			}
+			
+			res+=tmp;
+			dividends -= divisors;
+			divisors = curdivisors;
+		}
+		return flag ? res : -res;
+	}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;错误的测试用例是：
+-2147483648 1&lt;/p&gt;
+
+&lt;p&gt;错误的根由在于 (Integer.MAX_VALUE），(Integer.MIN_VALUE) 一个是 -2147483648，一个是2147483647，这道题目下，如果不使用Long值，修改为负数比较合适。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class Solution {
+    		public int divide(int dividend, int divisor) {
+		//首先判定符号的问题
+		boolean flag = (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) || (dividend &amp;lt; 0 &amp;amp;&amp;amp; divisor &amp;lt; 0);
+
+		int dividends = dividend &amp;gt; 0 ? -dividend : dividend;
+		int divisors = divisor &amp;gt; 0 ? -divisor : divisor;
+		
+		int res = 0;int curdivisors = divisors;
+		while (dividends &amp;lt;= divisors) {
+			int tmp = 1;
+			while( (divisors &amp;lt;&amp;lt; 1 &amp;gt;= dividends) &amp;amp;&amp;amp; (divisors &amp;lt;&amp;lt; 1) &amp;lt; 0 ) {
+				tmp &amp;lt;&amp;lt;=1;
+				divisors &amp;lt;&amp;lt;=1;
+			}
+			
+			res+=tmp;
+			dividends -= divisors;
+			divisors = curdivisors;
+		}
+			return flag ? res==Integer.MIN_VALUE?Integer.MAX_VALUE:res : -res;
+
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/18/leetcode29/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode29/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>LeetCode28   Implement strStr()</title>
@@ -1630,196 +1861,6 @@ class Solution {
         <pubDate>Fri, 16 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/16/leetcode24/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode24/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode23</title>
-        <description>&lt;p&gt;LeetCode 23题的分析和总结：Merge k Sorted Lists&lt;/p&gt;
-
-&lt;p&gt;LeetCode 21. Merge Two Sorted Lists ，从2到K的扩展，解法确大不一样了。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 23. Merge k Sorted Lists&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
-
-Example:
-
-Input:
-[
-  1-&amp;gt;4-&amp;gt;5,
-  1-&amp;gt;3-&amp;gt;4,
-  2-&amp;gt;6
-]
-Output: 1-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;4-&amp;gt;5-&amp;gt;6
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;我们已经实现过了 Merge two Sorted Lists,使用的是while循环，直接的设置一个新的List。但是这个就有点力不从心了，因为这个K值的大小无法确定，而且寻找最小的当前节点也比较的费时。需要采用另外的策略。
-
-利用已经有的Merge two Sorted Lists，直接的采用分治的策略，先两两合并，然后在同一的合并在一起。
-
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-public static ListNode mergeKLists_best(ListNode[] lists){
-    return partion(lists,0,lists.length-1);
-}
-
-public static ListNode partion(ListNode[] lists,int s,int e){
-    if(s==e)  return lists[s];
-    if(s&amp;lt;e){
-        int q=s+(e-s)/2;
-        ListNode l1=partion(lists,s,q);
-        ListNode l2=partion(lists,q+1,e);
-        return mergeTwoLists(l1,l2);
-    }else
-        return null;
-}
-
-public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-	ListNode head = new ListNode(-1);
-	ListNode tmp = head;
-	while (l1 != null || l2 != null) {
-		int l1v = l1 != null ? l1.val : Integer.MAX_VALUE;
-		int l2v = l2 != null ? l2.val : Integer.MAX_VALUE;
-		if (l1v &amp;lt; l2v) {
-			tmp.next = new ListNode(l1v);
-			l1 = l1.next;
-		} else {
-			tmp.next = new ListNode(l2v);
-			l2 = l2.next;
-		}
-		tmp = tmp.next;
-	}
-	return head.next;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;其中的mergeTwoLists，还可以再次的使用递归的算法合并：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//This function is from Merge Two Sorted Lists.
-public static ListNode merge(ListNode l1,ListNode l2){
-    if(l1==null) return l2;
-    if(l2==null) return l1;
-    if(l1.val&amp;lt;l2.val){
-        l1.next=merge(l1.next,l2);
-        return l1;
-    }else{
-        l2.next=merge(l1,l2.next);
-        return l2;
-    }
-}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Fri, 16 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/16/leetcode23/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode23/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode22</title>
-        <description>&lt;p&gt;LeetCode 22题的分析和总结：22. Generate Parentheses&lt;/p&gt;
-
-&lt;p&gt;递归&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 22. Generate Parentheses&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given n pairs of parentheses, 
-write a function to generate 
-all combinations of well-formed parentheses.
-
-For example, given n = 3, a solution set is:
-
-[
-  &quot;((()))&quot;,
-  &quot;(()())&quot;,
-  &quot;(())()&quot;,
-  &quot;()(())&quot;,
-  &quot;()()()&quot;
-]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;一开始的思路是插入，寻找插入的位置：
-|（|）|
-|（|）|（|）|
-后来代码累出来之后，错误百出。
-
-然后还是根据规律来进行办事，参看讨论的迭代思路，真正的梳理了逻辑之后，发现解决方案，还是一如既往的好看，简练，直接。
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;String&amp;gt; generateParenthesis(int n) {
-        List&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;String&amp;gt;();
-        backtrack(list, &quot;&quot;, 0, 0, n);
-        return list;
-    }
-    
-    public void backtrack(List&amp;lt;String&amp;gt; list, String str, int open, int close, int max){
-        
-        if(str.length() == max*2){
-            list.add(str);
-            return;
-        }
-        
-        if(open &amp;lt; max)
-            backtrack(list, str+&quot;(&quot;, open+1, close, max);
-        if(close &amp;lt; open)
-            backtrack(list, str+&quot;)&quot;, open, close+1, max);
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;理解这个算法的一个样例：
-(
-((
-(((
-((()
-((())
-((()))
-(()
-(()(
-(()()
-(()())
-(())
-(())(
-(())()
-()
-()(
-()((
-()(()
-()(())
-()()
-()()(
-()()()&lt;/p&gt;
-</description>
-        <pubDate>Fri, 16 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/16/leetcode22/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/16/leetcode22/</guid>
         
         <category>LeetCode</category>
         

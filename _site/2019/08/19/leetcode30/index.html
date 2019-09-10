@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode24 - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode 30. Substring with Concatenation of All Words - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/16/leetcode24/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/19/leetcode30/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>LeetCode24</h1>
+                    <h1>LeetCode 30. Substring with Concatenation of All Words</h1>
                     
                     
                     <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 16, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 19, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,117 +209,78 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 24题的分析和总结：Swap Nodes in Pairs</p>
+				<p>LeetCode 29 题的分析和总结：  30. Substring with Concatenation of All Words</p>
 
-<p>递归</p>
+<p>hard</p>
 
 <!--more-->
 
-<p>LeetCode 24. Swap Nodes in Pairs</p>
+<p>LeetCode 30. Substring with Concatenation of All Words</p>
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, 
-swap every two adjacent nodes and 
-return its head.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
 
-You may not modify the values in the list's nodes, 
-only nodes itself may be changed.
+Example 1:
 
- 
+Input:
+  s = "barfoothefoobarman",
+  words = ["foo","bar"]
+Output: [0,9]
+Explanation: Substrings starting at index 0 and 9 are "barfoor" and "foobar" respectively.
+The output order does not matter, returning [9,0] is fine too.
+Example 2:
 
-Example:
-
-Given 
-1-&gt;2-&gt;3-&gt;4, 
-you should return the list as 
-2-&gt;1-&gt;4-&gt;3.
+Input:
+  s = "wordgoodgoodgoodbestword",
+  words = ["word","good","best","word"]
+Output: []
 
 </code></pre></div></div>
 
 <p>思路：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>首先是words的定长，这个在匹配的时候，
+肯定更加的好判断一点，还有就是题目中没有明确说明的重复出现的单词的现象，
+需要考虑一下。可以采用Map的数据结构存储，key为单词，value为单词出现的
+次数。
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>链表翻转的变形类题目
+对于匹配的元素，再次的采用map数据记录。
+根据匹配的个数是否与words的length值相等来判断是否，匹配成功。
+
+对字符串进行遍历操作，每次的i，都要进行words的匹配的校验
 </code></pre></div></div>
 
 <p>代码：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;Integer&gt; findSubstring(String s, String[] words) {
+        final Map&lt;String, Integer&gt; counts = new HashMap&lt;&gt;();
+        for (final String word : words) {
+            counts.put(word, counts.getOrDefault(word, 0) + 1);
+        }
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
- * }
- */
-class Solution {
-    //替换两个节点的值
-	public static ListNode swapPairs(ListNode head) {
-		if (head == null|| head.next == null)
-			return head;
-		
-		ListNode pre = new ListNode(0);
-		ListNode tmp = null;
-		ListNode currentPre = pre;
-		
-		
-		
-		while (head != null &amp;&amp; head.next != null) {
-			//next 插入到 head 之前即可 
-			tmp = head.next;
-				
-		    head.next = tmp.next;
-				
-			tmp.next = head;
-			
-			currentPre.next = tmp;
-			
-			if(pre.next == null) pre.next = tmp;
-			currentPre = head;
-			
-			head = head.next;
-			
-		}
-		return pre.next;
-	}
-}
+        final List&lt;Integer&gt; indexes = new ArrayList&lt;&gt;();
+        final int n = s.length(), num = words.length, len = words[0].length();
+        for (int i = 0; i &lt; n - num * len + 1; i++) {
+            final Map&lt;String, Integer&gt; seen = new HashMap&lt;&gt;();
+            int j = 0;
+            while (j &lt; num) {
+                final String word = s.substring(i + j * len, i + (j + 1) * len);
+                if (counts.containsKey(word)) {
+                    seen.put(word, seen.getOrDefault(word, 0) + 1);
+                    if (seen.get(word) &gt; counts.getOrDefault(word, 0)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                j++;
+            }
+            if (j == num) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
+    }	
 </code></pre></div></div>
-
-<p>这个翻转的套路需要背会了，这次是两个翻转，下次有可能是3个元素翻转，再下次有可能是从i到j的翻转。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  /***
-   * 此方法的内容是翻转从head开始，后面的K个元素，如果不足K个元素，则不翻转
-   * @param head 开始的节点
-   * @param k 后续翻转元素的个数
-   * */
-	public static ListNode swapPairs(ListNode head,int k) {
-		ListNode returntmp = new ListNode(-1);
-		returntmp.next = head;
-		ListNode currentPre = returntmp;
-		ListNode tmp = head;
-		int i = 0;
-		while(tmp.next != null) {
-			i++;
-			tmp = tmp.next;
-		}
-		
-		if(i&lt;k) return head;
-		
-		ListNode tmp2 = head;int j = 0;
-		
-		while(tmp2 != null &amp;&amp; tmp2.next != null &amp;&amp; j &lt; k) {
-			ListNode tmp3 = tmp2.next;
-			tmp2.next = tmp3.next;
-			tmp3.next = tmp2;
-			currentPre.next = tmp3;
-			tmp2= tmp2.next;
-		}
-		
-		return returntmp.next;
-		
-	}
-</code></pre></div></div>
-
 
 
                 <hr style="visibility: hidden;">
@@ -327,19 +288,12 @@ class Solution {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/16/leetcode23/" data-toggle="tooltip" data-placement="top" title="LeetCode23">
+                        <a href="/2019/08/18/leetcode29/" data-toggle="tooltip" data-placement="top" title="LeetCode 29. Divide Two Integers">
                         Previous<br>
-                        <span>LeetCode23</span>
+                        <span>LeetCode 29. Divide Two Integers</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/16/leetcode25/" data-toggle="tooltip" data-placement="top" title="LeetCode25">
-                        Next<br>
-                        <span>LeetCode25</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -454,8 +408,8 @@ class Solution {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/16/ leetcode24";
-    var disqus_url = "http://localhost:4000/2019/08/16/leetcode24/";
+    var disqus_identifier = "/2019/08/19/ leetcode30";
+    var disqus_url = "http://localhost:4000/2019/08/19/leetcode30/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

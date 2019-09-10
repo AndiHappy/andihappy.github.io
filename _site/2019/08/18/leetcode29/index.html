@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode24 - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode 29. Divide Two Integers - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/16/leetcode24/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/18/leetcode29/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>LeetCode24</h1>
+                    <h1>LeetCode 29. Divide Two Integers</h1>
                     
                     
                     <h2 class="subheading">算法分析和总结</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 16, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 18, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,117 +209,141 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 24题的分析和总结：Swap Nodes in Pairs</p>
+				<p>LeetCode 29 题的分析和总结：  29. Divide Two Integers</p>
 
-<p>递归</p>
+<p>迭代循环</p>
 
 <!--more-->
 
-<p>LeetCode 24. Swap Nodes in Pairs</p>
+<p>LeetCode 29. Divide Two Integers</p>
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, 
-swap every two adjacent nodes and 
-return its head.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
 
-You may not modify the values in the list's nodes, 
-only nodes itself may be changed.
+Return the quotient after dividing dividend by divisor.
 
- 
+The integer division should truncate toward zero.
 
-Example:
+Example 1:
 
-Given 
-1-&gt;2-&gt;3-&gt;4, 
-you should return the list as 
-2-&gt;1-&gt;4-&gt;3.
+Input: dividend = 10, divisor = 3
+Output: 3
+Example 2:
+
+Input: dividend = 7, divisor = -3
+Output: -2
+Note:
+
+Both dividend and divisor will be 32-bit signed integers.
+The divisor will never be 0.
+Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose of this problem, assume that your function returns 231 − 1 when the division result overflows.
 
 </code></pre></div></div>
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>链表翻转的变形类题目
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>迭代逻辑，不使用乘除，取余的计算，我们还可以使用加法，位移运算等。
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
- * }
- */
-class Solution {
-    //替换两个节点的值
-	public static ListNode swapPairs(ListNode head) {
-		if (head == null|| head.next == null)
-			return head;
-		
-		ListNode pre = new ListNode(0);
-		ListNode tmp = null;
-		ListNode currentPre = pre;
-		
-		
-		
-		while (head != null &amp;&amp; head.next != null) {
-			//next 插入到 head 之前即可 
-			tmp = head.next;
-				
-		    head.next = tmp.next;
-				
-			tmp.next = head;
-			
-			currentPre.next = tmp;
-			
-			if(pre.next == null) pre.next = tmp;
-			currentPre = head;
-			
-			head = head.next;
-			
-		}
-		return pre.next;
-	}
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide_copy(int dividend, int divisor) {
+    if (dividend == Integer.MIN_VALUE &amp;&amp; divisor == -1) {
+        return Integer.MAX_VALUE;
+    }
+
+    if (dividend &gt; 0 &amp;&amp; divisor &gt; 0) {
+        return divideHelper(-dividend, -divisor);
+    } else if (dividend &gt; 0) {
+        return -divideHelper(-dividend, divisor);
+    }
+    else if(divisor &gt; 0) {
+        return -divideHelper(dividend, -divisor);
+    }
+    else {
+        return divideHelper(dividend, divisor);
+    }
+}
+
+private int divideHelper(int dividend, int divisor){
+    int res = 0;
+    int currentDivisor = divisor;
+    while(dividend&lt;=divisor){    // abs(divisor) &lt;= abs(dividend)
+    	
+        int temp = 1;  
+        //test max temp for: temp * abs(divisor) &lt;= abs(dividend), while temp = 2^n
+        while( (currentDivisor &lt;&lt; 1) &gt;=dividend &amp;&amp; (currentDivisor &lt;&lt; 1) &lt;0 ){  
+            temp &lt;&lt;=1;
+            currentDivisor &lt;&lt;=1;
+        }
+        
+        dividend -= currentDivisor;  
+        res += temp;    
+        currentDivisor = divisor;
+    }       
+    return res;
 }
 </code></pre></div></div>
 
-<p>这个翻转的套路需要背会了，这次是两个翻转，下次有可能是3个元素翻转，再下次有可能是从i到j的翻转。</p>
+<p>本来还有一个采用加法循环res的值，但是如果是除以1的话，会有超时的问题，所以才有了位移的操作。关于这个为什么是负数的操作，下面有一个正数的操作，但是报错了：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  /***
-   * 此方法的内容是翻转从head开始，后面的K个元素，如果不足K个元素，则不翻转
-   * @param head 开始的节点
-   * @param k 后续翻转元素的个数
-   * */
-	public static ListNode swapPairs(ListNode head,int k) {
-		ListNode returntmp = new ListNode(-1);
-		returntmp.next = head;
-		ListNode currentPre = returntmp;
-		ListNode tmp = head;
-		int i = 0;
-		while(tmp.next != null) {
-			i++;
-			tmp = tmp.next;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide(int dividend, int divisor) {
+		//首先判定符号的问题
+		boolean flag = (dividend &gt; 0 &amp;&amp; divisor &gt; 0) || (dividend &lt; 0 &amp;&amp; divisor &lt; 0);
+		int dividends = 0;
+		int divisors = 0;
+		if (dividend == Integer.MIN_VALUE) dividend = Integer.MAX_VALUE;
+		if (divisor == Integer.MIN_VALUE) divisor = Integer.MAX_VALUE;
+		
+		dividends = dividend &gt; 0 ? dividend : -dividend;
+		divisors = divisor &gt; 0 ? divisor : -divisor;
+		
+		int res = 0;int curdivisors = divisors;
+		while (dividends - divisors &gt;= 0) {
+			int tmp = 1;
+			while( (divisors &lt;&lt; 1 &lt;= dividends) &amp;&amp; (divisors &lt;&lt; 1) &gt; 0 ) {
+				tmp &lt;&lt;=1;
+				divisors &lt;&lt;=1;
+			}
+			
+			res+=tmp;
+			dividends -= divisors;
+			divisors = curdivisors;
 		}
-		
-		if(i&lt;k) return head;
-		
-		ListNode tmp2 = head;int j = 0;
-		
-		while(tmp2 != null &amp;&amp; tmp2.next != null &amp;&amp; j &lt; k) {
-			ListNode tmp3 = tmp2.next;
-			tmp2.next = tmp3.next;
-			tmp3.next = tmp2;
-			currentPre.next = tmp3;
-			tmp2= tmp2.next;
-		}
-		
-		return returntmp.next;
-		
+		return flag ? res : -res;
 	}
 </code></pre></div></div>
+<p>错误的测试用例是：
+-2147483648 1</p>
 
+<p>错误的根由在于 (Integer.MAX_VALUE），(Integer.MIN_VALUE) 一个是 -2147483648，一个是2147483647，这道题目下，如果不使用Long值，修改为负数比较合适。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Solution {
+    		public int divide(int dividend, int divisor) {
+		//首先判定符号的问题
+		boolean flag = (dividend &gt; 0 &amp;&amp; divisor &gt; 0) || (dividend &lt; 0 &amp;&amp; divisor &lt; 0);
+
+		int dividends = dividend &gt; 0 ? -dividend : dividend;
+		int divisors = divisor &gt; 0 ? -divisor : divisor;
+		
+		int res = 0;int curdivisors = divisors;
+		while (dividends &lt;= divisors) {
+			int tmp = 1;
+			while( (divisors &lt;&lt; 1 &gt;= dividends) &amp;&amp; (divisors &lt;&lt; 1) &lt; 0 ) {
+				tmp &lt;&lt;=1;
+				divisors &lt;&lt;=1;
+			}
+			
+			res+=tmp;
+			dividends -= divisors;
+			divisors = curdivisors;
+		}
+			return flag ? res==Integer.MIN_VALUE?Integer.MAX_VALUE:res : -res;
+
+	}
+}
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -327,17 +351,17 @@ class Solution {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/16/leetcode23/" data-toggle="tooltip" data-placement="top" title="LeetCode23">
+                        <a href="/2019/08/18/leetcode28/" data-toggle="tooltip" data-placement="top" title="LeetCode28   Implement strStr()">
                         Previous<br>
-                        <span>LeetCode23</span>
+                        <span>LeetCode28   Implement strStr()</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2019/08/16/leetcode25/" data-toggle="tooltip" data-placement="top" title="LeetCode25">
+                        <a href="/2019/08/19/leetcode30/" data-toggle="tooltip" data-placement="top" title="LeetCode 30. Substring with Concatenation of All Words">
                         Next<br>
-                        <span>LeetCode25</span>
+                        <span>LeetCode 30. Substring with Concatenation of All Words</span>
                         </a>
                     </li>
                     
@@ -454,8 +478,8 @@ class Solution {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/16/ leetcode24";
-    var disqus_url = "http://localhost:4000/2019/08/16/leetcode24/";
+    var disqus_identifier = "/2019/08/18/ leetcode29";
+    var disqus_url = "http://localhost:4000/2019/08/18/leetcode29/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -195,28 +195,32 @@
 <div class="post-preview">
     <a href="/2019/08/20/concurrent-4/">
         <h2 class="post-title">
-            并发知识梳理：2. Lock
+            并发知识梳理：3. 通过具体的应用展示锁的实现机制
         </h2>
         
         <h3 class="post-subtitle">
-            
+            AQS和ReentrantLock
         </h3>
         
         <div class="post-content-preview">
-        <p>java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。</p>
+        <p>上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。</p>
 
 
         </div>
         <!-- <div class="post-content-preview">
-            java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。
+            上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。
 
 
 
-Lock
+ReentrantLock
 
-Lock接口和Condition接口的均为锁相关的两个接口，具体的说明：
+关于可重入锁带着两个问题，去分析的：
 
-  Lock implementations provide more extensive locking operations than can be obtained using syn...
+  怎么判断的重入，如何增加锁的次数的。
+  重入次数的判断，释放锁的时候，如果消减锁的次数，释放以后，其他的等待的线程是如何响应的
+
+
+
         </div> -->
     </a>
     <p class="post-meta">
@@ -421,7 +425,7 @@ Given a sorted array nums, remove the duplicates in-place such that each el...
         </h2>
         
         <h3 class="post-subtitle">
-            
+            锁的实现架构AQS
         </h3>
         
         <div class="post-content-preview">
@@ -450,11 +454,11 @@ Lock接口和Condition接口的均为锁相关的两个接口，具体的说明�
 <div class="post-preview">
     <a href="/2019/08/17/concurrent-2/">
         <h2 class="post-title">
-            并发知识梳理：1. synchronized
+            并发知识梳理：1. synchronized，volatile
         </h2>
         
         <h3 class="post-subtitle">
-            
+            JVM支持的关键字
         </h3>
         
         <div class="post-content-preview">
@@ -491,7 +495,7 @@ class Producer extends Thread {
         </h2>
         
         <h3 class="post-subtitle">
-            
+            简述梳理的过程
         </h3>
         
         <div class="post-content-preview">

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "并发知识梳理：2. Lock"
-subtitle: ""
+subtitle: "锁的实现架构AQS"
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true

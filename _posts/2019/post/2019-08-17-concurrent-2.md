@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "并发知识梳理：1. synchronized"
-subtitle: ""
+title: "并发知识梳理：1. synchronized，volatile"
+subtitle: "JVM支持的关键字"
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true

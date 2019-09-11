@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "并发知识梳理：概述"
-subtitle: ""
+subtitle: "简述梳理的过程"
 author: "zhailzh"  
 header-img: "img/post-bg-2015.jpg"  
 catalog: true

@@ -6,7 +6,8 @@
 
 ##FlyBread   
 
-个人邮箱:  zhailzh@126.com         
+个人邮箱:  zlzdbf@gmail.com
+         
 github : [https://github.com/andihappy](https://github.com/andihappy)
   
 信念：  
@@ -16,4 +17,4 @@ github : [https://github.com/andihappy](https://github.com/andihappy)
     笨但不懒，有心不怕事烦。  <br/>
     
 简介：
-    互联网+的企业沟通，协同，管理方面，热爱公司运营过程中的自动化管理。
+    互联网+沟通。

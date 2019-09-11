@@ -31,6 +31,9 @@ description: "JUST DO IT"
 <!-- Pager -->
 {% if paginator.total_pages > 1 %}
 <ul class="pager">
+    
+    <span class="page-number">第 {{ paginator.page }}/{{ paginator.total_pages }} 页</span>
+    
     {% if paginator.previous_page %}
     <li class="previous">
         <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; Newer Posts</a>

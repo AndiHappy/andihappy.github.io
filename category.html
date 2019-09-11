@@ -1,8 +1,8 @@
 ---
-title: 分类展示
+title: 杂记
 layout: default
 description: 天下古今之庸人，皆以一惰字致败
-header-img: "img/home-bg.jpg"
+header-img: "img/post-bg-os-metro.jpg"
 ---
 
 <!-- Page Header -->
@@ -40,23 +40,31 @@ header-img: "img/home-bg.jpg"
 		<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <!-- 标签云 -->
 			<div id='tag_cloud' class="tags">
-				{% for tag in site.categories %}
+				<!-- {% for tag in site.categories %}
 				<a href="#{{ tag[0] }}" title="{{ tag[0] }}" rel="{{ tag[1].size }}">{{ tag[0] }}</a>
-				{% endfor %}
+				{% endfor %} -->
+				<p>命运不可知</p>
 			</div>
+			<!-- Chinese Version -->
+	<div class="zh post-container">
+		{% capture about_zh %}{% include shuohua.md %}{% endcapture %}
+		{{ about_zh | markdownify }}
+	</div>
+
+			<p> 你说你自己的命运到底是谁在掌握尼？ </p>
 
             <!-- 标签列表 -->
-			{% for tag in site.categories %}
-			<div class="one-tag-list">
+			<!-- {% for tag in site.categories %} -->
+			<!-- <div class="one-tag-list">
 			  	<span class="fa fa-camera-retro fa-lg" id="{{ tag[0] }}">
                     <span class="tag-text">{{ tag[0] }}</span>
-                </span>
-				{% for post in tag[1] %}
+                </span> -->
+				<!-- {% for post in tag[1] %} -->
 				  <!-- <li class="listing-item">
 				  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
 				  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
 				  </li> -->
-				 <div class="post-preview">
+				 <!-- <div class="post-preview">
 				    <a href="{{ post.url | prepend: site.baseurl }}">
 				        <h2 class="post-title">
                             {{ post.title }}
@@ -66,13 +74,13 @@ header-img: "img/home-bg.jpg"
 				            {{ post.subtitle }}
 				        </h3>
 				        {% endif %}
-				    </a>
+				    </a> -->
 				    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-				</div>
-				<hr>
-				{% endfor %}
-			</div>
-			{% endfor %}
+				<!-- </div> -->
+				<!-- <hr> -->
+				<!-- {% endfor %} -->
+			<!-- </div> -->
+			<!-- {% endfor %} -->
 
 		</div>
 	</div>

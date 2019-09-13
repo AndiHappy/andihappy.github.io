@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode25 - 飞翔的面包 | FlyBread Blog</title>
+    <title>LeetCode 33. Search in Rotated Sorted Array - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/16/leetcode25/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/21/leetcode33/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>LeetCode25</h1>
+                    <h1>LeetCode 33. Search in Rotated Sorted Array</h1>
                     
                     
-                    <h2 class="subheading">算法分析和总结</h2>
+                    <h2 class="subheading">对算法和数据结构的理解</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 16, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 21, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,128 +209,70 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 25题的分析和总结：Reverse Nodes in k-Group</p>
+				<p>LeetCode 33. Search in Rotated Sorted Array</p>
 
-<p>递归</p>
+<p>从根本上面说，这个数据很有意思，只是正常的数据进行的一次转换，我们需要的就是怎么转换回来，或者说在经典的算法中，下标计算的时候，怎么能够不受这次转换的影响。</p>
 
 <!--more-->
 
-<p>LeetCode 25. Reverse Nodes in k-Group</p>
-
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
 
-k is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of k then left-out nodes in the end should remain as it is.
+(i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
 
-Example:
+You are given a target value to search. If found in the array return its index, otherwise return -1.
 
-Given this linked list: 1-&gt;2-&gt;3-&gt;4-&gt;5
+You may assume no duplicate exists in the array.
 
-For k = 2, you should return: 2-&gt;1-&gt;4-&gt;3-&gt;5
+Your algorithm's runtime complexity must be in the order of O(log n).
 
-For k = 3, you should return: 3-&gt;2-&gt;1-&gt;4-&gt;5
+Example 1:
 
-Note:
+Input: nums = [4,5,6,7,0,1,2], target = 0
+Output: 4
+Example 2:
 
-Only constant extra memory is allowed.
-You may not alter the values in the list's nodes, only nodes itself may be changed.
+Input: nums = [4,5,6,7,0,1,2], target = 3
+Output: -1
 </code></pre></div></div>
 
 <p>思路：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>既然是有一段数据被翻转回到了数据的开头，那我们怎么能够比较巧妙的翻转回去尼？
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>链表翻转的变形类题目,我们可以采用L24后面总结的基本的算法
+i = (i + k) % n
 </code></pre></div></div>
 
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static ListNode reverseKGroup(ListNode head, int k) {
-		
-		ListNode returnVal = null;
-		ListNode prevToSet = null;
-		int count = count(head);
-		if (k &gt; count) return head;
-
-		ListNode result = head;
-		while (result != null &amp;&amp; count &gt;= k) {
-			ListNode[] tmp = reverseKGroupHelper(result, k);
-			result = tmp[1].next;
-			count = count - k;
-			if (prevToSet != null) {
-				prevToSet.next = tmp[0];
-				prevToSet = tmp[1];
-			}
-
-			if (returnVal == null) {
-				returnVal = tmp[0];
-				prevToSet = tmp[1];
-			}
-		}
-
-		return returnVal;
-	}
+<p>具体的代码如下：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int search(int A[], int n, int target) {
+  int lo = 0, hi = n - 1;
+  //！！！寻找折点的算法也是折半查找！！！
+  while (lo &lt; hi) {
+   int mid = (lo + hi) / 2;
+   if (A[mid] &gt; A[hi])
+    lo = mid + 1;
+   else
+    hi = mid;
+  }
 
 
+  int rot = lo;
+  lo = 0;
+  hi = n - 1;
 
-	/**
-	 * @param head
-	 * @param count
-	 * @return
-	 */
-	private static int count(ListNode head) {
-		int count = 0;
-		ListNode result = head;
-		while (result != null) {
-			result = result.next;
-			++count;
-		}
-		return count;
-	}
-	
-	/**
-	 * 一段的反转的过程，具体的逻辑可以描述为：把元素轮流的插入链表的头部
-	 * */
-	public static ListNode[] reverseKGroupHelper(ListNode head, int limitk) {
-		ListNode pre = head;
-		ListNode current = head;
-		//当前元素的下一个元素
-		ListNode next = null;
-		int count = 1;
-		while (current.next != null &amp;&amp; count &lt; limitk) {
-			//下一个元素
-			next = current.next;
-			//把当前元素的下一个元素指向下一个元素的next，相当于是跳过了next所指向的元素
-			current.next = next.next;
-			//然后把next指向的元素的下一个元素设置为前一个元素，完成把头元素的后面的元素挪到前面的位置
-			next.next = pre;
-			pre = next;
-			++count;
-		}
-		return new ListNode[] { pre, current };
-	}
-</code></pre></div></div>
-
-<p>简单的写法：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode reverseKGroup_copy(ListNode head, int k) {
-    int n = 0;
-    for (ListNode i = head; i != null; n++, i = i.next);
-    
-    ListNode dmy = new ListNode(0);
-    dmy.next = head;
-    for(ListNode prev = dmy, tail = head; n &gt;= k; n -= k) {
-        for (int i = 1; i &lt; k; i++) {
-            ListNode next = tail.next.next;
-            tail.next.next = prev.next;
-            prev.next = tail.next;
-            tail.next = next;
-        }
-        
-        prev = tail;
-        tail = tail.next;
-    }
-    return dmy.next;
-}
+  while (lo &lt;= hi) {
+   int mid = (lo + hi) / 2;
+   //最关键的一句，说明了，这个题目看数据的方式
+   int realmid = (mid + rot) % n;
+   if (A[realmid] == target)
+    return realmid;
+   if (A[realmid] &lt; target)
+    lo = mid + 1;
+   else
+    hi = mid - 1;
+  }
+  return -1;
+ }
 </code></pre></div></div>
 
 
@@ -339,19 +281,12 @@ You may not alter the values in the list's nodes, only nodes itself may be chang
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/16/leetcode24/" data-toggle="tooltip" data-placement="top" title="LeetCode24">
+                        <a href="/2019/08/21/leetcode32/" data-toggle="tooltip" data-placement="top" title="LeetCode 32. Longest Valid Parentheses">
                         Previous<br>
-                        <span>LeetCode24</span>
+                        <span>LeetCode 32. Longest Valid Parentheses</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/17/concurrent-1/" data-toggle="tooltip" data-placement="top" title="并发知识梳理：概述">
-                        Next<br>
-                        <span>并发知识梳理：概述</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -466,8 +401,8 @@ You may not alter the values in the list's nodes, only nodes itself may be chang
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/16/ leetcode25";
-    var disqus_url = "http://localhost:4000/2019/08/16/leetcode25/";
+    var disqus_identifier = "/2019/08/21/ leetcode33";
+    var disqus_url = "http://localhost:4000/2019/08/21/leetcode33/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -259,12 +259,14 @@ LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框
    first = node;
   else
    l.next = node;
-   
+
   ++count;
   notEmpty.signal();
   return true;
  }
 ~~~
+
+
 
 
 

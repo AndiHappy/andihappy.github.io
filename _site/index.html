@@ -193,6 +193,43 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/08/23/concurrent-6/">
+        <h2 class="post-title">
+            并发知识梳理：4. 阻塞队列
+        </h2>
+        
+        <h3 class="post-subtitle">
+            AQS和ReentrantReadWriteLock
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>阻塞队列的接口为： BlockingQueue<E> 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。</E></p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            阻塞队列的接口为： BlockingQueue 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。
+
+
+
+BlockingQueue 的操作方法
+
+
+
+如图中所示：
+add(e),当队列满了以后，抛出IllegalStateException。
+offer(e),当队列满了以后,返回false。
+put(e),当队列满了以后,会被阻塞。
+put(e,time,unit):false i...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 23, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/08/23/leetcode39/">
         <h2 class="post-title">
             Leetcode:39,40,78,90,46,47,131
@@ -242,16 +279,26 @@ ALGORITHM try(v1,...,vi...
         </h3>
         
         <div class="post-content-preview">
-        <p>ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要是关注Condition的运用，底层的实现，更加清楚的明白重入锁的控制。</p>
+        <p>ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。</p>
 
 
         </div>
         <!-- <div class="post-content-preview">
-            ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要是关注Condition的运用，底层的实现，更加清楚的明白重入锁的控制。
+            ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。
 
 
 
+首先还是复习一下重入锁的伪代码：
 
+
+ReentrantLock
+public NonFairLock nonfairLock = new NonFairLock();
+lock(){
+	nonfairLock.lock()
+}
+
+// 获取锁的过程
+nonfairLo...
         </div> -->
     </a>
     <p class="post-meta">
@@ -511,45 +558,6 @@ Given two integers dividend and divisor, divide two integers without using multi
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode28/">
-        <h2 class="post-title">
-            LeetCode28   Implement strStr()
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 28 题的分析和总结：  Implement strStr()</p>
-
-<p>字符串操作</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 28 题的分析和总结：  Implement strStr()
-
-字符串操作
-
-
-
-LeetCode 28. Implement strStr()
-
-描述：
-
-Implement strStr().
-
-Return the index of the first occurrence of needle in haystack, or -1 if needle is not ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -625,7 +633,7 @@ Return the index of the first occurrence of needle in haystack, or -1 if needle 
                             
                         
                             
-                                <a href="/tags/#Concurrent" title="Concurrent" rel="5">
+                                <a href="/tags/#Concurrent" title="Concurrent" rel="6">
                                     Concurrent
                                 </a>
                             

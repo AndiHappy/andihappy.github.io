@@ -5,9 +5,105 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 16 Sep 2019 10:10:18 +0800</pubDate>
-    <lastBuildDate>Mon, 16 Sep 2019 10:10:18 +0800</lastBuildDate>
+    <pubDate>Tue, 17 Sep 2019 10:33:02 +0800</pubDate>
+    <lastBuildDate>Tue, 17 Sep 2019 10:33:02 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>并发知识梳理：4. 阻塞队列</title>
+        <description>&lt;p&gt;阻塞队列的接口为： BlockingQueue&lt;E&gt; 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。&lt;/E&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;blockingqueue-的操作方法&quot;&gt;BlockingQueue 的操作方法&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/queue/q1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如图中所示：
+add(e),当队列满了以后，抛出IllegalStateException。
+offer(e),当队列满了以后,返回false。
+put(e),当队列满了以后,会被阻塞。
+put(e,time,unit):false if the specified waiting time elapses before space is available&lt;/p&gt;
+
+&lt;h3 id=&quot;blockingqueue常用的四个实现类&quot;&gt;BlockingQueue常用的四个实现类&lt;/h3&gt;
+
+&lt;p&gt;ArrayBlockingQueue：规定大小的BlockingQueue,其构造函数必须带一个int参数来指明其大小.其所含的对象是以FIFO(先入先出)顺序排序的.&lt;/p&gt;
+
+&lt;p&gt;LinkedBlockingQueue：大小不定的BlockingQueue,若其构造函数带一个规定大小的参数,生成的
+BlockingQueue有大小限制,若不带大小参数,所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定.其所含的对象是以FIFO(先入先出)顺序排序的&lt;/p&gt;
+
+&lt;p&gt;PriorityBlockingQueue：类似于LinkedBlockQueue,但其所含对象的排序不是FIFO,而是依据对象的自然排序顺序或者是构造函数的Comparator决定的顺序.&lt;/p&gt;
+
+&lt;p&gt;SynchronousQueue：特殊的BlockingQueue,对其的操作必须是放和取交替完成的.&lt;/p&gt;
+
+&lt;h3 id=&quot;arrayblockingqueue-主要实现的逻辑&quot;&gt;ArrayBlockingQueue&lt;E&gt; 主要实现的逻辑&lt;/E&gt;&lt;/h3&gt;
+
+&lt;p&gt;我们还可以先回看一下ArrayQueue的实现：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 成员变量
+
+private int capacity;
+private T[] queue;
+private int head;
+private int tail;
+
+// 有点意思的是构造函数 capacity+1 
+public ArrayQueue(int capacity) {
+    this.capacity = capacity + 1;
+    this.queue = newArray(capacity + 1);
+    this.head = 0;
+    this.tail = 0;
+}
+// 添加方法，采用的是tail+1 取余capacity 的方法，这也就是构建capacity+1的原因
+ public boolean add(T o) {
+  queue[tail] = o;
+  int newtail = (tail + 1) % capacity;
+  if (newtail == head)
+   throw new IndexOutOfBoundsException(&quot;Queue full&quot;);
+  tail = newtail;
+  return true; // we did add something
+ }
+
+//删除的方法，采用的是 head+1 取余capacity 的方法，都是+1取余的操作
+public T remove(int i) {
+  if (i != 0)
+   throw new IllegalArgumentException(&quot;Can only remove head of queue&quot;);
+  if (head == tail)
+   throw new IndexOutOfBoundsException(&quot;Queue empty&quot;);
+  T removed = queue[head];
+  queue[head] = null;
+  head = (head + 1) % capacity;
+  return removed;
+ }
+
+ public T get(int i) {
+  int size = size();
+  if (i &amp;lt; 0 || i &amp;gt;= size) {
+   final String msg = &quot;Index &quot; + i + &quot;, queue size &quot; + size;
+   throw new IndexOutOfBoundsException(msg);
+  }
+  int index = (head + i) % capacity;
+  return queue[index];
+ }
+
+// 判定大小的时候，采用的是tail-head 的方法
+ public int size() {
+  // Can't use % here because it's not mod: -3 % 2 is -1, not +1.
+  int diff = tail - head;
+  if (diff &amp;lt; 0)
+   diff += capacity;
+  return diff;
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Fri, 23 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/23/concurrent-6/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/23/concurrent-6/</guid>
+        
+        <category>Concurrent</category>
+        
+        
+      </item>
     
       <item>
         <title>Leetcode:39,40,78,90,46,47,131</title>
@@ -378,9 +474,300 @@ public boolean isPalindrome(String s, int low, int high){
     
       <item>
         <title>并发知识梳理：4. 读写锁等其他的类型的锁的支持</title>
-        <description>&lt;p&gt;ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要是关注Condition的运用，底层的实现，更加清楚的明白重入锁的控制。&lt;/p&gt;
+        <description>&lt;p&gt;ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。&lt;/p&gt;
 
 &lt;!--more--&gt;
+
+&lt;p&gt;首先还是复习一下重入锁的伪代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+ReentrantLock
+public NonFairLock nonfairLock = new NonFairLock();
+lock(){
+	nonfairLock.lock()
+}
+
+// 获取锁的过程
+nonfairLock.lock(){
+	if(cas(state,0,1)){
+		setExcludeThread(Thread.currentThread());
+	}else{
+		if(!tryAcqure(1) &amp;amp;&amp;amp; acquireQueued(addWaiter(Node.excluse),arg))
+			selfInterrupt();
+	}
+}
+
+nonfairLock.tryAcquire(int acquire){
+	int c = getState();
+	if(c == 0) {
+		if(cas(state,0,1){
+			setExcludeThread(Thread.currentThread());
+			return true;
+		}
+	}else if(Thread.currentThread() == getExclude){
+		int nextc = c+acquire;
+		if(nextc &amp;lt; 0) {
+			throw new Error(lock too large);
+		}
+		setstate(nextc);
+		return true;
+	}
+	return false;
+}
+
+Node addWaiter(){ // 把Thread放到一个Node节点中，组成等待的链条
+	 Node node = new Node(Thread.currentThread(), mode);
+	 addTail(node)
+	 return node;
+}
+acquireQueued(Node node) {// 更新等待链条的状态，释放锁的时候，可以调用tryAcquire
+	interrupted = false;
+	for(;;){
+		if(head == node.pre &amp;amp;&amp;amp; tryAcquire()){
+			 setHead(node); // head = node;
+       p.next = null; // help GC
+       failed = false;
+       return interrupted;
+		}
+		
+		if(shouldParkAfterAcqiureFailed(p,node) &amp;amp;&amp;amp; parkAndChectInterrupt()){
+			interrupted = true;
+		}
+	}
+}
+
+//释放锁的过程
+unlock(){
+	nonfairLock.release(1);
+}
+
+nonfairLock.release(1){
+	if(tryRealse(1)){
+		If(head != null &amp;amp;&amp;amp; h.state != 0){
+			unparkSuccessor(head) // unpark head的下一个节点，head中不包含thread
+		}
+	}
+}
+
+nonfairLock.tryRelease(1){
+	int c = getState  - 1;
+	if(Thread.concurrent != getExcluseThread) {
+		throw Error( not state )
+	}
+	 boolean free = false;
+	if(c == 0) {
+		setExcluseThread(null)
+		free = true
+	}
+	
+	setState(c);
+	return free;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;读写锁的控制，更加的复杂，我们只是大致的梳理出来重要的逻辑框架，并不扣具体的细节。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class CachedData {
+ Object data;
+ volatile boolean cacheValid;
+ final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+
+ void processCachedData() {
+  rwl.readLock().lock();
+  if (!cacheValid) {
+   // Must release read lock before acquiring write lock
+   rwl.readLock().unlock();
+   rwl.writeLock().lock();
+   try {
+    // Recheck state because another thread might have
+    // acquired write lock and changed state before we did.
+    if (!cacheValid) {
+     data = &quot;use data &quot;;
+     cacheValid = true;
+    }
+    // Downgrade by acquiring read lock before releasing write lock
+    rwl.readLock().lock();
+   } finally {
+    rwl.writeLock().unlock(); // Unlock write, still hold read
+   }
+  }
+
+  try {
+   //       use(data);
+  } finally {
+   rwl.readLock().unlock();
+  }
+ }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;从官方的示例代码中，我们可以知道ReentrantReadWriteLock（以下简写为RRW）有两个锁类型，读锁：ReadLock（RL）和写锁：WriteLock (WL)
+从代码中也能初见端倪：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public ReentrantReadWriteLock(boolean fair) {
+        sync = fair ? new FairSync() : new NonfairSync();
+        readerLock = new ReadLock(this);
+        writerLock = new WriteLock(this);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们首先看读锁：RL&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;RL.lock(){
+    sync.acquireShared(1);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;还是原来的熟悉的配方，使用内部类：Sync来实现。Sync继承AQS的框架&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AQS.acquireShared(int arg) {
+        if (tryAcquireShared(arg) &amp;lt; 0)
+            doAcquireShared(arg);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;首先就是共享锁定加锁的过程：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Sync.tryAcquireShared(int unused) {
+
+            Thread current = Thread.currentThread();
+            int c = getState();
+            // 如果被独占锁占据 直接返回-1
+            if (exclusiveCount(c) != 0 &amp;amp;&amp;amp; // exclusiveCount(c) c的后16位标识独占锁
+                getExclusiveOwnerThread() != current)
+                return -1;
+
+            int r = sharedCount(c); // sharedCount(c) c的前16位标识的是共享锁
+
+            //readerShouldBlock()：第一个排队的线程是否为独占节点
+            if (!readerShouldBlock() &amp;amp;&amp;amp; r &amp;lt; MAX_COUNT &amp;amp;&amp;amp; compareAndSetState(c, c + SHARED_UNIT)) {
+                // 条件表示为：第一个等待的线程不是独占节点，并且CAS成功
+                if (r == 0) {
+                    firstReader = current;
+                    firstReaderHoldCount = 1;
+                } else if (firstReader == current) {
+                    firstReaderHoldCount++;
+                } else {
+                    HoldCounter rh = cachedHoldCounter;
+                    if (rh == null || rh.tid != getThreadId(current))
+                        cachedHoldCounter = rh = readHolds.get();
+                    else if (rh.count == 0)
+                        readHolds.set(rh);
+                    rh.count++;
+                }
+                //返回1
+                return 1;
+            }
+
+            return fullTryAcquireShared(current); // 增加了无限的循环
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;doAcquireShared 类似于重入锁里面的 addWaiter和 更新节点状态&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; private void doAcquireShared(int arg) {
+        final Node node = addWaiter(Node.SHARED);
+        boolean failed = true;
+        try {
+            boolean interrupted = false;
+            for (;;) {
+                final Node p = node.predecessor();
+                if (p == head) {
+                    int r = tryAcquireShared(arg);
+                    if (r &amp;gt;= 0) {
+                        setHeadAndPropagate(node, r);
+                        p.next = null; // help GC
+                        if (interrupted)
+                            selfInterrupt();
+                        failed = false;
+                        return;
+                    }
+                }
+                if (shouldParkAfterFailedAcquire(p, node) &amp;amp;&amp;amp;
+                    parkAndCheckInterrupt())
+                    interrupted = true;
+            }
+        } finally {
+            if (failed)
+                cancelAcquire(node);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;再来看解锁的过程,这次释放的是共享锁&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;RL.unlock() {
+            sync.releaseShared(1);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;同样的Sync的实现AQS的框架：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AQS.releaseShared(int arg) {
+        if (tryReleaseShared(arg)) {
+            doReleaseShared();
+            return true;
+        }
+        return false;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;熟悉的配方，但是不是熟悉的过程了。共享锁在释放的过程中，不再是线程安全的单个线程的调用，而是多个线程调用了。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Sync.tryReleaseShared(int unused) {
+   Thread current = Thread.currentThread();
+   // 首先是普通成员变量 firstReader 的更新操作
+   if (firstReader == current) {
+    // assert firstReaderHoldCount &amp;gt; 0;
+    if (firstReaderHoldCount == 1)
+     firstReader = null;
+    else
+     firstReaderHoldCount--;
+   } else {
+    HoldCounter rh = cachedHoldCounter;
+    if (rh == null || rh.tid != getThreadId(current))
+     rh = readHolds.get();
+    int count = rh.count;
+    if (count &amp;lt;= 1) {
+     readHolds.remove();
+     if (count &amp;lt;= 0)
+      throw unmatchedUnlockException();
+    }
+    --rh.count;
+   }
+   // 再次就是无限循环的状态更新，最后的结果是 nextc 是否为0
+   for (;;) {
+    int c = getState();
+    int nextc = c - SHARED_UNIT;
+    if (compareAndSetState(c, nextc))
+     // Releasing the read lock has no effect on readers,
+     // but it may allow waiting writers to proceed if
+     // both read and write locks are now free.
+     return nextc == 0;
+   }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;doReleaseShared 和重入锁的释放过程，基本类似。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void doReleaseShared() {
+  for (;;) {
+   Node h = head;
+   if (h != null &amp;amp;&amp;amp; h != tail) {
+    int ws = h.waitStatus;
+    if (ws == Node.SIGNAL) {
+     if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+      continue; // loop to recheck cases
+     unparkSuccessor(h);
+    } else if (ws == 0 &amp;amp;&amp;amp; !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+     continue; // loop on failed CAS
+   }
+   if (h == head) // loop if head changed
+    break;
+  }
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 </description>
         <pubDate>Thu, 22 Aug 2019 00:00:00 +0800</pubDate>
@@ -1472,156 +1859,6 @@ private int divideHelper(int dividend, int divisor){
         <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/18/leetcode29/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode29/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode28   Implement strStr()</title>
-        <description>&lt;p&gt;LeetCode 28 题的分析和总结：  Implement strStr()&lt;/p&gt;
-
-&lt;p&gt;字符串操作&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 28. Implement strStr()&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Implement strStr().
-
-Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
-
-Example 1:
-
-Input: haystack = &quot;hello&quot;, needle = &quot;ll&quot;
-Output: 2
-Example 2:
-
-Input: haystack = &quot;aaaaa&quot;, needle = &quot;bba&quot;
-Output: -1
-Clarification:
-
-What should we return when needle is an empty string? This is a great question to ask during an interview.
-
-For the purpose of this problem, we will return 0 when needle is an empty string. This is consistent to C's strstr() and Java's indexOf().
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;needle 为null的时候，返回的是0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int strStr(String haystack, String needle) {
-		if (needle == null || &quot;&quot;.equals(needle))
-			return 0;
-		char[] haystackc = haystack.toCharArray();
-		char[] neddlec = needle.toCharArray();
-		for (int i = 0; i &amp;lt; haystackc.length - neddlec.length + 1; i++) {
-			char hc = haystackc[i];
-			if (hc == neddlec[0]) {
-				if (meetCondition(haystackc, i + 1, neddlec, 1)) {
-					return i;
-				}
-			}
-		}
-
-		return -1;
-	}
-
-private boolean meetCondition(char[] haystackc, int i, char[] neddlec, int j) {
-	for (; j &amp;lt; neddlec.length &amp;amp;&amp;amp; i &amp;lt; haystackc.length; j++, i++) {
-		if (neddlec[j] != haystackc[i]) {
-			return false;
-		}
-	}
-	return true;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;JAVA 的JDK里面的 String的API方法：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int indexOf(String str) {
-        return indexOf(str, 0);
-    }
-
-	public int indexOf(String str, int fromIndex) {
-        return indexOf(value, 0, value.length,
-                str.value, 0, str.value.length, fromIndex);
-    }
-
-	 /**
-     * Code shared by String and StringBuffer to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
-     *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   targetOffset offset of the target string.
-     * @param   targetCount  count of the target string.
-     * @param   fromIndex    the index to begin searching from.
-     */
-    static int indexOf(char[] source, int sourceOffset, int sourceCount,
-            char[] target, int targetOffset, int targetCount,
-            int fromIndex) {
-        if (fromIndex &amp;gt;= sourceCount) {
-            return (targetCount == 0 ? sourceCount : -1);
-        }
-        if (fromIndex &amp;lt; 0) {
-            fromIndex = 0;
-        }
-        if (targetCount == 0) {
-            return fromIndex;
-        }
-
-        char first = target[targetOffset];
-        int max = sourceOffset + (sourceCount - targetCount);
-
-        for (int i = sourceOffset + fromIndex; i &amp;lt;= max; i++) {
-            /* Look for first character. */
-            if (source[i] != first) {
-                while (++i &amp;lt;= max &amp;amp;&amp;amp; source[i] != first);
-            }
-
-            /* Found first character, now look at the rest of v2 */
-            if (i &amp;lt;= max) {
-                int j = i + 1;
-                int end = j + targetCount - 1;
-                for (int k = targetOffset + 1; j &amp;lt; end &amp;amp;&amp;amp; source[j]
-                        == target[k]; j++, k++);
-
-                if (j == end) {
-                    /* Found whole string. */
-                    return i - sourceOffset;
-                }
-            }
-        }
-        return -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;总感觉JDK的代码写的比较的优雅一些，到底是哪里比较好尼？
-首先是参数名称的定义：
-char[] source 
-char[] target 
-这两个就不说了，关键是sourceOffset，sourceCount，targetOffset，targetCount和fromIndex 定义的比较的赏心悦目。
-另外就是整个算法的逻辑比较清晰，首先异常处理，然后确定首次的匹配开始i，然后i之后的判断。还有一点就是缩写的使用：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; while (++i &amp;lt;= max &amp;amp;&amp;amp; source[i] != first);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for (int k = targetOffset + 1; j &amp;lt; end &amp;amp;&amp;amp; source[j]== target[k]; j++, k++);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/18/leetcode28/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode28/</guid>
         
         <category>LeetCode</category>
         

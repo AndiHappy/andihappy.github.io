@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode18, 19，20 - 飞翔的面包 | FlyBread Blog</title>
+    <title>Leetcode:41  firstMissingPositive - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/14/day4/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/24/leetcode41/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -186,12 +186,12 @@
                         <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>LeetCode18, 19，20</h1>
+                    <h1>Leetcode:41  firstMissingPositive</h1>
                     
                     
-                    <h2 class="subheading">算法分析和总结</h2>
+                    <h2 class="subheading">解决问题的一种技巧：使用数组的下标</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 14, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 24, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,229 +209,49 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 第18，19，20题的分析和总结</p>
+				<p>数组的下标是一种天然的资源，有序，有界。在某些特殊的问题下，可以做为一种辅助信息。</p>
 
 <!--more-->
-
-<p>LeetCode 18. 4Sum</p>
-
-<p>描述：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
-
-Note:
-
-The solution set must not contain duplicate quadruplets.
-
-Example:
-
-Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
-
-A solution set is:
-[
-  [-1,  0, 0, 1],
-  [-2, -1, 1, 2],
-  [-2,  0, 0, 2]
-]
+<p>问题的描述为：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an unsorted integer array, find the smallest missing positive integer.
+ Example 1:
+ Input: [1,2,0]
+ Output: 3
+ Example 2:
+ Input: [3,4,-1,1]
+ Output: 2
+ Example 3:
+ Input: [7,8,9,11,12]
+ Output: 1
+ Note:
+ Your algorithm should run in O(n) time and uses constant extra space.
 </code></pre></div></div>
 
-<p>思路：</p>
+<p>Your algorithm should run in O(n) time and uses constant extra space.
+这里面的uses constant extra space 和 O(n) 也算是一种提示吧。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，同一个思路
-</code></pre></div></div>
+<p>具体的代码：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int firstMissingPositive_(int[] A) {
+  int i = 0;
+  while (i &lt; A.length) {
+   if (A[i] == i + 1 || A[i] &lt;= 0 || A[i] &gt; A.length)
+    i++;
+   else if (A[A[i] - 1] != A[i])
+    swap(A, i, A[i] - 1);
+   else
+    i++;
+  }
+  i = 0;
+  while (i &lt; A.length &amp;&amp; A[i] == i + 1)
+   i++;
+  return i + 1;
+ }
 
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;List&lt;Integer&gt;&gt; fourSum(int[] nums, int target) {
-      List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;List&lt;Integer&gt;&gt;();
-    List&lt;Integer&gt; l;
-    Arrays.sort(nums);
-    int len = nums.length;
-    for (int i = 0; i &lt; len - 3; i++) {
-      // 相同直接返回
-      if (i != 0 &amp;&amp; nums[i] == nums[i - 1]) continue;
-      // 最小值如果大于target，直接的返回
-      if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] &gt; target) break;
-      // 此值和最大的三个值相加，小于target 直接的返回
-      if (nums[i] + nums[len - 1] + nums[len - 2] + nums[len - 2] &lt; target) continue;
-
-      for (int j = i + 1; j &lt; len - 2; j++) {
-        // 相同直接返回
-        if (j != i + 1 &amp;&amp; nums[j] == nums[j - 1]) continue;
-        // 最小值如果大于target，直接的返回
-        if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] &gt; target) break;
-        // 此值和最大的三个值相加，小于target 直接的返回
-        if (nums[i] + nums[j] + nums[len - 1] + nums[len - 2] &lt; target) continue;
-
-        int head = j + 1, end = len - 1;
-        while (head &lt; end) {
-          int tempt = nums[i] + nums[j] + nums[head] + nums[end];
-          if (tempt == target) {
-            l = new ArrayList&lt;Integer&gt;();
-            l.add(nums[i]);
-            l.add(nums[j]);
-            l.add(nums[head]);
-            l.add(nums[end]);
-            list.add(l);
-            head++;
-			end--;
-            while (head &lt; end &amp;&amp; nums[head] == nums[head - 1]) {
-              head++;
-            }
-			while (head &lt; end &amp;&amp; nums[end] == nums[end+1]) {
-              end--;
-            }
-          } else if (tempt &gt; target)
-            end--;
-          else
-            head++;
-        }
-      }
-    }
-    return list; 
-}
-</code></pre></div></div>
-
-<p>LeetCode 19. Remove Nth Node From End of List</p>
-
-<p>题目描述：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, remove the n-th node from the end of list and return its head.
-
-Example:
-
-Given linked list: 1-&gt;2-&gt;3-&gt;4-&gt;5, and n = 2.
-
-After removing the second node from the end, the linked list becomes 1-&gt;2-&gt;3-&gt;5.
-Note:
-
-Given n will always be valid.
-
-Follow up:
-
-Could you do this in one pass?
-</code></pre></div></div>
-
-<p>思路：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单题目，注意链表的表头的处理，下标的处理
-</code></pre></div></div>
-
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode removeNthFromEnd_copy(ListNode head, int n) {
-	ListNode tmp = new ListNode(-1);
-	ListNode first = tmp;ListNode second = tmp;
-	tmp.next = head;
-	for(int i = 1 ; i&lt;=n+1;i++) {
-		first = first.next;
-	}
-	while(first != null) {
-		first = first.next;
-		second = second.next;
-	}
-		
-	second.next = second.next.next;
-		
-	return tmp.next;
-}
-</code></pre></div></div>
-
-<p>LeetCode 20. Valid Parentheses</p>
-
-<p>题目描述：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters 
-'(', ')', '{', '}', '[' and ']', 
-determine if the input string is valid.
-
-An input string is valid if:
-
-Open brackets must be closed by the same type of brackets.
-Open brackets must be closed in the correct order.
-Note that an empty string is also considered valid.
-
-Example 1:
-
-Input: "()"
-Output: true
-Example 2:
-
-Input: "()[]{}"
-Output: true
-Example 3:
-
-Input: "(]"
-Output: false
-Example 4:
-
-Input: "([)]"
-Output: false
-Example 5:
-
-Input: "{[]}"
-Output: true
-</code></pre></div></div>
-
-<p>思路：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>典型的栈的应用，但是有两种不同的思路。
-</code></pre></div></div>
-
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//正常的思路
-public boolean isValid(String s) {
-	if(s == null || s.length() &lt;= 0){
-   		return true;
-   	}
-   	Stack&lt;Character&gt; stack = new Stack&lt;Character&gt;();
-   	for (int i = 0; i &lt; s.length(); i++) {
-   		char cha = s.charAt(i);
-		switch (cha) {
-		case '(':
-		case '{':
-		case '[':
-			stack.push(cha);
-			break;
-		case ')':
-			if(stack.isEmpty() || stack.pop() != '(' ){
-				return false;
-			}
-			break;
-		case '}':
-			if(stack.isEmpty() || stack.pop()!= '{' ){
-				return false;
-			}
-			break;
-		case ']':
-			if(stack.isEmpty() || stack.pop() != '[' ){
-			return false;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-   	return stack.isEmpty();
-}
-
-//匹配的思路
-
-public boolean isValid(String s) {
-	Stack&lt;Character&gt; stack = new Stack&lt;Character&gt;();
-	for (char c : s.toCharArray()) {
-		if (c == '(')
-			stack.push(')');
-		else if (c == '{')
-			stack.push('}');
-		else if (c == '[')
-			stack.push(']');
-		else if (stack.isEmpty() || stack.pop() != c)
-			return false;
-	}
-	return stack.isEmpty();
-}
+ private void swap(int[] A, int i, int j) {
+  int temp = A[i];
+  A[i] = A[j];
+  A[j] = temp;
+ }
 </code></pre></div></div>
 
 
@@ -440,19 +260,12 @@ public boolean isValid(String s) {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/13/day4/" data-toggle="tooltip" data-placement="top" title="LeetCode16，17">
+                        <a href="/2019/08/23/concurrent-6/" data-toggle="tooltip" data-placement="top" title="并发知识梳理：4. 阻塞队列">
                         Previous<br>
-                        <span>LeetCode16，17</span>
+                        <span>并发知识梳理：4. 阻塞队列</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/15/day5/" data-toggle="tooltip" data-placement="top" title="JDK7的新特性1 ForkJoinPool">
-                        Next<br>
-                        <span>JDK7的新特性1 ForkJoinPool</span>
-                        </a>
-                    </li>
                     
                 </ul>
 
@@ -567,8 +380,8 @@ public boolean isValid(String s) {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/14/day4";
-    var disqus_url = "http://localhost:4000/2019/08/14/day4/";
+    var disqus_identifier = "/2019/08/24/ leetcode41";
+    var disqus_url = "http://localhost:4000/2019/08/24/leetcode41/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

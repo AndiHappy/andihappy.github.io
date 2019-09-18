@@ -266,17 +266,104 @@ LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框
  }
 ~~~
 
+这里面中的信号，使用到了Condition，Condition的建立是：
+
+~~~
+lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull = lock.newCondition();
+~~~
+ReentrantLock 的 newCondition的方法是
+
+~~~
+ReentrantLock.newCondition() {
+  return sync.newCondition();
+ }
+~~~
+还是原来的：Sync 实现：
+
+~~~
+final ConditionObject newCondition() {
+   return new ConditionObject();
+  }
+返回的是AQS的一个内部类ConditionObject
+~~~
+
+ConditionObject 为AQS专门实现的一个类，具体我们只看两个关键的方法，在BlockingQueue中，使用的比较的多。
+~~~
+public final void await() throws InterruptedException {
+   if (Thread.interrupted())
+    throw new InterruptedException();
+   Node node = addConditionWaiter();
+   // ！！！当调用await的时候，就已经释放了拥有的锁！！
+   int savedState = fullyRelease(node);
+   int interruptMode = 0;
+   while (!isOnSyncQueue(node)) {
+    LockSupport.park(this);
+    if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+     break;
+   }
+   if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
+    interruptMode = REINTERRUPT;
+   if (node.nextWaiter != null) // clean up if cancelled
+    unlinkCancelledWaiters();
+   if (interruptMode != 0)
+    reportInterruptAfterWait(interruptMode);
+  }
 
 
+  // 增加到等待的队列里面
+  private Node addConditionWaiter() {
+   Node t = lastWaiter;
+   // If lastWaiter is cancelled, clean out.
+   if (t != null && t.waitStatus != Node.CONDITION) {
+    unlinkCancelledWaiters();
+    t = lastWaiter;
+   }
+   Node node = new Node(Thread.currentThread(), Node.CONDITION);
+   if (t == null)
+    firstWaiter = node;
+   else
+    t.nextWaiter = node;
+   lastWaiter = node;
+   return node;
+  }
+~~~
 
+~~~
+public final void signal() {
+   if (!isHeldExclusively())
+    throw new IllegalMonitorStateException();
+   Node first = firstWaiter;
+   if (first != null)
+    doSignal(first);
+  }
+  
+  private void doSignal(Node first) {
+   do {
+    if ((firstWaiter = first.nextWaiter) == null)
+     lastWaiter = null;
+    first.nextWaiter = null;
+   } while (!transferForSignal(first) && (first = firstWaiter) != null);
+  }
+  
+  final boolean transferForSignal(Node node) {
+   /*
+    * If cannot change waitStatus, the node has been cancelled.
+    */
+   if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+    return false;
 
-
-
-
-
-
-
-
-
-
-
+   /*
+    * Splice onto queue and try to set waitStatus of predecessor to
+    * indicate that thread is (probably) waiting. If cancelled or
+    * attempt to set waitStatus fails, wake up to resync (in which
+    * case the waitStatus can be transiently and harmlessly wrong).
+    */
+   Node p = enq(node);
+   int ws = p.waitStatus;
+   if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+    LockSupport.unpark(node.thread);
+   return true;
+  }
+~~~

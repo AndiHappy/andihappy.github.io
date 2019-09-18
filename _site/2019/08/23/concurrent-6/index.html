@@ -293,6 +293,272 @@ public T remove(int i) {
  }
 </code></pre></div></div>
 
+<p>然后我们再看BlockingQueue的方法的实现：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> // ArrayBlockingQueue 的成员变量：
+
+ /** The queued items */
+ final Object[] items;
+
+ /** items index for next take, poll, peek or remove */
+ int takeIndex;
+
+ /** items index for next put, offer, or add */
+ int putIndex;
+
+ /** Number of elements in the queue */
+ int count;
+
+ /** Main lock guarding all access */
+ final ReentrantLock lock;
+
+ /** Condition for waiting takes */
+ private final Condition notEmpty;
+
+ /** Condition for waiting puts */
+ private final Condition notFull;
+
+ public ArrayBlockingQueue(int capacity, boolean fair) {
+  if (capacity &lt;= 0)
+   throw new IllegalArgumentException();
+  this.items = new Object[capacity];
+  lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull = lock.newCondition();
+ }
+
+</code></pre></div></div>
+
+<p>具体的方法的实现：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public boolean add(E e) {
+  return super.add(e);
+ }
+
+/**
+实现的方式：
+public boolean add(E e) {
+   if (offer(e))
+        return true;
+   else
+       throw new IllegalStateException("Queue full");
+} 
+*/
+ public boolean offer(E e) {
+  checkNotNull(e);
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   if (count == items.length)
+    return false;
+   else {
+    // 保证lock的前提下，调用这个方法
+    // 保证了队列不满，如果满了，直接在try方法中就已经返回
+    enqueue(e);
+    return true;
+   }
+  } finally {
+   lock.unlock();
+  }
+ }
+ /**
+  * ① 已经拥有锁的前提下调用
+  * ② 满的时候，putIndex直接设置为0，从头开始（这里面的putIndex为0，标识已经满了）
+  * */
+ private void enqueue(E x) {
+  final Object[] items = this.items;
+  items[putIndex] = x;
+  if (++putIndex == items.length)
+   putIndex = 0;
+  count++;
+  notEmpty.signal();
+ }
+ 
+ public void put(E e) throws InterruptedException {
+  checkNotNull(e);
+  final ReentrantLock lock = this.lock;
+  lock.lockInterruptibly();
+  try {
+   while (count == items.length)
+    notFull.await();
+   enqueue(e);
+  } finally {
+   lock.unlock();
+  }
+ }
+ 
+ //相对应的四个方法：remove() poll()
+ public E remove() {
+  E x = poll();
+  if (x != null)
+      return x;
+  else
+      throw new NoSuchElementException();
+}
+public E poll() {
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   return (count == 0) ? null : dequeue();
+  } finally {
+   lock.unlock();
+  }
+ }
+private E dequeue() {
+ final Object[] items = this.items;
+ @SuppressWarnings("unchecked")
+ E x = (E) items[takeIndex];
+ items[takeIndex] = null;
+ if (++takeIndex == items.length)
+  takeIndex = 0;
+ count--;
+ if (itrs != null)
+  itrs.elementDequeued();
+ notFull.signal();
+ return x;
+}
+</code></pre></div></div>
+
+<p>LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框架上面，基本相同。当时具体的数据处理是不一样的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public boolean add(E e) {
+  addLast(e);
+  return true;
+ }
+
+ public void addLast(E e) {
+  if (!offerLast(e))
+   throw new IllegalStateException("Deque full");
+ }
+
+ public boolean offerLast(E e) {
+  if (e == null)
+   throw new NullPointerException();
+  Node&lt;E&gt; node = new Node&lt;E&gt;(e);
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   return linkLast(node);
+  } finally {
+   lock.unlock();
+  }
+ }
+
+ private boolean linkLast(Node&lt;E&gt; node) {
+  // assert lock.isHeldByCurrentThread();
+  if (count &gt;= capacity)
+   return false;
+
+  Node&lt;E&gt; l = last;
+  node.prev = l;
+  last = node;
+  if (first == null)
+   first = node;
+  else
+   l.next = node;
+
+  ++count;
+  notEmpty.signal();
+  return true;
+ }
+</code></pre></div></div>
+
+<p>这里面中的信号，使用到了Condition，Condition的建立是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull = lock.newCondition();
+</code></pre></div></div>
+<p>ReentrantLock 的 newCondition的方法是</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ReentrantLock.newCondition() {
+  return sync.newCondition();
+ }
+</code></pre></div></div>
+<p>还是原来的：Sync 实现：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final ConditionObject newCondition() {
+   return new ConditionObject();
+  }
+返回的是AQS的一个内部类ConditionObject
+</code></pre></div></div>
+
+<p>ConditionObject 为AQS专门实现的一个类，具体我们只看两个关键的方法，在BlockingQueue中，使用的比较的多。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void await() throws InterruptedException {
+   if (Thread.interrupted())
+    throw new InterruptedException();
+   Node node = addConditionWaiter();
+   // ！！！当调用await的时候，就已经释放了拥有的锁！！
+   int savedState = fullyRelease(node);
+   int interruptMode = 0;
+   while (!isOnSyncQueue(node)) {
+    LockSupport.park(this);
+    if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+     break;
+   }
+   if (acquireQueued(node, savedState) &amp;&amp; interruptMode != THROW_IE)
+    interruptMode = REINTERRUPT;
+   if (node.nextWaiter != null) // clean up if cancelled
+    unlinkCancelledWaiters();
+   if (interruptMode != 0)
+    reportInterruptAfterWait(interruptMode);
+  }
+
+
+  // 增加到等待的队列里面
+  private Node addConditionWaiter() {
+   Node t = lastWaiter;
+   // If lastWaiter is cancelled, clean out.
+   if (t != null &amp;&amp; t.waitStatus != Node.CONDITION) {
+    unlinkCancelledWaiters();
+    t = lastWaiter;
+   }
+   Node node = new Node(Thread.currentThread(), Node.CONDITION);
+   if (t == null)
+    firstWaiter = node;
+   else
+    t.nextWaiter = node;
+   lastWaiter = node;
+   return node;
+  }
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void signal() {
+   if (!isHeldExclusively())
+    throw new IllegalMonitorStateException();
+   Node first = firstWaiter;
+   if (first != null)
+    doSignal(first);
+  }
+  
+  private void doSignal(Node first) {
+   do {
+    if ((firstWaiter = first.nextWaiter) == null)
+     lastWaiter = null;
+    first.nextWaiter = null;
+   } while (!transferForSignal(first) &amp;&amp; (first = firstWaiter) != null);
+  }
+  
+  final boolean transferForSignal(Node node) {
+   /*
+    * If cannot change waitStatus, the node has been cancelled.
+    */
+   if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+    return false;
+
+   /*
+    * Splice onto queue and try to set waitStatus of predecessor to
+    * indicate that thread is (probably) waiting. If cancelled or
+    * attempt to set waitStatus fails, wake up to resync (in which
+    * case the waitStatus can be transiently and harmlessly wrong).
+    */
+   Node p = enq(node);
+   int ws = p.waitStatus;
+   if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+    LockSupport.unpark(node.thread);
+   return true;
+  }
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -306,6 +572,13 @@ public T remove(int i) {
                         </a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="/2019/08/24/leetcode41/" data-toggle="tooltip" data-placement="top" title="Leetcode:41  firstMissingPositive">
+                        Next<br>
+                        <span>Leetcode:41  firstMissingPositive</span>
+                        </a>
+                    </li>
                     
                 </ul>
 
@@ -375,7 +648,7 @@ public T remove(int i) {
                             
         				
                             
-                				<a href="/tags/#LeetCode" title="LeetCode" rel="22">
+                				<a href="/tags/#LeetCode" title="LeetCode" rel="23">
                                     LeetCode
                                 </a>
                             

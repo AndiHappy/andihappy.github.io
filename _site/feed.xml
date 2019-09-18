@@ -5,9 +5,65 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 17 Sep 2019 10:33:02 +0800</pubDate>
-    <lastBuildDate>Tue, 17 Sep 2019 10:33:02 +0800</lastBuildDate>
+    <pubDate>Wed, 18 Sep 2019 21:51:56 +0800</pubDate>
+    <lastBuildDate>Wed, 18 Sep 2019 21:51:56 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Leetcode:41  firstMissingPositive</title>
+        <description>&lt;p&gt;数组的下标是一种天然的资源，有序，有界。在某些特殊的问题下，可以做为一种辅助信息。&lt;/p&gt;
+
+&lt;!--more--&gt;
+&lt;p&gt;问题的描述为：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an unsorted integer array, find the smallest missing positive integer.
+ Example 1:
+ Input: [1,2,0]
+ Output: 3
+ Example 2:
+ Input: [3,4,-1,1]
+ Output: 2
+ Example 3:
+ Input: [7,8,9,11,12]
+ Output: 1
+ Note:
+ Your algorithm should run in O(n) time and uses constant extra space.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Your algorithm should run in O(n) time and uses constant extra space.
+这里面的uses constant extra space 和 O(n) 也算是一种提示吧。&lt;/p&gt;
+
+&lt;p&gt;具体的代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public int firstMissingPositive_(int[] A) {
+  int i = 0;
+  while (i &amp;lt; A.length) {
+   if (A[i] == i + 1 || A[i] &amp;lt;= 0 || A[i] &amp;gt; A.length)
+    i++;
+   else if (A[A[i] - 1] != A[i])
+    swap(A, i, A[i] - 1);
+   else
+    i++;
+  }
+  i = 0;
+  while (i &amp;lt; A.length &amp;amp;&amp;amp; A[i] == i + 1)
+   i++;
+  return i + 1;
+ }
+
+ private void swap(int[] A, int i, int j) {
+  int temp = A[i];
+  A[i] = A[j];
+  A[j] = temp;
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sat, 24 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/24/leetcode41/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/24/leetcode41/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>并发知识梳理：4. 阻塞队列</title>
@@ -95,6 +151,272 @@ public T remove(int i) {
  }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
+&lt;p&gt;然后我们再看BlockingQueue的方法的实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // ArrayBlockingQueue 的成员变量：
+
+ /** The queued items */
+ final Object[] items;
+
+ /** items index for next take, poll, peek or remove */
+ int takeIndex;
+
+ /** items index for next put, offer, or add */
+ int putIndex;
+
+ /** Number of elements in the queue */
+ int count;
+
+ /** Main lock guarding all access */
+ final ReentrantLock lock;
+
+ /** Condition for waiting takes */
+ private final Condition notEmpty;
+
+ /** Condition for waiting puts */
+ private final Condition notFull;
+
+ public ArrayBlockingQueue(int capacity, boolean fair) {
+  if (capacity &amp;lt;= 0)
+   throw new IllegalArgumentException();
+  this.items = new Object[capacity];
+  lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull = lock.newCondition();
+ }
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;具体的方法的实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public boolean add(E e) {
+  return super.add(e);
+ }
+
+/**
+实现的方式：
+public boolean add(E e) {
+   if (offer(e))
+        return true;
+   else
+       throw new IllegalStateException(&quot;Queue full&quot;);
+} 
+*/
+ public boolean offer(E e) {
+  checkNotNull(e);
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   if (count == items.length)
+    return false;
+   else {
+    // 保证lock的前提下，调用这个方法
+    // 保证了队列不满，如果满了，直接在try方法中就已经返回
+    enqueue(e);
+    return true;
+   }
+  } finally {
+   lock.unlock();
+  }
+ }
+ /**
+  * ① 已经拥有锁的前提下调用
+  * ② 满的时候，putIndex直接设置为0，从头开始（这里面的putIndex为0，标识已经满了）
+  * */
+ private void enqueue(E x) {
+  final Object[] items = this.items;
+  items[putIndex] = x;
+  if (++putIndex == items.length)
+   putIndex = 0;
+  count++;
+  notEmpty.signal();
+ }
+ 
+ public void put(E e) throws InterruptedException {
+  checkNotNull(e);
+  final ReentrantLock lock = this.lock;
+  lock.lockInterruptibly();
+  try {
+   while (count == items.length)
+    notFull.await();
+   enqueue(e);
+  } finally {
+   lock.unlock();
+  }
+ }
+ 
+ //相对应的四个方法：remove() poll()
+ public E remove() {
+  E x = poll();
+  if (x != null)
+      return x;
+  else
+      throw new NoSuchElementException();
+}
+public E poll() {
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   return (count == 0) ? null : dequeue();
+  } finally {
+   lock.unlock();
+  }
+ }
+private E dequeue() {
+ final Object[] items = this.items;
+ @SuppressWarnings(&quot;unchecked&quot;)
+ E x = (E) items[takeIndex];
+ items[takeIndex] = null;
+ if (++takeIndex == items.length)
+  takeIndex = 0;
+ count--;
+ if (itrs != null)
+  itrs.elementDequeued();
+ notFull.signal();
+ return x;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框架上面，基本相同。当时具体的数据处理是不一样的。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public boolean add(E e) {
+  addLast(e);
+  return true;
+ }
+
+ public void addLast(E e) {
+  if (!offerLast(e))
+   throw new IllegalStateException(&quot;Deque full&quot;);
+ }
+
+ public boolean offerLast(E e) {
+  if (e == null)
+   throw new NullPointerException();
+  Node&amp;lt;E&amp;gt; node = new Node&amp;lt;E&amp;gt;(e);
+  final ReentrantLock lock = this.lock;
+  lock.lock();
+  try {
+   return linkLast(node);
+  } finally {
+   lock.unlock();
+  }
+ }
+
+ private boolean linkLast(Node&amp;lt;E&amp;gt; node) {
+  // assert lock.isHeldByCurrentThread();
+  if (count &amp;gt;= capacity)
+   return false;
+
+  Node&amp;lt;E&amp;gt; l = last;
+  node.prev = l;
+  last = node;
+  if (first == null)
+   first = node;
+  else
+   l.next = node;
+
+  ++count;
+  notEmpty.signal();
+  return true;
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里面中的信号，使用到了Condition，Condition的建立是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull = lock.newCondition();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;ReentrantLock 的 newCondition的方法是&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ReentrantLock.newCondition() {
+  return sync.newCondition();
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;还是原来的：Sync 实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final ConditionObject newCondition() {
+   return new ConditionObject();
+  }
+返回的是AQS的一个内部类ConditionObject
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;ConditionObject 为AQS专门实现的一个类，具体我们只看两个关键的方法，在BlockingQueue中，使用的比较的多。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void await() throws InterruptedException {
+   if (Thread.interrupted())
+    throw new InterruptedException();
+   Node node = addConditionWaiter();
+   // ！！！当调用await的时候，就已经释放了拥有的锁！！
+   int savedState = fullyRelease(node);
+   int interruptMode = 0;
+   while (!isOnSyncQueue(node)) {
+    LockSupport.park(this);
+    if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+     break;
+   }
+   if (acquireQueued(node, savedState) &amp;amp;&amp;amp; interruptMode != THROW_IE)
+    interruptMode = REINTERRUPT;
+   if (node.nextWaiter != null) // clean up if cancelled
+    unlinkCancelledWaiters();
+   if (interruptMode != 0)
+    reportInterruptAfterWait(interruptMode);
+  }
+
+
+  // 增加到等待的队列里面
+  private Node addConditionWaiter() {
+   Node t = lastWaiter;
+   // If lastWaiter is cancelled, clean out.
+   if (t != null &amp;amp;&amp;amp; t.waitStatus != Node.CONDITION) {
+    unlinkCancelledWaiters();
+    t = lastWaiter;
+   }
+   Node node = new Node(Thread.currentThread(), Node.CONDITION);
+   if (t == null)
+    firstWaiter = node;
+   else
+    t.nextWaiter = node;
+   lastWaiter = node;
+   return node;
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void signal() {
+   if (!isHeldExclusively())
+    throw new IllegalMonitorStateException();
+   Node first = firstWaiter;
+   if (first != null)
+    doSignal(first);
+  }
+  
+  private void doSignal(Node first) {
+   do {
+    if ((firstWaiter = first.nextWaiter) == null)
+     lastWaiter = null;
+    first.nextWaiter = null;
+   } while (!transferForSignal(first) &amp;amp;&amp;amp; (first = firstWaiter) != null);
+  }
+  
+  final boolean transferForSignal(Node node) {
+   /*
+    * If cannot change waitStatus, the node has been cancelled.
+    */
+   if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+    return false;
+
+   /*
+    * Splice onto queue and try to set waitStatus of predecessor to
+    * indicate that thread is (probably) waiting. If cancelled or
+    * attempt to set waitStatus fails, wake up to resync (in which
+    * case the waitStatus can be transiently and harmlessly wrong).
+    */
+   Node p = enq(node);
+   int ws = p.waitStatus;
+   if (ws &amp;gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+    LockSupport.unpark(node.thread);
+   return true;
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Fri, 23 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/23/concurrent-6/</link>
@@ -1712,153 +2034,6 @@ Output: []
         <pubDate>Mon, 19 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/19/leetcode30/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/19/leetcode30/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode 29. Divide Two Integers</title>
-        <description>&lt;p&gt;LeetCode 29 题的分析和总结：  29. Divide Two Integers&lt;/p&gt;
-
-&lt;p&gt;迭代循环&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 29. Divide Two Integers&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
-
-Return the quotient after dividing dividend by divisor.
-
-The integer division should truncate toward zero.
-
-Example 1:
-
-Input: dividend = 10, divisor = 3
-Output: 3
-Example 2:
-
-Input: dividend = 7, divisor = -3
-Output: -2
-Note:
-
-Both dividend and divisor will be 32-bit signed integers.
-The divisor will never be 0.
-Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose of this problem, assume that your function returns 231 − 1 when the division result overflows.
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;迭代逻辑，不使用乘除，取余的计算，我们还可以使用加法，位移运算等。
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	public int divide_copy(int dividend, int divisor) {
-    if (dividend == Integer.MIN_VALUE &amp;amp;&amp;amp; divisor == -1) {
-        return Integer.MAX_VALUE;
-    }
-
-    if (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) {
-        return divideHelper(-dividend, -divisor);
-    } else if (dividend &amp;gt; 0) {
-        return -divideHelper(-dividend, divisor);
-    }
-    else if(divisor &amp;gt; 0) {
-        return -divideHelper(dividend, -divisor);
-    }
-    else {
-        return divideHelper(dividend, divisor);
-    }
-}
-
-private int divideHelper(int dividend, int divisor){
-    int res = 0;
-    int currentDivisor = divisor;
-    while(dividend&amp;lt;=divisor){    // abs(divisor) &amp;lt;= abs(dividend)
-    	
-        int temp = 1;  
-        //test max temp for: temp * abs(divisor) &amp;lt;= abs(dividend), while temp = 2^n
-        while( (currentDivisor &amp;lt;&amp;lt; 1) &amp;gt;=dividend &amp;amp;&amp;amp; (currentDivisor &amp;lt;&amp;lt; 1) &amp;lt;0 ){  
-            temp &amp;lt;&amp;lt;=1;
-            currentDivisor &amp;lt;&amp;lt;=1;
-        }
-        
-        dividend -= currentDivisor;  
-        res += temp;    
-        currentDivisor = divisor;
-    }       
-    return res;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;本来还有一个采用加法循环res的值，但是如果是除以1的话，会有超时的问题，所以才有了位移的操作。关于这个为什么是负数的操作，下面有一个正数的操作，但是报错了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	public int divide(int dividend, int divisor) {
-		//首先判定符号的问题
-		boolean flag = (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) || (dividend &amp;lt; 0 &amp;amp;&amp;amp; divisor &amp;lt; 0);
-		int dividends = 0;
-		int divisors = 0;
-		if (dividend == Integer.MIN_VALUE) dividend = Integer.MAX_VALUE;
-		if (divisor == Integer.MIN_VALUE) divisor = Integer.MAX_VALUE;
-		
-		dividends = dividend &amp;gt; 0 ? dividend : -dividend;
-		divisors = divisor &amp;gt; 0 ? divisor : -divisor;
-		
-		int res = 0;int curdivisors = divisors;
-		while (dividends - divisors &amp;gt;= 0) {
-			int tmp = 1;
-			while( (divisors &amp;lt;&amp;lt; 1 &amp;lt;= dividends) &amp;amp;&amp;amp; (divisors &amp;lt;&amp;lt; 1) &amp;gt; 0 ) {
-				tmp &amp;lt;&amp;lt;=1;
-				divisors &amp;lt;&amp;lt;=1;
-			}
-			
-			res+=tmp;
-			dividends -= divisors;
-			divisors = curdivisors;
-		}
-		return flag ? res : -res;
-	}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;错误的测试用例是：
--2147483648 1&lt;/p&gt;
-
-&lt;p&gt;错误的根由在于 (Integer.MAX_VALUE），(Integer.MIN_VALUE) 一个是 -2147483648，一个是2147483647，这道题目下，如果不使用Long值，修改为负数比较合适。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class Solution {
-    		public int divide(int dividend, int divisor) {
-		//首先判定符号的问题
-		boolean flag = (dividend &amp;gt; 0 &amp;amp;&amp;amp; divisor &amp;gt; 0) || (dividend &amp;lt; 0 &amp;amp;&amp;amp; divisor &amp;lt; 0);
-
-		int dividends = dividend &amp;gt; 0 ? -dividend : dividend;
-		int divisors = divisor &amp;gt; 0 ? -divisor : divisor;
-		
-		int res = 0;int curdivisors = divisors;
-		while (dividends &amp;lt;= divisors) {
-			int tmp = 1;
-			while( (divisors &amp;lt;&amp;lt; 1 &amp;gt;= dividends) &amp;amp;&amp;amp; (divisors &amp;lt;&amp;lt; 1) &amp;lt; 0 ) {
-				tmp &amp;lt;&amp;lt;=1;
-				divisors &amp;lt;&amp;lt;=1;
-			}
-			
-			res+=tmp;
-			dividends -= divisors;
-			divisors = curdivisors;
-		}
-			return flag ? res==Integer.MIN_VALUE?Integer.MAX_VALUE:res : -res;
-
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sun, 18 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/18/leetcode29/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/18/leetcode29/</guid>
         
         <category>LeetCode</category>
         

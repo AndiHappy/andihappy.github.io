@@ -80,21 +80,6 @@ layout: default
                     </li>
                     {% endif %}
                 </ul>
-
-
-                {% if site.disqus_username %}
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
-                {% endif %}
-
-                {% if site.netease_comment %}
-                <!-- 网易云跟帖 评论框 start -->
-                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
-                <!-- 网易云跟帖 评论框 end -->
-                {% endif %}
             </div>
 
     <!-- Side Catalog Container -->
@@ -152,9 +137,9 @@ layout: default
 </article>
 
 
-{% if site.netease_comment %}
+<!-- {% if site.netease_comment %} -->
 <!-- 网易云跟帖JS代码 start -->
-<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+<!-- <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
 <script>
   var cloudTieConfig = {
     url: document.location.href,
@@ -164,14 +149,14 @@ layout: default
   };
   var yunManualLoad = true;
   Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
-</script>
+</script> -->
 <!-- 网易云跟帖JS代码 end -->
-{% endif %}
+<!-- {% endif %} -->
 
 
-{% if site.disqus_username %}
+<!-- {% if site.disqus_username %} -->
 <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "{{site.disqus_username}}";
     var disqus_identifier = "{{page.id}}";
@@ -182,9 +167,9 @@ layout: default
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
-</script>
+</script> -->
 <!-- disqus 公共JS代码 end -->
-{% endif %}
+<!-- {% endif %} -->
 
 
 {% if site.anchorjs %}

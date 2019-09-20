@@ -193,6 +193,77 @@
             ">
     			
 <div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti8/">
+        <h2 class="post-title">
+            activiti和设计模式(8)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中流程各个节点的行为数据
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            BPMN中不仅规定了每一个图标代表的意义，例如：    
+  
+而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  
+
+首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：
+
+public interface ActivityBehav...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/activiti-desigen-pattern/2017/08/13/activiti7/">
+        <h2 class="post-title">
+            activiti和设计模式(7)
+        </h2>
+        
+        <h3 class="post-subtitle">
+            activiti中流程定义中节点的跳转
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>一个具体的流程启动以后，具体流程示意图：   <br />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png" alt="简单会签流程示意图" /></p>
+
+<p>追踪流程的运转的情况，找到好玩的代码。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            一个具体的流程启动以后，具体流程示意图：   
+
+
+追踪流程的运转的情况，找到好玩的代码。  
+
+根据状态机的跳转的动作：
+PROCESS_START = new AtomicOperationProcessStart
+||
+PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+||
+ACTIVITY_EXECUT...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 13, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/activiti-desigen-pattern/2017/08/13/activiti6/">
         <h2 class="post-title">
             activiti和设计模式(6)
@@ -503,7 +574,7 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                         
                             
-                                <a href="/tags/#学习" title="学习" rel="22">
+                                <a href="/tags/#学习" title="学习" rel="23">
                                     学习
                                 </a>
                             
@@ -539,7 +610,7 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                         
                             
-                                <a href="/tags/#Concurrent" title="Concurrent" rel="6">
+                                <a href="/tags/#Concurrent" title="Concurrent" rel="7">
                                     Concurrent
                                 </a>
                             

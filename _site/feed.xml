@@ -5,9 +5,107 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 18 Sep 2019 21:51:56 +0800</pubDate>
-    <lastBuildDate>Wed, 18 Sep 2019 21:51:56 +0800</lastBuildDate>
+    <pubDate>Fri, 20 Sep 2019 16:01:22 +0800</pubDate>
+    <lastBuildDate>Fri, 20 Sep 2019 16:01:22 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>并发知识梳理：5.Atomic 原子类，LockSupport支持类</title>
+        <description>&lt;p&gt;在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;首先我们来看Atomic原子类，自己把它分为三类的：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;基础类型：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference之类的。&lt;/li&gt;
+  &lt;li&gt;数组类型：AtomicIntegerArray，AtomicLongArray，AtomicReferenceArray之类的。&lt;/li&gt;
+  &lt;li&gt;成员变成之类的：AtomicIntegerFiledUpdate等&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;我们先从基础类说明：AtomicBoolean有三个主要的成员变量：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long valueOffset;
+
+static {
+      try {
+         valueOffset = unsafe.objectFieldOffset
+            (AtomicBoolean.class.getDeclaredField(&quot;value&quot;));
+      } catch (Exception ex) { throw new Error(ex); }
+  }
+
+private volatile int value;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;主要的方法：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean get() {
+     return value != 0;
+}
+
+public final boolean compareAndSet(boolean expect, boolean update) {
+    int e = expect ? 1 : 0;
+    int u = update ? 1 : 0;
+    return unsafe.compareAndSwapInt(this, valueOffset, e, u);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;实现的原理就是，通过Unsafe，拿到Volatile修饰的成员变量value的内存地址，然后通过Unsafe的
+compareAndSet方法来设置value的值。&lt;/p&gt;
+
+&lt;p&gt;其他的基础类，基本就是这种模式的实现。&lt;/p&gt;
+
+&lt;p&gt;AtomicIntegerArray 的实现的源码，也是操作内存地址，但是因为是数组，所以有了些许的变化：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AtomicIntegerArray：
+
+private static final int base = unsafe.arrayBaseOffset(int[].class);
+ private static final int shift;
+ private final int[] array;
+
+ static {
+  int scale = unsafe.arrayIndexScale(int[].class);
+  if ((scale &amp;amp; (scale - 1)) != 0)
+   throw new Error(&quot;data type scale not a power of two&quot;);
+  shift = 31 - Integer.numberOfLeadingZeros(scale);
+ }
+
+ private long checkedByteOffset(int i) {
+  if (i &amp;lt; 0 || i &amp;gt;= array.length)
+   throw new IndexOutOfBoundsException(&quot;index &quot; + i);
+
+  return byteOffset(i);
+ }
+
+ private static long byteOffset(int i) {
+  return ((long) i &amp;lt;&amp;lt; shift) + base;
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们看一个具体的实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean compareAndSet(int i, int expect, int update) {
+  return compareAndSetRaw(checkedByteOffset(i), expect, update);
+ }
+
+ private boolean compareAndSetRaw(long offset, int expect, int update) {
+  return unsafe.compareAndSwapInt(array, offset, expect, update);
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;checkedByteOffset 就是根据i，确实能够&lt;code class=&quot;highlighter-rouge&quot;&gt;array[i]&lt;/code&gt; 对应的内存地址： &lt;code class=&quot;highlighter-rouge&quot;&gt;((long) i &amp;lt;&amp;lt; shift) + base&lt;/code&gt;
+其中shift 为 &lt;code class=&quot;highlighter-rouge&quot;&gt;31 - Integer.numberOfLeadingZeros(unsafe.arrayIndexScale(int[].class))&lt;/code&gt;
+就看计算公式，就让我们想起来数组的基础地址 + i* 每一个元素所占的步长的算法。&lt;/p&gt;
+
+&lt;p&gt;这也是其他的数组类原子类的基本操作了。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 24 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/24/concurrent-7/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/24/concurrent-7/</guid>
+        
+        <category>Concurrent</category>
+        
+        
+      </item>
     
       <item>
         <title>Leetcode:41  firstMissingPositive</title>
@@ -1952,90 +2050,6 @@ public void lock() {
         <guid isPermaLink="true">http://localhost:4000/2019/08/20/concurrent-4/</guid>
         
         <category>Concurrent</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode 30. Substring with Concatenation of All Words</title>
-        <description>&lt;p&gt;LeetCode 30. Substring with Concatenation of All Words&lt;/p&gt;
-
-&lt;p&gt;hard&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;LeetCode 30. Substring with Concatenation of All Words&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
-
-Example 1:
-
-Input:
-  s = &quot;barfoothefoobarman&quot;,
-  words = [&quot;foo&quot;,&quot;bar&quot;]
-Output: [0,9]
-Explanation: Substrings starting at index 0 and 9 are &quot;barfoor&quot; and &quot;foobar&quot; respectively.
-The output order does not matter, returning [9,0] is fine too.
-Example 2:
-
-Input:
-  s = &quot;wordgoodgoodgoodbestword&quot;,
-  words = [&quot;word&quot;,&quot;good&quot;,&quot;best&quot;,&quot;word&quot;]
-Output: []
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先是words的定长，这个在匹配的时候，
-肯定更加的好判断一点，还有就是题目中没有明确说明的重复出现的单词的现象，
-需要考虑一下。可以采用Map的数据结构存储，key为单词，value为单词出现的
-次数。
-
-对于匹配的元素，再次的采用map数据记录。
-根据匹配的个数是否与words的length值相等来判断是否，匹配成功。
-
-对字符串进行遍历操作，每次的i，都要进行words的匹配的校验
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public List&amp;lt;Integer&amp;gt; findSubstring(String s, String[] words) {
-        final Map&amp;lt;String, Integer&amp;gt; counts = new HashMap&amp;lt;&amp;gt;();
-        for (final String word : words) {
-            counts.put(word, counts.getOrDefault(word, 0) + 1);
-        }
-
-        final List&amp;lt;Integer&amp;gt; indexes = new ArrayList&amp;lt;&amp;gt;();
-        final int n = s.length(), num = words.length, len = words[0].length();
-        for (int i = 0; i &amp;lt; n - num * len + 1; i++) {
-            final Map&amp;lt;String, Integer&amp;gt; seen = new HashMap&amp;lt;&amp;gt;();
-            int j = 0;
-            while (j &amp;lt; num) {
-                final String word = s.substring(i + j * len, i + (j + 1) * len);
-                if (counts.containsKey(word)) {
-                    seen.put(word, seen.getOrDefault(word, 0) + 1);
-                    if (seen.get(word) &amp;gt; counts.getOrDefault(word, 0)) {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-                j++;
-            }
-            if (j == num) {
-                indexes.add(i);
-            }
-        }
-        return indexes;
-    }	
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Mon, 19 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/19/leetcode30/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/19/leetcode30/</guid>
-        
-        <category>LeetCode</category>
         
         
       </item>

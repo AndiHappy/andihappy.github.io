@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>LeetCode18, 19，20 - 飞翔的面包 | FlyBread Blog</title>
+    <title>并发知识梳理：5.Atomic 原子类，LockSupport支持类 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/08/14/day4/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/24/concurrent-7/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
+                        <a class="tag" href="/tags/#Concurrent" title="Concurrent">Concurrent</a>
                         
                     </div>
-                    <h1>LeetCode18, 19，20</h1>
+                    <h1>并发知识梳理：5.Atomic 原子类，LockSupport支持类</h1>
                     
                     
-                    <h2 class="subheading">算法分析和总结</h2>
+                    <h2 class="subheading">并发支持类</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 14, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 24, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,230 +209,92 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>LeetCode 第18，19，20题的分析和总结</p>
+				<p>在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。</p>
 
 <!--more-->
 
-<p>LeetCode 18. 4Sum</p>
+<p>首先我们来看Atomic原子类，自己把它分为三类的：</p>
+<ol>
+  <li>基础类型：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference之类的。</li>
+  <li>数组类型：AtomicIntegerArray，AtomicLongArray，AtomicReferenceArray之类的。</li>
+  <li>成员变成之类的：AtomicIntegerFiledUpdate等</li>
+</ol>
 
-<p>描述：</p>
+<p>我们先从基础类说明：AtomicBoolean有三个主要的成员变量：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long valueOffset;
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
+static {
+      try {
+         valueOffset = unsafe.objectFieldOffset
+            (AtomicBoolean.class.getDeclaredField("value"));
+      } catch (Exception ex) { throw new Error(ex); }
+  }
 
-Note:
+private volatile int value;
 
-The solution set must not contain duplicate quadruplets.
-
-Example:
-
-Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
-
-A solution set is:
-[
-  [-1,  0, 0, 1],
-  [-2, -1, 1, 2],
-  [-2,  0, 0, 2]
-]
 </code></pre></div></div>
 
-<p>思路：</p>
+<p>主要的方法：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean get() {
+     return value != 0;
+}
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，同一个思路
-</code></pre></div></div>
-
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;List&lt;Integer&gt;&gt; fourSum(int[] nums, int target) {
-      List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;List&lt;Integer&gt;&gt;();
-    List&lt;Integer&gt; l;
-    Arrays.sort(nums);
-    int len = nums.length;
-    for (int i = 0; i &lt; len - 3; i++) {
-      // 相同直接返回
-      if (i != 0 &amp;&amp; nums[i] == nums[i - 1]) continue;
-      // 最小值如果大于target，直接的返回
-      if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] &gt; target) break;
-      // 此值和最大的三个值相加，小于target 直接的返回
-      if (nums[i] + nums[len - 1] + nums[len - 2] + nums[len - 2] &lt; target) continue;
-
-      for (int j = i + 1; j &lt; len - 2; j++) {
-        // 相同直接返回
-        if (j != i + 1 &amp;&amp; nums[j] == nums[j - 1]) continue;
-        // 最小值如果大于target，直接的返回
-        if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] &gt; target) break;
-        // 此值和最大的三个值相加，小于target 直接的返回
-        if (nums[i] + nums[j] + nums[len - 1] + nums[len - 2] &lt; target) continue;
-
-        int head = j + 1, end = len - 1;
-        while (head &lt; end) {
-          int tempt = nums[i] + nums[j] + nums[head] + nums[end];
-          if (tempt == target) {
-            l = new ArrayList&lt;Integer&gt;();
-            l.add(nums[i]);
-            l.add(nums[j]);
-            l.add(nums[head]);
-            l.add(nums[end]);
-            list.add(l);
-            head++;
-			end--;
-            while (head &lt; end &amp;&amp; nums[head] == nums[head - 1]) {
-              head++;
-            }
-			while (head &lt; end &amp;&amp; nums[end] == nums[end+1]) {
-              end--;
-            }
-          } else if (tempt &gt; target)
-            end--;
-          else
-            head++;
-        }
-      }
-    }
-    return list; 
+public final boolean compareAndSet(boolean expect, boolean update) {
+    int e = expect ? 1 : 0;
+    int u = update ? 1 : 0;
+    return unsafe.compareAndSwapInt(this, valueOffset, e, u);
 }
 </code></pre></div></div>
 
-<p>LeetCode 19. Remove Nth Node From End of List</p>
+<p>实现的原理就是，通过Unsafe，拿到Volatile修饰的成员变量value的内存地址，然后通过Unsafe的
+compareAndSet方法来设置value的值。</p>
 
-<p>题目描述：</p>
+<p>其他的基础类，基本就是这种模式的实现。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, remove the n-th node from the end of list and return its head.
+<p>AtomicIntegerArray 的实现的源码，也是操作内存地址，但是因为是数组，所以有了些许的变化：</p>
 
-Example:
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicIntegerArray：
 
-Given linked list: 1-&gt;2-&gt;3-&gt;4-&gt;5, and n = 2.
+private static final int base = unsafe.arrayBaseOffset(int[].class);
+ private static final int shift;
+ private final int[] array;
 
-After removing the second node from the end, the linked list becomes 1-&gt;2-&gt;3-&gt;5.
-Note:
+ static {
+  int scale = unsafe.arrayIndexScale(int[].class);
+  if ((scale &amp; (scale - 1)) != 0)
+   throw new Error("data type scale not a power of two");
+  shift = 31 - Integer.numberOfLeadingZeros(scale);
+ }
 
-Given n will always be valid.
+ private long checkedByteOffset(int i) {
+  if (i &lt; 0 || i &gt;= array.length)
+   throw new IndexOutOfBoundsException("index " + i);
 
-Follow up:
+  return byteOffset(i);
+ }
 
-Could you do this in one pass?
+ private static long byteOffset(int i) {
+  return ((long) i &lt;&lt; shift) + base;
+ }
 </code></pre></div></div>
 
-<p>思路：</p>
+<p>我们看一个具体的实现：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单题目，注意链表的表头的处理，下标的处理
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean compareAndSet(int i, int expect, int update) {
+  return compareAndSetRaw(checkedByteOffset(i), expect, update);
+ }
+
+ private boolean compareAndSetRaw(long offset, int expect, int update) {
+  return unsafe.compareAndSwapInt(array, offset, expect, update);
+ }
 </code></pre></div></div>
 
-<p>代码：</p>
+<p>checkedByteOffset 就是根据i，确实能够<code class="highlighter-rouge">array[i]</code> 对应的内存地址： <code class="highlighter-rouge">((long) i &lt;&lt; shift) + base</code>
+其中shift 为 <code class="highlighter-rouge">31 - Integer.numberOfLeadingZeros(unsafe.arrayIndexScale(int[].class))</code>
+就看计算公式，就让我们想起来数组的基础地址 + i* 每一个元素所占的步长的算法。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode removeNthFromEnd_copy(ListNode head, int n) {
-	ListNode tmp = new ListNode(-1);
-	ListNode first = tmp;ListNode second = tmp;
-	tmp.next = head;
-	for(int i = 1 ; i&lt;=n+1;i++) {
-		first = first.next;
-	}
-	while(first != null) {
-		first = first.next;
-		second = second.next;
-	}
-		
-	second.next = second.next.next;
-		
-	return tmp.next;
-}
-</code></pre></div></div>
-
-<p>LeetCode 20. Valid Parentheses</p>
-
-<p>题目描述：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters 
-'(', ')', '{', '}', '[' and ']', 
-determine if the input string is valid.
-
-An input string is valid if:
-
-Open brackets must be closed by the same type of brackets.
-Open brackets must be closed in the correct order.
-Note that an empty string is also considered valid.
-
-Example 1:
-
-Input: "()"
-Output: true
-Example 2:
-
-Input: "()[]{}"
-Output: true
-Example 3:
-
-Input: "(]"
-Output: false
-Example 4:
-
-Input: "([)]"
-Output: false
-Example 5:
-
-Input: "{[]}"
-Output: true
-</code></pre></div></div>
-
-<p>思路：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>典型的栈的应用，但是有两种不同的思路。
-</code></pre></div></div>
-
-<p>代码：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//正常的思路
-public boolean isValid(String s) {
-	if(s == null || s.length() &lt;= 0){
-   		return true;
-   	}
-   	Stack&lt;Character&gt; stack = new Stack&lt;Character&gt;();
-   	for (int i = 0; i &lt; s.length(); i++) {
-   		char cha = s.charAt(i);
-		switch (cha) {
-		case '(':
-		case '{':
-		case '[':
-			stack.push(cha);
-			break;
-		case ')':
-			if(stack.isEmpty() || stack.pop() != '(' ){
-				return false;
-			}
-			break;
-		case '}':
-			if(stack.isEmpty() || stack.pop()!= '{' ){
-				return false;
-			}
-			break;
-		case ']':
-			if(stack.isEmpty() || stack.pop() != '[' ){
-			return false;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-   	return stack.isEmpty();
-}
-
-//匹配的思路
-
-public boolean isValid(String s) {
-	Stack&lt;Character&gt; stack = new Stack&lt;Character&gt;();
-	for (char c : s.toCharArray()) {
-		if (c == '(')
-			stack.push(')');
-		else if (c == '{')
-			stack.push('}');
-		else if (c == '[')
-			stack.push(']');
-		else if (stack.isEmpty() || stack.pop() != c)
-			return false;
-	}
-	return stack.isEmpty();
-}
-</code></pre></div></div>
+<p>这也是其他的数组类原子类的基本操作了。</p>
 
 
                 <hr style="visibility: hidden;">
@@ -440,19 +302,12 @@ public boolean isValid(String s) {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/08/13/day4/" data-toggle="tooltip" data-placement="top" title="LeetCode16，17">
+                        <a href="/2019/08/24/leetcode41/" data-toggle="tooltip" data-placement="top" title="Leetcode:41  firstMissingPositive">
                         Previous<br>
-                        <span>LeetCode16，17</span>
+                        <span>Leetcode:41  firstMissingPositive</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/08/15/day5/" data-toggle="tooltip" data-placement="top" title="JDK7的新特性1 ForkJoinPool">
-                        Next<br>
-                        <span>JDK7的新特性1 ForkJoinPool</span>
-                        </a>
-                    </li>
                     
                 </ul>
             </div>
@@ -552,8 +407,8 @@ public boolean isValid(String s) {
 <!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/08/14/day4";
-    var disqus_url = "http://localhost:4000/2019/08/14/day4/";
+    var disqus_identifier = "/2019/08/24/concurrent-7";
+    var disqus_url = "http://localhost:4000/2019/08/24/concurrent-7/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

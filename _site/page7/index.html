@@ -193,6 +193,59 @@
             ">
     			
 <div class="post-preview">
+    <a href="/concurrent/2017/08/26/concurrent/">
+        <h2 class="post-title">
+            JDK并发框架的描述（一）
+        </h2>
+        
+        <h3 class="post-subtitle">
+            JDK中可重入锁，以及CountDownLatch等锁的实现的基础架构说明（一）
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
+
+
+java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现锁的基础呢...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 26, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/">
+        <h2 class="post-title">
+            复习算法和数据结构（1）
+        </h2>
+        
+        <h3 class="post-subtitle">
+            整理自己的笔记，回顾自己以前记录的算法和数据结构，争取做到温故而知新。
+        </h3>
+        
+        <div class="post-content-preview">
+        
+
+        </div>
+        <!-- <div class="post-content-preview">
+            
+
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 18, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/activiti-desigen-pattern/2017/08/13/activiti8/">
         <h2 class="post-title">
             activiti和设计模式(8)
@@ -456,97 +509,22 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/activiti-desigen-pattern/2017/08/02/activit1/">
-        <h2 class="post-title">
-            activiti和设计模式(1)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            通过学习activiti的源码，从设计模式这个角度去分析这个框架，熟悉源码，学习其中的设计思想
-        </h3>
-        
-        <div class="post-content-preview">
-        <ol>
-  <li>activiti的源码的主要的架构</li>
-  <li>activiti前两层包含的设计模式</li>
-</ol>
-
-<p>从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   <br />
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！</p>
-
-<p>另外的一个原因，在于activiti的主设计人员已经经历了一次设计jbpmn，可能被坑过一次了，所以在第二次设计的时候，更加的完善。</p>
-
-<p>至于为什么选择了从设计模式分析activiti，主要是想提供一个另外的角度，看看能不能学到点大神设计框架的精髓。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            
-  activiti的源码的主要的架构
-  activiti前两层包含的设计模式
-
-
-从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。   
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！
-
-另外的一个原因，在于activi...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 2, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/2017/07/26/begine/">
-        <h2 class="post-title">
-            再次出发
-        </h2>
-        
-        <h3 class="post-subtitle">
-            每一次的出发都是信心满满，就是不知道能坚持多久
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>终于再次的出发，想今后写点东西。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            终于再次的出发，想今后写点东西。
-
-
-
-正文
-
-这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。   
-自己有时间了，在慢慢的修改，变为自己喜欢的。
-
-每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天下古今之庸人，皆以一惰字致败。		...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on July 26, 2017
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
 <ul class="pager">
     
-    <span class="page-number">第 7/7 页</span>
+    <span class="page-number">第 7/8 页</span>
     
     
     <li class="previous">
         <a href="/page6">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page8">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -604,7 +582,7 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
                             
                         
                             
-                                <a href="/tags/#LeetCode" title="LeetCode" rel="23">
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="25">
                                     LeetCode
                                 </a>
                             

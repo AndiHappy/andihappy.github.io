@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>JDK并发框架的描述（二） - 飞翔的面包 | FlyBread Blog</title>
+    <title>Leetcode:48. Rotate Image - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/concurrent/2017/08/28/concurrent2/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/25/leetcode48/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>JDK并发框架的描述（二）</h1>
+                    <h1>Leetcode:48. Rotate Image</h1>
                     
                     
-                    <h2 class="subheading">锁的Condition，CyclicBarrier以及实现的说明</h2>
+                    <h2 class="subheading">解决问题的一种技巧：加倍或者先到彼再由此</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 28, 2017</span>
+                    <span class="meta">Posted by zhailzh on August 25, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,13 +209,79 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>线程之间的通信，在java中有两种：      <br />
-  一种是synchronized对应的wait，和notify；    <br />
-  另外一种，就是Lock中对应的Condition中的await和signal</p>
+				<p>问题的描述为：
+You are given an n x n 2D matrix representing an image.</p>
+
+<p>Rotate the image by 90 degrees (clockwise).</p>
+
+<p>Note:</p>
+
+<p>You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.</p>
 
 <!--more-->
 
-<p>待续。。。。。。。。。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Example 1:
+
+Given input matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+rotate the input matrix in-place such that it becomes:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+Example 2:
+
+Given input matrix =
+[
+  [ 5, 1, 9,11],
+  [ 2, 4, 8,10],
+  [13, 3, 6, 7],
+  [15,14,12,16]
+], 
+
+rotate the input matrix in-place such that it becomes:
+[
+  [15,13, 2, 5],
+  [14, 3, 4, 1],
+  [12, 6, 8, 9],
+  [16, 7,10,11]
+]
+
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 2 3     7 8 9     7 4 1
+4 5 6  =&gt; 4 5 6  =&gt; 8 5 2
+7 8 9     1 2 3     9 6 3
+</code></pre></div></div>
+
+<p>具体的代码：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void rotate(int[][] matrix) {
+    int s = 0, e = matrix.length - 1;
+    while(s &lt; e){
+        int[] temp = matrix[s];
+        matrix[s] = matrix[e];
+        matrix[e] = temp;
+        s++; e--;
+    }
+
+    for(int i = 0; i &lt; matrix.length; i++){
+        for(int j = i+1; j &lt; matrix[i].length; j++){
+            int temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+    }
+}
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -223,19 +289,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/concurrent/2017/08/27/concurrent1/" data-toggle="tooltip" data-placement="top" title="JDK并发框架的描述（二）">
+                        <a href="/2019/08/24/concurrent-7/" data-toggle="tooltip" data-placement="top" title="并发知识梳理：5.Atomic 原子类，LockSupport支持类">
                         Previous<br>
-                        <span>JDK并发框架的描述（二）</span>
+                        <span>并发知识梳理：5.Atomic 原子类，LockSupport支持类</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/performance/2017/09/12/javaPerformance/" data-toggle="tooltip" data-placement="top" title="JAVA性能优化（一）">
-                        Next<br>
-                        <span>JAVA性能优化（一）</span>
-                        </a>
-                    </li>
                     
                 </ul>
             </div>
@@ -335,8 +394,8 @@
 <!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/concurrent/2017/08/28/concurrent2";
-    var disqus_url = "http://localhost:4000/concurrent/2017/08/28/concurrent2/";
+    var disqus_identifier = "/2019/08/25/ leetcode48";
+    var disqus_url = "http://localhost:4000/2019/08/25/leetcode48/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

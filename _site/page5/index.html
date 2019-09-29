@@ -193,6 +193,57 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/08/04/hashmap0/">
+        <h2 class="post-title">
+            沉下心来分析HashMap的源码（三）学习红黑树
+        </h2>
+        
+        <h3 class="post-subtitle">
+            红黑树相关的操作，尽可能的详细
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：</p>
+
+<ol>
+  <li>每个节点或者是红色，或者是黑色</li>
+  <li>根节点是黑色</li>
+  <li>每一个叶子节点(最后的空节点)是黑色的</li>
+  <li>如果一个节点是红色的，那么它的孩子节点都是黑色的</li>
+  <li>从任意一个节点到叶子节点，经过的黑色节点是一样的</li>
+</ol>
+
+<p>完全的不清楚为什么这么定义，以及这么定义的原因是什么。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：
+
+
+  每个节点或者是红色，或者是黑色
+  根节点是黑色
+  每一个叶子节点(最后的空节点)是黑色的
+  如果一个节点是红色的，那么它的孩子节点都是黑色的
+  从任意一个节点到叶子节点，经过的黑色节点是一样的
+
+
+完全的不清楚为什么这么定义，以及这么定义的原因是什么。
+
+
+
+先导
+
+先说红黑树的由来，是为了查找的平衡...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 4, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/08/03/hashmap/">
         <h2 class="post-title">
             沉下心来分析HashMap的源码（二）
@@ -484,33 +535,6 @@ When a ChannelInboundHandler implementation overrides ch...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017/12/04/nettyinaction4/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的第四,五章
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     <br />
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuffer.</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuf...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 4, 2017
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -584,7 +608,7 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
                             
                         
                             
-                                <a href="/tags/#LeetCode" title="LeetCode" rel="25">
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="26">
                                     LeetCode
                                 </a>
                             

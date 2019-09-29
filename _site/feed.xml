@@ -5,9 +5,73 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 23 Sep 2019 09:50:02 +0800</pubDate>
-    <lastBuildDate>Mon, 23 Sep 2019 09:50:02 +0800</lastBuildDate>
+    <pubDate>Sun, 29 Sep 2019 09:56:49 +0800</pubDate>
+    <lastBuildDate>Sun, 29 Sep 2019 09:56:49 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Leetcode:49. Group Anagrams</title>
+        <description>&lt;p&gt;问题的描述为：
+Given an array of strings, group anagrams together.
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Example:
+
+Input: [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;],
+Output:
+[
+  [&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;],
+  [&quot;nat&quot;,&quot;tan&quot;],
+  [&quot;bat&quot;]
+]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note:&lt;/p&gt;
+
+&lt;p&gt;All inputs will be in lowercase.
+The order of your output does not matter.&lt;/p&gt;
+
+&lt;p&gt;思路：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;关键在于，有相同字符确定的不同字符串怎么的确定？
+如果把hashcode变成字母的和，是不是直接的判断hashcode的值就行了？
+
+转念在一想不行，例如：duh, ill 值是相同的，
+所以我们可以采用26个特殊的值，它们相加的时候，和自己的有关，
+这个设计到质数的概念，计算出26个质数，这个比较的困难！
+
+确定一中唯一的比对规则很重要。
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;具体的代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public static List&amp;lt;List&amp;lt;String&amp;gt;&amp;gt; groupAnagrams(String[] strs) {
+  if (strs == null || strs.length == 0) {
+   return null;
+  }
+
+  Map&amp;lt;String, List&amp;lt;String&amp;gt;&amp;gt; judge = new HashMap&amp;lt;String, List&amp;lt;String&amp;gt;&amp;gt;();
+  for (String key : strs) {
+   char[] value = key.toCharArray();
+   Arrays.sort(value);
+   String tmp1 = new String(value);
+   if (!judge.containsKey(tmp1)) judge.put(tmp1, new ArrayList&amp;lt;String&amp;gt;());
+   judge.get(tmp1).add(key);
+  }
+
+  return new ArrayList&amp;lt;List&amp;lt;String&amp;gt;&amp;gt;(judge.values());
+
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Mon, 26 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/26/leetcode49/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/26/leetcode49/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>Leetcode:48. Rotate Image</title>
@@ -1562,118 +1626,6 @@ i = (i + k) % n
         <pubDate>Wed, 21 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/21/leetcode33/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/21/leetcode33/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode 32. Longest Valid Parentheses</title>
-        <description>&lt;p&gt;LeetCode 32. Longest Valid Parentheses
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
-
-Example 1:
-
-Input: &quot;(()&quot;
-Output: 2
-Explanation: The longest valid parentheses substring is &quot;()&quot;
-Example 2:
-
-Input: &quot;)()())&quot;
-Output: 4
-Explanation: The longest valid parentheses substring is &quot;()()&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 1. 首先理解题意是关键的步骤：挑选可以使用的括号规则，如下的规则
- * 
- * ()(() 计算值为2
- * ()()) 计算值为4
- * 
- * 2. 理解了题意之后，就是梳理具体的逻辑
- * 
- * 采用栈的的数据结构，来匹配右括号与左括号的匹配的规则
- * 左括号则入栈，右括号需要处理的逻辑是：
- * 匹配或者不匹配的情况
- *   如果是匹配的情况，那么需要把匹配的左括号出栈，然后根据出栈后的情况：
- *   如果还有内容，没有匹配完呢，直接的更新数据。
- *   如果栈内没有了内容，需要计算最大的长度。
- * 
- * 	 如果是不匹配的情况，右括号不匹配的情况，就是直接的丢弃。判断这个时候的栈内元素为空，并且更新最大长度的开始的值。
- * 			
- * */
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;具体的代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;static int longestValidParentheses_copy(String s) {
-  int n = s.length(), longest = 0;
-  //记录遍历过程中s的下标的值
-  Stack&amp;lt;Integer&amp;gt; st = new Stack&amp;lt;Integer&amp;gt;();
-  
-  for (int i = 0; i &amp;lt; n; i++) {
-      if (s.charAt(i) == '(') {
-       st.push(i);
-      }else {
-          if (!st.empty() &amp;amp;&amp;amp; s.charAt(st.peek()) == '(') {
-           st.pop();
-          }else {
-           st.push(i);
-          }
-      }
-  }
-  
-  if (st.empty()) longest = n;
-  else {
-      int a = n, b = 0;
-      while (!st.empty()) {
-          b = st.peek(); st.pop();
-          longest = Math.max(longest, a-b-1);
-          a = b;
-      }
-      longest = Math.max(longest, a);
-  }
-  return longest;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这种方案，可以比较清晰的看到，解题的思路，但是可能清晰的看到优化的空间，因为后面遍历stack的过程，可以融合在第一次遍历s的过程中。就如思路中所描述的那样。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int longestValidParentheses(String s) {
-        Stack&amp;lt;Integer&amp;gt; stack = new Stack&amp;lt;Integer&amp;gt;();
-        int max=0;
-        // 匹配开始的节点
-        int left = -1;//设想是(),匹配结束的i应该是1，则1-（-1） = 2 
-        for(int j=0;j&amp;lt;s.length();j++){
-            if(s.charAt(j)=='(') stack.push(j);
-            else {
-                if (stack.isEmpty()) left=j;
-                else{
-                    stack.pop();
-                    if(stack.isEmpty()) max=Math.max(max,j-left);
-                    else max=Math.max(max,j-stack.peek());
-                }
-            }
-        }
-        return max;
-    }
-
-System.out.println(longestValidParentheses(&quot;()(()&quot;)); //2
-System.out.println(longestValidParentheses(&quot;)()())&quot;));//4
-System.out.println(longestValidParentheses1(&quot;()(()&quot;)); //2
-System.out.println(longestValidParentheses1(&quot;)()())&quot;));//4
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-</description>
-        <pubDate>Wed, 21 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/21/leetcode32/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/21/leetcode32/</guid>
         
         <category>LeetCode</category>
         

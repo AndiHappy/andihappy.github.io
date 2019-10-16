@@ -5,9 +5,100 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 29 Sep 2019 09:56:49 +0800</pubDate>
-    <lastBuildDate>Sun, 29 Sep 2019 09:56:49 +0800</lastBuildDate>
+    <pubDate>Wed, 16 Oct 2019 09:30:30 +0800</pubDate>
+    <lastBuildDate>Wed, 16 Oct 2019 09:30:30 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>对Leetcode问题的思索</title>
+        <description>&lt;p&gt;突然想起来LeetCode的每一道题，最终要的是对思维能力的锻炼，解决方案的提取，不能一味的去刷题，那样太没有趣味和底下了。&lt;/p&gt;
+
+&lt;p&gt;问题的描述为：
+Given a list of daily temperatures T, return a list such that, for each day in the input, 
+ tells you how many days you would have to wait until a warmer temperature.
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  
+ If there is no future day for which this is possible, put 0 instead.
+For example, given the list of temperatures 
+T = [73, 74, 75, 71, 69, 72, 76, 73], 
+your output should be [1, 1, 4, 2, 1, 1, 0, 0].
+
+Note: The length of temperatures will be in the range [1, 30000]. 
+Each temperature will be an integer in the range [30, 100].
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第一步是弄懂具体的问题，输入是什么？输出什么？
+第二步是确定输入和输出之间的关系，这一步是最关键的。
+大概的逻辑关系，就是数据的怎么得到的逻辑关系，应该还是能够分析出来的。
+第三步：按照梳理出来的逻辑关系，来映射成为代码,这一步是最难的，但是我们因为知道它最难，我们采用我们学过的东西，对它进行分解，分类，拆成小步，一点一点的来解决。&lt;/p&gt;
+
+&lt;p&gt;我们就按照这个逻辑来分析，这个题目：&lt;/p&gt;
+
+&lt;p&gt;首先是输入的数组：&lt;code class=&quot;highlighter-rouge&quot;&gt;[73, 74, 75, 71, 69, 72, 76, 73]&lt;/code&gt;
+输出的数组是：&lt;code class=&quot;highlighter-rouge&quot;&gt;[1, 1, 4, 2, 1, 1, 0, 0]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;然后就是输入和输出之间的关系，此类题目的关系，可以直接的观察到，我们称之为：小白型（给不懂计算机的人员，讲解的时候，我能够比较轻松的说明这个输出数据的）：如果距离比今天温度还高的日子，还差几天。&lt;/p&gt;
+
+&lt;p&gt;第三步，就是映射成代码，针对小白型的题目，映射为代码，只需要梳理她的逻辑即可。&lt;/p&gt;
+
+&lt;p&gt;第3.1步：针对小白型的题目，关键在于梳理输出得到的过程。&lt;/p&gt;
+
+&lt;p&gt;首先肯定的需要对输入的数据进行遍历，不然找不到当前值，后须值的比对机会。&lt;/p&gt;
+
+&lt;p&gt;有了遍历的基本的框架，我们就有了当前值，当前值的索引，后须值，后须值的索引。如果后续的这个值大于当前值，那么结果值直接就能够得到，为1，如果后须值小于当前值，这个就需要临时的变量来进行存储，存储什么东西尼，这块可能就是算法的核心点了。&lt;/p&gt;
+
+&lt;p&gt;第3.2步：针对算法的核心点，我们才用梳理一直的量，和未知的量来探索这个点&lt;/p&gt;
+
+&lt;p&gt;当前值，当前值的索引，后须值，后须值的索引，我们只需要把那一小的值和索引存储起来，当遇到比当前值大的之后，再去更新即可。这个更新，就是找到了比当前值的索引减去 当前值的索引就好。或者没有找到比当前置大的值，但是已经遍历结束了，那么直接的设置为0即可。&lt;/p&gt;
+
+&lt;p&gt;这样的话，我们的关键点就在于，当时数组处于下降趋势的时候，存储下降趋势的索引值。&lt;/p&gt;
+
+&lt;p&gt;第3.3步：梳理整理的算法，合并可以合并标识的东西，我们如果声明一个临时的变量组，【当前值的索引，其实就是下标】，然后是结果值，我们就能够很大程度的优化代码的表述。我们需要保存下降趋势的下标，其实这是一个点，保存下标的方式有很多种，包括链表，数组，栈能够保存下标，但是哪一种合适尼？在分析下，我们使用这些下标干什么？在有大的值的时候，需要减去前面的下标，然后就没有用了，这个就有点栈的味道了，然后再把栈这个数据结构，套上去，看看能不能实现。&lt;/p&gt;
+
+&lt;p&gt;其实应该有3.4步，伪代码实现，然后再去编程。&lt;/p&gt;
+
+&lt;p&gt;栈实现的解决办法：&lt;/p&gt;
+
+&lt;p&gt;public int[] dailyTemperatures(int[] temperatures) {
+  Stack&lt;Integer&gt; stack = new Stack&amp;lt;&amp;gt;();
+  int[] ret = new int[temperatures.length];
+  for(int i = 0; i &amp;lt; temperatures.length; i++) {
+      while(!stack.isEmpty() &amp;amp;&amp;amp; temperatures[i] &amp;gt; temperatures[stack.peek()]) {
+          int idx = stack.pop();
+          ret[idx] = i - idx;
+      }
+      stack.push(i);
+  }
+  return ret;
+}&lt;/Integer&gt;&lt;/p&gt;
+
+&lt;p&gt;实现了之后，还有3.5 步，去优化，去实验其他的想法。&lt;/p&gt;
+
+&lt;p&gt;具体的代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public int[] dailyTemperatures(int[] temperatures) {
+  int[] stack = new int[temperatures.length];
+  int top = -1;
+  int[] ret = new int[temperatures.length];
+  for(int i = 0; i &amp;lt; temperatures.length; i++) {
+      while(top &amp;gt; -1 &amp;amp;&amp;amp; temperatures[i] &amp;gt; temperatures[stack[top]]) {
+          int idx = stack[top--];
+          ret[idx] = i - idx;
+      }
+      stack[++top] = i;
+  }
+  return ret;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Tue, 27 Aug 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/</guid>
+        
+        <category>LeetCode</category>
+        
+        
+      </item>
     
       <item>
         <title>Leetcode:49. Group Anagrams</title>
@@ -1549,83 +1640,6 @@ vector&amp;lt;int&amp;gt; searchRange(int A[], int n, int target) {
         <pubDate>Thu, 22 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/22/leetcode34/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/22/leetcode34/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LeetCode 33. Search in Rotated Sorted Array</title>
-        <description>&lt;p&gt;LeetCode 33. Search in Rotated Sorted Array&lt;/p&gt;
-
-&lt;p&gt;从根本上面说，这个数据很有意思，只是正常的数据进行的一次转换，我们需要的就是怎么转换回来，或者说在经典的算法中，下标计算的时候，怎么能够不受这次转换的影响。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;描述：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-
-(i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
-
-You are given a target value to search. If found in the array return its index, otherwise return -1.
-
-You may assume no duplicate exists in the array.
-
-Your algorithm's runtime complexity must be in the order of O(log n).
-
-Example 1:
-
-Input: nums = [4,5,6,7,0,1,2], target = 0
-Output: 4
-Example 2:
-
-Input: nums = [4,5,6,7,0,1,2], target = 3
-Output: -1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;既然是有一段数据被翻转回到了数据的开头，那我们怎么能够比较巧妙的翻转回去尼？
-
-i = (i + k) % n
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;具体的代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;int search(int A[], int n, int target) {
-  int lo = 0, hi = n - 1;
-  //！！！寻找折点的算法也是折半查找！！！
-  while (lo &amp;lt; hi) {
-   int mid = (lo + hi) / 2;
-   if (A[mid] &amp;gt; A[hi])
-    lo = mid + 1;
-   else
-    hi = mid;
-  }
-
-
-  int rot = lo;
-  lo = 0;
-  hi = n - 1;
-
-  while (lo &amp;lt;= hi) {
-   int mid = (lo + hi) / 2;
-   //最关键的一句，说明了，这个题目看数据的方式
-   int realmid = (mid + rot) % n;
-   if (A[realmid] == target)
-    return realmid;
-   if (A[realmid] &amp;lt; target)
-    lo = mid + 1;
-   else
-    hi = mid - 1;
-  }
-  return -1;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Wed, 21 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/21/leetcode33/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/21/leetcode33/</guid>
         
         <category>LeetCode</category>
         

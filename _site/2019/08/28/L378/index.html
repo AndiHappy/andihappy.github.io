@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>远程工作language的选择 - 飞翔的面包 | FlyBread Blog</title>
+    <title>L378 有序矩阵中第K小的元素 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/04/15/remotework/">
+    <link rel="canonical" href="http://localhost:4000/2019/08/28/L378/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -164,13 +164,13 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg1.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg1.jpg')
+        background-image: url('/img/post-bg-2015.jpg')
     }
 
     
@@ -183,13 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
+                        
                     </div>
-                    <h1>远程工作language的选择</h1>
+                    <h1>L378 有序矩阵中第K小的元素</h1>
                     
                     
-                    <h2 class="subheading"></h2>
+                    <h2 class="subheading">Kth Smallest Element in a Sorted Matrix</h2>
                     
-                    <span class="meta">Posted by 飞翔的面包 on April 15, 2019</span>
+                    <span class="meta">Posted by zhailzh on August 28, 2019</span>
                 </div>
             </div>
         </div>
@@ -207,30 +209,98 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p><a href="https://blog.usejournal.com/what-technologies-to-learn-to-land-a-remote-job-in-2018-7dff03e17982">文章地址</a></p>
+				<p>题目描述：</p>
 
-<p>What technologies to learn to land a remote job in 2018</p>
+<p>Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.</p>
 
-<!--more-->
+<p>Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+<!--more--></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
 
-<p>At this point in my career, I’m quite invested in the whole remote working, digital nomad shtick. My family, friends, and even strangers online now recognize me as the “guy who works in his pajamas from home”. So, perhaps I’m the man for the job when it comes to recommending technologies that will help propel you into this lifestyle.
-Note: I focus primarily on software development, so if you’re a videographer or something, this post won’t provide as much value.</p>
+matrix = [
+   [ 1,  5,  9],
+   [10, 11, 13],
+   [12, 13, 15]
+],
+k = 8,
+</code></pre></div></div>
 
-<p>Before I just go off（进行） ranting about the technologies I believe will assist（帮助） you in getting a remote gig（演奏，临时工作）; there are a few attributes that may be beneficial, or in some cases required. For example, you’ll have a much better chance if you’re personable, have past experience working from home, or have existing clientele（委托人，顾客）. For now, though, let’s omit（to fail to include or do something） anything that falls under a similar category, I want to focus primarily on the tech.
-Firstly, let’s focus on programming languages. I searched every popular language on several remote job sites that fit my criteria（a principle or standard by which something may be judged or decided.） (i.e. exclusively remote jobs to avoid on-site positions slipping through the cracks). One downside was most of these sites had 0 jobs available for certain languages. So, I resorted to StackOverflow for another metric, as it had remote jobs available for more obscure languages like Perl and R. StackOverflow jobs provided a solid baseline for remote jobs, and even did a superb job of filtering all on-site positions out.
-The results
-Obviously, these results are subject to change over the course of this year, so keep that in mind.</p>
+<p>return 13.
+Note:
+You may assume k is always valid, 1 ≤ k ≤ n2.</p>
 
-<p>Results for 8 commonly used programming languages
-Personally, I didn’t find this very surprising. Javascript has been growing exponentially for the past few years with the emergence of node.js and various front-end frameworks. Java, on the other hand is a tad bit interesting, because nearly all the jobs are senior positions. Python had a healthy mixture of web, machine learning, and data science jobs. Ruby is a little misleading because ALL of the jobs involved Ruby on Rails — the web framework (more on frameworks later). C++ and Go were very close, but I’d be willing to bet Go overtakes the former shortly.
-One thing to note regarding Javascript is the over abundance of frameworks that have been hitting the scene for the past few years. I mention React quite a bit in my articles surrounding the remote job landscape. (Mostly because I contribute my first remote job to my capabilities using the framework.) Job searchers should still be seeing a consistent flow of React positions popping up. At the time of writing it was ahead of the race in terms of front-end frameworks, with angular close behind, and vue quickly picking up steam. With the rise of React Native in the mobile space, experience working in React has become even more beneficial. Not surprisingly, express is still far ahead of the other backend frameworks.
-I would like to take a minute to talk about Ruby in a little more detail. I wrote above about all the positions being Ruby on Rails (the popular web framework), but interestingly I also spotted a lot of senior-level positions for the language. I presume the age of the language and framework has something a lot to do with this. As the language becomes less popular — not saying it’s “dying” by any stretch — the roles become a tad more demanding; at least that’s what I’ve come to find. So if you’re new to web development I’d avoid putting your eggs in the Ruby basket as it would be difficult to land a junior-level role.
-Another language to zoom in on would be PHP. Frameworks like Laravel and Symfony are all the buzz right now, but we can’t dismiss WordPress. Admittedly, I did less research into the 8th ranked language on the list, but I found a majority of the positions to be WordPress. Furthermore, positions such as these were quite a bit less technical. After reading the requirements for a few postings, it was clear that they fell more into the creative/design side of things — UI, UX, PSD-to-HTML, all were common themes.
-I’ll wrap up with a few words from my personal experience working and researching in this field. If you consider yourself “language agnostic” or a “T-shaped developer” you’ll have a much better chance of landing a remote job. I would consider myself very focused on React development, but I try to stay up to date on other technologies. A lot of co-workers ask how I know so much about something like Django, but spend no professional time working with the framework. The answer is quite simple, I love python and web development so I spend a lot of time reading about Django and building side-projects with the technology. I also dip my feet into WordPress every now and then because of freelance work that comes my way. It’s easy to excel in one particular language and maintain competency in another if the other interests you. A friend of mine works all day with node.js, but seems to be a master of 4–6 other tech stacks. She’s developed small games, created several bots, even dipped into machine learning. It’s her passion.</p>
+<p>分析思路：</p>
 
-<p><strong>So, my suggestion is to focus on a language that will bring you monetary and lifestyle results, but also pursue your passions and interests. I know it feels like you’re just wasting time if you play around with unpopular technologies, but you’re having fun, and that prevents burnout.</strong></p>
+<p>有序的矩阵，查找第K个小的元素，这种问题归类到已有的查找问题，和上一种小白的问题不同，这类我们可以称之为有踪迹或者可以归类的问题，类似于已有问题的扩展。就称之为基础问题吧。</p>
 
-<p>996投入的是自己的passions and interests.</p>
+<p>这类我们需要一个对照的模型，这个题目那，就是二分查找。为什么是二分查找尼？因为和二分查找很类似，如果不是矩阵的模式，而是一个数组的样式，那么就二分查找的问题。</p>
+
+<p>然后我们就去分析这道题目为什么不能直接的使用二分查找，二分查找有一个中间值和中间值的索引：</p>
+
+<p><code class="highlighter-rouge">from  to  和 mid = from+ （to-from）/2</code></p>
+
+<p>对应到这个题目就是：
+<code class="highlighter-rouge">[0][0] 和 [n][n]  mid = [0+(n-0)/2][0+(n-0)/2]</code></p>
+
+<p>再然后就是判断第K的跳转，是 from 到 mid 还是 mid 到 from，这个就和第K小的判断有关了，需要判断 mid 在数组中是第几小，然后和K进行比较。</p>
+
+<p>具体的代码实现为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int kthSmallest(int[][] matrix,int k){
+    int n = matrix.length;
+    int from = matrix[0][0];int to = matrix[n-1][n-1];
+
+    while(from &lt; to){
+        int mid = from + (to -from)/2;
+        int count = 0;// 计算mid为第几小的临时变量
+        int j = matrix[0].length-1;
+        // 计算mid为第几小
+        for(int i = 0;i &lt; matrix.length;i++){
+            while(j &gt;0 &amp;&amp; matrix[i][j]&gt;mid) j--;
+            count += (j+1);
+        }
+        if(count &lt;k ){
+             from=mid+1;    
+        }else{
+            to = mid;
+        }
+
+    }
+    return from;
+}
+
+</code></pre></div></div>
+
+<p>再然后就是优化一部分的逻辑，或者说归纳统一的逻辑，例如确定mid是第几小，可以归纳为一个方法里面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int lo = matrix[0][0], hi = matrix[n-1][n-1];
+        while(lo &lt; hi){
+            int mid = lo + (hi - lo) / 2;
+            int count = countLessOrEquals(mid, matrix);
+            if(count &lt; k)
+                lo = mid+1;
+            else
+                hi = mid;
+        }
+        return lo;
+    }
+    
+    public int countLessOrEquals(int target, int[][] matrix){
+        int i = matrix.length-1, j = 0;
+        int count = 0;
+        while(i &gt;= 0 &amp;&amp; j &lt; matrix[0].length){
+            if(target &lt; matrix[i][j]){
+                i--;
+            }else{
+                count += i+1;
+                j++;
+            }
+        }
+        return count;
+    }
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -238,17 +308,17 @@ I’ll wrap up with a few words from my personal experience working and research
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/04/09/whymongoDBSuccess/" data-toggle="tooltip" data-placement="top" title="为什么RethinkDB失败了？">
+                        <a href="/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="对Leetcode问题的思索">
                         Previous<br>
-                        <span>为什么RethinkDB失败了？</span>
+                        <span>对Leetcode问题的思索</span>
                         </a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2019/07/01/readingbook/" data-toggle="tooltip" data-placement="top" title="怎么读书">
+                        <a href="/2019/08/28/L384/" data-toggle="tooltip" data-placement="top" title="打乱数组，洗牌算法">
                         Next<br>
-                        <span>怎么读书</span>
+                        <span>打乱数组，洗牌算法</span>
                         </a>
                     </li>
                     
@@ -256,6 +326,20 @@ I’ll wrap up with a few words from my personal experience working and research
             </div>
 
     <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
         
 
     <!-- Sidebar Container -->
@@ -336,8 +420,8 @@ I’ll wrap up with a few words from my personal experience working and research
 <!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/2019/04/15/remotework";
-    var disqus_url = "http://localhost:4000/2019/04/15/remotework/";
+    var disqus_identifier = "/2019/08/28/L378";
+    var disqus_url = "http://localhost:4000/2019/08/28/L378/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -498,6 +582,50 @@ I’ll wrap up with a few words from my personal experience working and research
 
 
 <!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+        var P = $('div.post-container'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
 
 
 

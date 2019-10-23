@@ -193,6 +193,80 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/08/22/concurrent-5/">
+        <h2 class="post-title">
+            并发知识梳理：4. 读写锁等其他的类型的锁的支持
+        </h2>
+        
+        <h3 class="post-subtitle">
+            AQS和ReentrantReadWriteLock
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。
+
+
+
+首先还是复习一下重入锁的伪代码：
+
+
+ReentrantLock
+public NonFairLock nonfairLock = new NonFairLock();
+lock(){
+	nonfairLock.lock()
+}
+
+// 获取锁的过程
+nonfairLo...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 22, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/08/22/leetcode34/">
+        <h2 class="post-title">
+            LeetCode 34.Find First and Last Position of Element in Sorted Array 
+        </h2>
+        
+        <h3 class="post-subtitle">
+            基础的二分查找的变形
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>LeetCode 34. Find First and Last Position of Element in Sorted Array</p>
+
+<p>如果使用O(n)的遍历，根本就不会有什么难度了，但是题目中已经明确的标注了：Sorted Array，那么就不行了。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            LeetCode 34. Find First and Last Position of Element in Sorted Array
+
+如果使用O(n)的遍历，根本就不会有什么难度了，但是题目中已经明确的标注了：Sorted Array，那么就不行了。
+
+
+
+描述：
+
+Given an array of integers nums sorted in ascending order, f...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on August 22, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/08/21/leetcode33/">
         <h2 class="post-title">
             LeetCode 33. Search in Rotated Sorted Array
@@ -486,76 +560,6 @@ Do not a...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode26/">
-        <h2 class="post-title">
-            LeetCode26  Remove Duplicates from Sorted Array
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array</p>
-
-<p>数组操作</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array
-
-数组操作
-
-
-
-LeetCode 26.  Remove Duplicates from Sorted Array
-
-描述：
-
-Given a sorted array nums, remove the duplicates in-place such that each el...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-3/">
-        <h2 class="post-title">
-            并发知识梳理：2. Lock
-        </h2>
-        
-        <h3 class="post-subtitle">
-            锁的实现架构AQS
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。
-
-
-
-Lock
-
-Lock接口和Condition接口的均为锁相关的两个接口，具体的说明：
-
-  Lock implementations provide more extensive locking operations than can be obtained using syn...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -629,7 +633,7 @@ Lock接口和Condition接口的均为锁相关的两个接口，具体的说明�
                             
                         
                             
-                                <a href="/tags/#LeetCode" title="LeetCode" rel="27">
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="29">
                                     LeetCode
                                 </a>
                             

@@ -212,20 +212,64 @@
 				<p>题目描述：Shuffle a set of numbers without duplicates.
 <!--more--></p>
 
-<p>Example:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
 
-<p>// Init an array with set 1, 2, and 3.
+// Init an array with set 1, 2, and 3.
 int[] nums = {1,2,3};
-Solution solution = new Solution(nums);</p>
+Solution solution = new Solution(nums);
 
-<p>// Shuffle the array [1,2,3] and return its result. Any permutation of [1,2,3] must equally likely to be returned.
-solution.shuffle();</p>
+// Shuffle the array [1,2,3] and return its result. Any permutation of [1,2,3] must equally likely to be returned.
+solution.shuffle();
 
-<p>// Resets the array back to its original configuration [1,2,3].
-solution.reset();</p>
+// Resets the array back to its original configuration [1,2,3].
+solution.reset();
 
-<p>// Returns the random shuffling of array [1,2,3].
-solution.shuffle();</p>
+// Returns the random shuffling of array [1,2,3].
+solution.shuffle();
+</code></pre></div></div>
+<p>就是一个洗牌的算法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class L384ShuffleanArray {
+
+
+
+ private int[] nums;
+ private Random random;
+
+ public L384ShuffleanArray(int[] nums) {
+  this.nums = nums;
+  random = new Random();
+ }
+
+ /** Resets the array to its original configuration and return it. */
+ public int[] reset() {
+  return nums;
+ }
+
+ /** Returns a random shuffling of the array. */
+ public int[] shuffle() {
+  if (nums == null)
+   return null;
+  int[] a = nums.clone();
+  for (int i = a.length; i &gt;1; i--) {
+   swap(a, i-1, random.nextInt(i));
+  }
+  return a;
+ }
+
+ private void swap(int[] a, int i, int j) {
+  int t = a[i];
+  a[i] = a[j];
+  a[j] = t;
+ }
+
+ public static void main(String[] args) {
+  L384ShuffleanArray test = new L384ShuffleanArray(new int[] {1,2,3,4,5,6});
+  System.out.println(Arrays.toString(test.shuffle()));
+  System.out.println(Arrays.toString(test.reset()));
+
+ }
+</code></pre></div></div>
 
 
                 <hr style="visibility: hidden;">
@@ -239,6 +283,13 @@ solution.shuffle();</p>
                         </a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="/2019/08/29/L324/" data-toggle="tooltip" data-placement="top" title="快速排序和相关联的问题总结">
+                        Next<br>
+                        <span>快速排序和相关联的问题总结</span>
+                        </a>
+                    </li>
                     
                 </ul>
             </div>
@@ -293,7 +344,7 @@ solution.shuffle();</p>
                             
         				
                             
-                				<a href="/tags/#LeetCode" title="LeetCode" rel="29">
+                				<a href="/tags/#LeetCode" title="LeetCode" rel="30">
                                     LeetCode
                                 </a>
                             

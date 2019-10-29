@@ -228,6 +228,288 @@ Follow Up:
 Can you do it in O(n) time and/or in-place with O(1) extra space?
 </code></pre></div></div>
 
+<p>本题目主要依据是：<a href="https://leetcode.com/problems/wiggle-sort-ii/discuss/77684/Summary-of-the-various-solutions-to-Wiggle-Sort-for-your-reference">https://leetcode.com/problems/wiggle-sort-ii/discuss/77684/Summary-of-the-various-solutions-to-Wiggle-Sort-for-your-reference</a></p>
+
+<p>基本的思路：</p>
+
+<p>如果数组已经是排好序的了，就是按照 <code class="highlighter-rouge">nums[0] &lt; nums[1] &gt; nums[2] &lt; nums[3]....</code> 那么我们能够把元素划分为两个组里面：
+奇数组：  奇数的下标组成的数组，1，3，5 之类的
+欧数组： 偶数的下标组成的数组，0，2，4，6之类的</p>
+
+<p>从题目要求来看，奇数组的元素要比它的相邻的元素大，也仅仅是这个要求了，我们不能推断出其他的元素之间的大小的关系，仅仅是相邻的本地的关系。</p>
+
+<p>就是因为这种关系，导致我们不能够从头开始去排列数组中的元素。但是从全局的角度出发，我们能够得到，对于wiggly-sort的队列，它是可以转化为 奇数组的每一个元素不小于欧树组的元素。 下面为证明的过程：</p>
+
+<p>例如在奇数组的一个元素a，a小于偶数组的某一个元素b，也就是：
+<code class="highlighter-rouge">a &lt; b</code>
+c 和 d 为a的相邻的元素，e和f 为b的相邻的元素，根据wiggly-sort的特点，那么我们知道
+<code class="highlighter-rouge">c &lt;a ,d &lt;a  和  b &lt; e  , b &lt; f</code></p>
+
+<p>现在我们交换a和b，那么我们知道:
+<code class="highlighter-rouge">c &lt; b, d &lt; b 和 a &lt; e, a &lt; f</code></p>
+
+<p>那么我么就会发现，这并不影响wiggly-sort的属性，我们可以进行替换。也就是说我们可以把偶数组的大的元素替换为奇数组里面较小的元素，这样替换的结果就是：奇数组的元素不小于偶数组的元素。</p>
+
+<p>有了这个特性之后，我们才能够更好的处理给出的数组，有了一个全局的特性，我们分为两步来做：</p>
+
+<p>分区（Partition）：我们把给出的元素数组，分成两组，分别称之为S和L，相对来说，S组有m个元素，m为（n+1）/2 个元素，L拥有的是剩下的元素，并且L中的元素不小于S中的元素，也就是说L为奇数组，S为偶数组，相对来说L数组的数量不大于S数组的数量。</p>
+
+<p>放置（Placement）：如果L中的元素全部的大于S中的元素，我们可以直接的放置L的元素在偶数的位置，S的元素在技术中的索引的位置，trick case 就是两个数组中拥有相同元素的时候的处理。</p>
+
+<p>首先，我们需要确认相等元素的数量：不会比S数组元素中的数量m多。还是采用反正法：假设我们拥有了不小于m个的相等的元素，那么在wiggly-sort后，这些元素必须占据所有的奇数位或者偶数位，因为它们是相等的，所以不能够相邻。我们拥有了不小于m个元素的，就不能够保证了wiggly-sort的属性。也就是说相等的元素的最多的数量为：m个 (计算方式为(n+1)/2) 样式如下所示：
+<code class="highlighter-rouge">3 &lt;5 &gt; 3 &lt; 5 &gt;3</code></p>
+
+<p>然后，我们将证明：如果我们把相等的元素，如果相等的元素出现在S数组中，我们把它们安排在尽可能小的偶数组中，如果出现在L数组中，我们把它们安排在尽可能大的奇数组中，这样它们就不会相邻。我们假设 k1 和 k2 为S 和 L 中相等的元素，k为k1和k2之和。首先假设n为偶数，我们可以得到m为n/2,放置完成以后，S组中最后的可以放置的位置为：2<em>（k1-1），L 最后可以放置的位置为：（n-1）- 2</em>(k2-1) ,因为L是从最大的位置开始放置的。如果两个位置必须相隔1，这样再能够保证不相邻，那么就是：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2 * (k1 - 1) + 1 &lt; (n - 1) - 2 * (k2 - 1)
+也就是：
+k1 + k2 &lt; [n/2] + 1：
+我们假设n为偶数，所以很容易得到：
+k1 + k2 = k &lt;= n/2 = [n/2] &lt; [n/2] + 1.
+</code></pre></div></div>
+<p>然后在假设n为奇数，可以同样的分析。这种放置的方法是成立的。</p>
+
+<p>得到了这个放置方式以后，我们可以开始着手设计我们的解决方案。</p>
+
+<p>第一种解决方案：排序，时间复杂度是：O(nlogn) 空间复杂度是：O(n)</p>
+
+<p>具体的代码如下：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
+  int n = nums.length, m = (n + 1) &gt;&gt; 1;
+  int[] copy = Arrays.copyOf(nums, n);
+  Arrays.sort(copy);
+  // 首先是从中间位置开始，然后开始设置
+  for (int i = m - 1, j = 0; i &gt;= 0; i--, j += 2) nums[j] = copy[i];
+  // 从后面开始，然后开始设置，
+  for (int i = n - 1, j = 1; i &gt;= m; i--, j += 2) nums[j] = copy[i];
+}
+</code></pre></div></div>
+
+<p>第二种的解决的方案在第一种的基础之上，我们只需要知道分区和中间位置即可，借助了快排的思想演化出来的快速确认中间位置。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
+    // 来源于：https://leetcode.com/problems/kth-largest-element-in-an-array/submissions/
+    //划定好分区以后
+    int median=findKthLargest(nums,(nums.length+1)/2);
+
+    int odd=1;
+    int even=nums.length%2==0?nums.length-2:nums.length-1;
+    // 申请了O(n)的空间，放置数据
+    int[] tmpArr=new int[nums.length];
+    // 把大于中间值的数量全部放在了奇数位，把小于中间值的全部放在了偶数位。
+    for(int i=0;i&lt;nums.length;i++){
+        if(nums[i]&gt;median){
+            tmpArr[odd]=nums[i];
+            odd+=2;
+            continue;
+        }
+        if(nums[i]&lt;median){
+            tmpArr[even]=nums[i];
+            even-=2;
+            continue;
+        }
+    }
+// 然后在放置中间值
+    while(odd&lt;nums.length){
+        tmpArr[odd]=median;
+        odd+=2;
+    }
+    while(even&gt;=0){
+        tmpArr[even]=median;
+        even-=2;
+    }
+    for(int i=0;i&lt;nums.length;i++){
+        nums[i]=tmpArr[i];
+    }
+}
+</code></pre></div></div>
+
+<p>为了便于理解，我把一个运行的数组放在了下面：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n为偶数10,odd=1,even=8
+输入的数组：
+3,2,1,5,6,4,11,7,0,5
+分区之后的数据：
+3,2,1,0,4,5,5,6,11,7]
+4 6 0 11 1 7 2   3
+
+设置中间值：
+4 6 0 11 1 7 2 5 3 5
+
+n为奇数11，odd=1，even=10
+输入的数组：
+3,2,1,5,6,4,11,7,0,5,13
+分区之后的数据：
+3,2,1,0, 4, 5, 5, 6, 7, 13, 11
+  6 4 7  0  13 1 11  2       3
+
+设置中间值：
+5 6 4 7  0  13 1 11  2  5   3
+</code></pre></div></div>
+
+<p>此题目的关于，一个在于：O(n)的时间内确定findKthLargest的值，一个在于分析出wiggly排序的规则，都比较的困难，其中O(n)的时间内确定findKthLargest的值是基于快排的思想，具体的算法名称是：quickselect</p>
+
+<p>其中的伪代码为：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// pseudocode
+ function partition(list, left, right, pivotIndex)
+     pivotValue := list[pivotIndex]
+     swap list[pivotIndex] and list[right]  // Move pivot to end
+     storeIndex := left
+     for i from left to right-1
+         if list[i] &lt; pivotValue
+             swap list[storeIndex] and list[i]
+             increment storeIndex
+     swap list[right] and list[storeIndex]  // Move pivot to its final place
+     return storeIndex
+  // Returns the k-th smallest element of list within left..right inclusive
+  // (i.e. left &lt;= k &lt;= right).
+  function select(list, left, right, k)
+     if left = right        // If the list contains only one element,
+         return list[left]  // return that element
+     pivotIndex  := ...     // select a pivotIndex between left and right,
+                            // e.g., left + floor(rand() % (right - left + 1))
+     pivotIndex  := partition(list, left, right, pivotIndex)
+     // The pivot is in its final sorted position
+     if k = pivotIndex
+         return list[k]
+     else if k &lt; pivotIndex
+         return select(list, left, pivotIndex - 1, k)
+     else
+         return select(list, pivotIndex + 1, right, k - pivotIndex)  //The part of the list after pivotIndex has pivotIndex less elements
+</code></pre></div></div>
+
+<p>另外说到了快排，还会联想到Arrays.sort()的多路快排，以及普通的快排算法。
+首先是普通的快速排序算法,其伪代码为：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>algorithm quicksort(A, lo, hi) is
+    if lo &lt; hi then
+        p := partition(A, lo, hi)
+        quicksort(A, lo, p - 1)
+        quicksort(A, p + 1, hi)
+
+//轴放在了最后一位
+algorithm partition(A, lo, hi) is
+    pivot := A[hi]
+    i := lo
+    for j := lo to hi do
+        if A[j] &lt; pivot then
+            swap A[i] with A[j]
+            i := i + 1
+    swap A[i] with A[hi]
+    return i
+</code></pre></div></div>
+
+<p>多路快排的算法实现如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/******************************************************************************
+ *  Compilation:  javac QuickDualPivot.java
+ *  Execution:    java QuickDualPivot &lt; input.txt
+ *  Dependencies: StdOut.java StdIn.java
+ *  Data files:   https://algs4.cs.princeton.edu/23quicksort/tiny.txt
+ *                https://algs4.cs.princeton.edu/23quicksort/words3.txt
+ *   
+ *  Sorts a sequence of strings from standard input using dual-pivot
+ *  quicksort.
+ *
+ *  [Warning: not thoroughly tested.]
+ *   
+ *  % more tiny.txt
+ *  S O R T E X A M P L E
+ *
+ *  % java QuickDualPivot &lt; tiny.txt
+ *  A E E L M O P R S T X                 [ one string per line ]
+ *    
+ *  % more words3.txt
+ *  bed bug dad yes zoo ... all bad yet
+ *  
+ *  % java QuickDualPivot &lt; words3.txt
+ *  all bad bed bug dad ... yes yet zoo    [ one string per line ]
+ *
+ ******************************************************************************/
+
+public class QuickDualPivot {
+
+    // quicksort the array a[] using dual-pivot quicksort
+    public static void sort(Comparable[] a) {
+        StdRandom.shuffle(a);
+        sort(a, 0, a.length - 1);
+        assert isSorted(a);
+    }
+
+    // quicksort the subarray a[lo .. hi] using dual-pivot quicksort
+    private static void sort(Comparable[] a, int lo, int hi) { 
+        if (hi &lt;= lo) return;
+
+        // make sure a[lo] &lt;= a[hi]
+        if (less(a[hi], a[lo])) exch(a, lo, hi);
+
+        int lt = lo + 1, gt = hi - 1;
+        int i = lo + 1;
+        while (i &lt;= gt) {
+            if       (less(a[i], a[lo])) exch(a, lt++, i++);
+            else if  (less(a[hi], a[i])) exch(a, i, gt--);
+            else                         i++;
+        }
+        exch(a, lo, --lt);
+        exch(a, hi, ++gt);
+
+        // recursively sort three subarrays
+        sort(a, lo, lt-1);
+        if (less(a[lt], a[gt])) sort(a, lt+1, gt-1);
+        sort(a, gt+1, hi);
+
+        assert isSorted(a, lo, hi);
+    }
+
+
+
+   /***************************************************************************
+    *  Helper sorting functions.
+    ***************************************************************************/
+    
+    // is v &lt; w ?
+    private static boolean less(Comparable v, Comparable w) {
+        return v.compareTo(w) &lt; 0;
+    }
+
+    // exchange a[i] and a[j]
+    private static void exch(Object[] a, int i, int j) {
+        Object swap = a[i];
+        a[i] = a[j];
+        a[j] = swap;
+    }
+
+   /***************************************************************************
+    *  Check if array is sorted - useful for debugging.
+    ***************************************************************************/
+    private static boolean isSorted(Comparable[] a) {
+        return isSorted(a, 0, a.length - 1);
+    }
+
+    private static boolean isSorted(Comparable[] a, int lo, int hi) {
+        for (int i = lo + 1; i &lt;= hi; i++)
+            if (less(a[i], a[i-1])) return false;
+        return true;
+    }
+
+
+
+    // print array to standard output
+    private static void show(Comparable[] a) {
+        for (int i = 0; i &lt; a.length; i++) {
+            StdOut.println(a[i]);
+        }
+    }
+
+    // Read strings from standard input, sort them, and print.
+    public static void main(String[] args) {
+        String[] a = StdIn.readAllStrings();
+        QuickDualPivot.sort(a);
+        show(a);
+    }
+
+}
+</code></pre></div></div>
+
+<p>看看人家的示例写的，以后我们的算法，必须按照这个模板来进行书写，不然不能够体现出专业的水准啊。</p>
+
 
                 <hr style="visibility: hidden;">
 

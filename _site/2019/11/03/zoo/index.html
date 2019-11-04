@@ -10,7 +10,7 @@
     <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
     <meta name="theme-color" content="#000000">
     
-    <title>activiti和设计模式(8) - 飞翔的面包 | FlyBread Blog</title>
+    <title>zookeeper学习分析：zookeeper单实例的启动 - 飞翔的面包 | FlyBread Blog</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/">
+    <link rel="canonical" href="http://localhost:4000/2019/11/03/zoo/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,15 +183,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#学习" title="学习">学习</a>
+                        <a class="tag" href="/tags/#zookeeper" title="zookeeper">zookeeper</a>
                         
                     </div>
-                    <h1>activiti和设计模式(8)</h1>
+                    <h1>zookeeper学习分析：zookeeper单实例的启动</h1>
                     
                     
-                    <h2 class="subheading">activiti中流程各个节点的行为数据</h2>
+                    <h2 class="subheading">作为经典的分布式架构，分析zookeeper，学习其中的设计和架构</h2>
                     
-                    <span class="meta">Posted by zhailzh on August 13, 2017</span>
+                    <span class="meta">Posted by zhailzh on November 3, 2019</span>
                 </div>
             </div>
         </div>
@@ -209,112 +209,32 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  <br />
+				<p>我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。</p>
+
 <!--more-->
-首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
+<p>我们使用<code class="highlighter-rouge">ps -ef| grep zoo</code>来过滤出来zookeeper的进程。
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.jpg" alt="进程的展示" /></p>
 
-  public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
+<p>其中的红圈中的就是进程的启动的JAVA类名和配置文件。</p>
 
-  public abstract EventSubProcessStartEventActivityBehavior createEventSubProcessStartEventActivityBehavior(StartEvent startEvent, String activityId);
-
-  public abstract TaskActivityBehavior createTaskActivityBehavior(Task task);
-
-  public abstract ManualTaskActivityBehavior createManualTaskActivityBehavior(ManualTask manualTask);
-
-  public abstract ReceiveTaskActivityBehavior createReceiveTaskActivityBehavior(ReceiveTask receiveTask);
-
-  public abstract UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask, TaskDefinition taskDefinition);
-
-  public abstract ClassDelegate createClassDelegateServiceTask(ServiceTask serviceTask);
-
-  public abstract ServiceTaskDelegateExpressionActivityBehavior createServiceTaskDelegateExpressionActivityBehavior(ServiceTask serviceTask);
-
-  public abstract ServiceTaskExpressionActivityBehavior createServiceTaskExpressionActivityBehavior(ServiceTask serviceTask);
-
-  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask);
-
-  public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(SendTask sendTask);
-
-  // We do not want a hard dependency on the Mule module, hence we return ActivityBehavior and instantiate
-  // the delegate instance using a string instead of the Class itself.
-  public abstract ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createMuleActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createCamelActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel);
-
-  public abstract ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
-
-  public abstract ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask);
-
-  public abstract ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask);
-
-  public abstract ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask);
-
-  public abstract ExclusiveGatewayActivityBehavior createExclusiveGatewayActivityBehavior(ExclusiveGateway exclusiveGateway);
-
-  public abstract ParallelGatewayActivityBehavior createParallelGatewayActivityBehavior(ParallelGateway parallelGateway);
-
-  public abstract InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway);
-
-  public abstract EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway);
-
-  public abstract SequentialMultiInstanceBehavior createSequentialMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
-
-  public abstract ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
-
-  public abstract SubProcessActivityBehavior createSubprocActivityBehavior(SubProcess subProcess);
-
-  public abstract CallActivityBehavior createCallActivityBehavior(CallActivity callActivity);
-
-  public abstract TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction);
-
-  public abstract IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent);
-
-  public abstract IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent);
-
-  public abstract IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent, Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration);
-
-  public abstract IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent, CompensateEventDefinition compensateEventDefinition);
-
- ...........
-
-}
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //示例0:单实例ZK的启动过程 2
+    public static void main(String[] args) {
+    	  args = new String[1];
+    	  args[0] = "conf/zoo.cfg";
+        QuorumPeerMain main = new QuorumPeerMain();
+        try {
+            main.initializeAndRun(args);
+        } catch (IllegalArgumentException e) {
+        }
+        LOG.info("Exiting normally");
+        System.exit(ExitCode.EXECUTION_FINISHED.getValue());
+    }
 </code></pre></div></div>
 
-<p>默认的实现是：</p>
+<p>我们的启动类是：<code class="highlighter-rouge">org.apache.zookeeper.server.quorum.QuorumPeerMain</code></p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="n">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="n">ActivityBehaviorFactory</span> <span class="o">{</span>
-
-  <span class="c1">// Start event</span>
-  <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">EXCEPTION_MAP_FIELD</span> <span class="o">=</span> <span class="s">"mapExceptions"</span><span class="o">;</span>
-
-  <span class="kd">public</span> <span class="n">NoneStartEventActivityBehavior</span> <span class="nf">createNoneStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">NoneStartEventActivityBehavior</span><span class="o">();</span>
-  <span class="o">}</span>
-
-  <span class="kd">public</span> <span class="n">EventSubProcessStartEventActivityBehavior</span> <span class="nf">createEventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">,</span> <span class="n">String</span> <span class="n">activityId</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">EventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">activityId</span><span class="o">);</span>
-  <span class="o">}</span>
-
-  <span class="c1">// Task</span>
-
-  <span class="kd">public</span> <span class="n">TaskActivityBehavior</span> <span class="nf">createTaskActivityBehavior</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">TaskActivityBehavior</span><span class="o">();</span>
-  <span class="o">}</span>
-<span class="o">...........</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>我们在<strong>「activiti和设计模式(7)」</strong> 中定义的usertask是多实例的，所以对应的Behavior是：</p>
+<p>无论是单例还是集群。</p>
 
 
                 <hr style="visibility: hidden;">
@@ -322,19 +242,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/activiti-desigen-pattern/2017/08/13/activiti7/" data-toggle="tooltip" data-placement="top" title="activiti和设计模式(7)">
+                        <a href="/2019/11/02/zooCode1/" data-toggle="tooltip" data-placement="top" title="zookeeper代码片段学习">
                         Previous<br>
-                        <span>activiti和设计模式(7)</span>
+                        <span>zookeeper代码片段学习</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/2017/08/18/alg/" data-toggle="tooltip" data-placement="top" title="复习算法和数据结构（1）">
-                        Next<br>
-                        <span>复习算法和数据结构（1）</span>
-                        </a>
-                    </li>
                     
                 </ul>
             </div>
@@ -440,8 +353,8 @@
 <!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-andihappy-github-io-2";
-    var disqus_identifier = "/activiti-desigen-pattern/2017/08/13/activiti8";
-    var disqus_url = "http://localhost:4000/activiti-desigen-pattern/2017/08/13/activiti8/";
+    var disqus_identifier = "/2019/11/03/zoo";
+    var disqus_url = "http://localhost:4000/2019/11/03/zoo/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

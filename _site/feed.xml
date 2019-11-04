@@ -5,9 +5,126 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 29 Oct 2019 13:40:10 +0800</pubDate>
-    <lastBuildDate>Tue, 29 Oct 2019 13:40:10 +0800</lastBuildDate>
+    <pubDate>Mon, 04 Nov 2019 15:14:19 +0800</pubDate>
+    <lastBuildDate>Mon, 04 Nov 2019 15:14:19 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>zookeeper学习分析：zookeeper单实例的启动</title>
+        <description>&lt;p&gt;我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;我们使用&lt;code class=&quot;highlighter-rouge&quot;&gt;ps -ef| grep zoo&lt;/code&gt;来过滤出来zookeeper的进程。
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.jpg&quot; alt=&quot;进程的展示&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中的红圈中的就是进程的启动的JAVA类名和配置文件。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //示例0:单实例ZK的启动过程 2
+    public static void main(String[] args) {
+    	  args = new String[1];
+    	  args[0] = &quot;conf/zoo.cfg&quot;;
+        QuorumPeerMain main = new QuorumPeerMain();
+        try {
+            main.initializeAndRun(args);
+        } catch (IllegalArgumentException e) {
+        }
+        LOG.info(&quot;Exiting normally&quot;);
+        System.exit(ExitCode.EXECUTION_FINISHED.getValue());
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们的启动类是：&lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.zookeeper.server.quorum.QuorumPeerMain&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;无论是单例还是集群。&lt;/p&gt;
+</description>
+        <pubDate>Sun, 03 Nov 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/11/03/zoo/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/03/zoo/</guid>
+        
+        <category>zookeeper</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>zookeeper代码片段学习</title>
+        <description>&lt;p&gt;一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;我们使用&lt;code class=&quot;highlighter-rouge&quot;&gt;ps -ef| grep zoo&lt;/code&gt;来过滤出来zookeeper的进程。
+&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.jpg&quot; alt=&quot;进程的展示&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中的红圈中的就是进程的启动的JAVA类名和配置文件。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //示例0:单实例ZK的启动过程 2
+    public static void main(String[] args) {
+    	  args = new String[1];
+    	  args[0] = &quot;conf/zoo.cfg&quot;;
+        QuorumPeerMain main = new QuorumPeerMain();
+        try {
+            main.initializeAndRun(args);
+        } catch (IllegalArgumentException e) {
+        }
+        LOG.info(&quot;Exiting normally&quot;);
+        System.exit(ExitCode.EXECUTION_FINISHED.getValue());
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们的启动类是：&lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.zookeeper.server.quorum.QuorumPeerMain&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;无论是单例还是集群。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//示例0:单实例ZK的启动过程 3
+    protected void initializeAndRun(String[] args) throws ConfigException, IOException, AdminServerException {
+        QuorumPeerConfig config = new QuorumPeerConfig();
+        // 第一阶段：配置文件解析（存疑点：zoo.cfg.dynamic.0 dynamic的设置）
+        if (args.length == 1) {
+        		//示例0:单实例ZK的启动过程 4
+            config.parse(args[0]);
+        }
+
+        /**
+         * ​ 3、然后启动DatadirCleanupManager线程，由于Zookeeper的任何一个变更操作(增、删、改)都将在transaction log中进行记录，
+         * 因为内存中的数据掉电后会丢失，必须写入到硬盘上的transaction log中；当写操作达到一定量或者一定时间间隔后，
+         * 会对内存中的数据进行一次快照并写入到硬盘上的snap log中，主要为了缩短启动时加载数据的时间从而加快系统启动，
+         * 另一方面避免transaction log日志数量过度膨胀。随着运行时间的增长生成的transaction log和snapshot将越来越多，
+         * 所以要定期清理.
+         * 
+         * DatadirCleanupManager就是启动一个TimeTask定时任务用于清理DataDir中的snapshot及对应的transaction log
+         * 默认的zoo.cfg 中 autopurge.purgeInterval=0 ，就是不开启 DatadirCleanupManager
+         * */
+        // Start and schedule the the purge task
+      //示例0:单实例ZK的启动过程 5 启动日志和snapshot的清理机制
+        DatadirCleanupManager purgeMgr = new DatadirCleanupManager(
+            config.getDataDir(),
+            config.getDataLogDir(),
+            config.getSnapRetainCount(),
+            config.getPurgeInterval());
+        purgeMgr.start();
+
+        //确定是否为cluster的一个判断的依据：quorumVerifier.getVotingMembers().size() &amp;gt; 1
+        //示例0:单实例ZK的启动过程 6 确定是单机还是集群的模式
+        if (args.length == 1 &amp;amp;&amp;amp; config.isDistributed()) {
+            runFromConfig(config);
+        } else {
+        	  // 单机版本的zookeeper的状态
+            LOG.warn(&quot;Either no config or no quorum defined in config, running &quot; + &quot; in standalone mode&quot;);
+            // there is only server in the quorum -- run as standalone
+            //示例0:单实例ZK的启动过程 7 单机实例的入口
+            ZooKeeperServerMain.main(args);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sat, 02 Nov 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/11/02/zooCode1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/02/zooCode1/</guid>
+        
+        <category>zookeeper</category>
+        
+        
+      </item>
     
       <item>
         <title>快速排序和相关联的问题总结</title>
@@ -901,424 +1018,6 @@ Output: 6
         <guid isPermaLink="true">http://localhost:4000/2019/08/24/leetcode42/</guid>
         
         <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Leetcode:41  firstMissingPositive</title>
-        <description>&lt;p&gt;数组的下标是一种天然的资源，有序，有界。在某些特殊的问题下，可以做为一种辅助信息。&lt;/p&gt;
-
-&lt;!--more--&gt;
-&lt;p&gt;问题的描述为：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an unsorted integer array, find the smallest missing positive integer.
- Example 1:
- Input: [1,2,0]
- Output: 3
- Example 2:
- Input: [3,4,-1,1]
- Output: 2
- Example 3:
- Input: [7,8,9,11,12]
- Output: 1
- Note:
- Your algorithm should run in O(n) time and uses constant extra space.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Your algorithm should run in O(n) time and uses constant extra space.
-这里面的uses constant extra space 和 O(n) 也算是一种提示吧。&lt;/p&gt;
-
-&lt;p&gt;具体的代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public int firstMissingPositive_(int[] A) {
-  int i = 0;
-  while (i &amp;lt; A.length) {
-   if (A[i] == i + 1 || A[i] &amp;lt;= 0 || A[i] &amp;gt; A.length)
-    i++;
-   else if (A[A[i] - 1] != A[i])
-    swap(A, i, A[i] - 1);
-   else
-    i++;
-  }
-  i = 0;
-  while (i &amp;lt; A.length &amp;amp;&amp;amp; A[i] == i + 1)
-   i++;
-  return i + 1;
- }
-
- private void swap(int[] A, int i, int j) {
-  int temp = A[i];
-  A[i] = A[j];
-  A[j] = temp;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sat, 24 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/24/leetcode41/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/24/leetcode41/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>并发知识梳理：4. 阻塞队列</title>
-        <description>&lt;p&gt;阻塞队列的接口为： BlockingQueue&lt;E&gt; 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。&lt;/E&gt;&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;blockingqueue-的操作方法&quot;&gt;BlockingQueue 的操作方法&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/queue/q1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;如图中所示：
-add(e),当队列满了以后，抛出IllegalStateException。
-offer(e),当队列满了以后,返回false。
-put(e),当队列满了以后,会被阻塞。
-put(e,time,unit):false if the specified waiting time elapses before space is available&lt;/p&gt;
-
-&lt;h3 id=&quot;blockingqueue常用的四个实现类&quot;&gt;BlockingQueue常用的四个实现类&lt;/h3&gt;
-
-&lt;p&gt;ArrayBlockingQueue：规定大小的BlockingQueue,其构造函数必须带一个int参数来指明其大小.其所含的对象是以FIFO(先入先出)顺序排序的.&lt;/p&gt;
-
-&lt;p&gt;LinkedBlockingQueue：大小不定的BlockingQueue,若其构造函数带一个规定大小的参数,生成的
-BlockingQueue有大小限制,若不带大小参数,所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定.其所含的对象是以FIFO(先入先出)顺序排序的&lt;/p&gt;
-
-&lt;p&gt;PriorityBlockingQueue：类似于LinkedBlockQueue,但其所含对象的排序不是FIFO,而是依据对象的自然排序顺序或者是构造函数的Comparator决定的顺序.&lt;/p&gt;
-
-&lt;p&gt;SynchronousQueue：特殊的BlockingQueue,对其的操作必须是放和取交替完成的.&lt;/p&gt;
-
-&lt;h3 id=&quot;arrayblockingqueue-主要实现的逻辑&quot;&gt;ArrayBlockingQueue&lt;E&gt; 主要实现的逻辑&lt;/E&gt;&lt;/h3&gt;
-
-&lt;p&gt;我们还可以先回看一下ArrayQueue的实现：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 成员变量
-
-private int capacity;
-private T[] queue;
-private int head;
-private int tail;
-
-// 有点意思的是构造函数 capacity+1 
-public ArrayQueue(int capacity) {
-    this.capacity = capacity + 1;
-    this.queue = newArray(capacity + 1);
-    this.head = 0;
-    this.tail = 0;
-}
-// 添加方法，采用的是tail+1 取余capacity 的方法，这也就是构建capacity+1的原因
- public boolean add(T o) {
-  queue[tail] = o;
-  int newtail = (tail + 1) % capacity;
-  if (newtail == head)
-   throw new IndexOutOfBoundsException(&quot;Queue full&quot;);
-  tail = newtail;
-  return true; // we did add something
- }
-
-//删除的方法，采用的是 head+1 取余capacity 的方法，都是+1取余的操作
-public T remove(int i) {
-  if (i != 0)
-   throw new IllegalArgumentException(&quot;Can only remove head of queue&quot;);
-  if (head == tail)
-   throw new IndexOutOfBoundsException(&quot;Queue empty&quot;);
-  T removed = queue[head];
-  queue[head] = null;
-  head = (head + 1) % capacity;
-  return removed;
- }
-
- public T get(int i) {
-  int size = size();
-  if (i &amp;lt; 0 || i &amp;gt;= size) {
-   final String msg = &quot;Index &quot; + i + &quot;, queue size &quot; + size;
-   throw new IndexOutOfBoundsException(msg);
-  }
-  int index = (head + i) % capacity;
-  return queue[index];
- }
-
-// 判定大小的时候，采用的是tail-head 的方法
- public int size() {
-  // Can't use % here because it's not mod: -3 % 2 is -1, not +1.
-  int diff = tail - head;
-  if (diff &amp;lt; 0)
-   diff += capacity;
-  return diff;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后我们再看BlockingQueue的方法的实现：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // ArrayBlockingQueue 的成员变量：
-
- /** The queued items */
- final Object[] items;
-
- /** items index for next take, poll, peek or remove */
- int takeIndex;
-
- /** items index for next put, offer, or add */
- int putIndex;
-
- /** Number of elements in the queue */
- int count;
-
- /** Main lock guarding all access */
- final ReentrantLock lock;
-
- /** Condition for waiting takes */
- private final Condition notEmpty;
-
- /** Condition for waiting puts */
- private final Condition notFull;
-
- public ArrayBlockingQueue(int capacity, boolean fair) {
-  if (capacity &amp;lt;= 0)
-   throw new IllegalArgumentException();
-  this.items = new Object[capacity];
-  lock = new ReentrantLock(fair);
-  notEmpty = lock.newCondition();
-  notFull = lock.newCondition();
- }
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;具体的方法的实现：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public boolean add(E e) {
-  return super.add(e);
- }
-
-/**
-实现的方式：
-public boolean add(E e) {
-   if (offer(e))
-        return true;
-   else
-       throw new IllegalStateException(&quot;Queue full&quot;);
-} 
-*/
- public boolean offer(E e) {
-  checkNotNull(e);
-  final ReentrantLock lock = this.lock;
-  lock.lock();
-  try {
-   if (count == items.length)
-    return false;
-   else {
-    // 保证lock的前提下，调用这个方法
-    // 保证了队列不满，如果满了，直接在try方法中就已经返回
-    enqueue(e);
-    return true;
-   }
-  } finally {
-   lock.unlock();
-  }
- }
- /**
-  * ① 已经拥有锁的前提下调用
-  * ② 满的时候，putIndex直接设置为0，从头开始（这里面的putIndex为0，标识已经满了）
-  * */
- private void enqueue(E x) {
-  final Object[] items = this.items;
-  items[putIndex] = x;
-  if (++putIndex == items.length)
-   putIndex = 0;
-  count++;
-  notEmpty.signal();
- }
- 
- public void put(E e) throws InterruptedException {
-  checkNotNull(e);
-  final ReentrantLock lock = this.lock;
-  lock.lockInterruptibly();
-  try {
-   while (count == items.length)
-    notFull.await();
-   enqueue(e);
-  } finally {
-   lock.unlock();
-  }
- }
- 
- //相对应的四个方法：remove() poll()
- public E remove() {
-  E x = poll();
-  if (x != null)
-      return x;
-  else
-      throw new NoSuchElementException();
-}
-public E poll() {
-  final ReentrantLock lock = this.lock;
-  lock.lock();
-  try {
-   return (count == 0) ? null : dequeue();
-  } finally {
-   lock.unlock();
-  }
- }
-private E dequeue() {
- final Object[] items = this.items;
- @SuppressWarnings(&quot;unchecked&quot;)
- E x = (E) items[takeIndex];
- items[takeIndex] = null;
- if (++takeIndex == items.length)
-  takeIndex = 0;
- count--;
- if (itrs != null)
-  itrs.elementDequeued();
- notFull.signal();
- return x;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框架上面，基本相同。当时具体的数据处理是不一样的。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; public boolean add(E e) {
-  addLast(e);
-  return true;
- }
-
- public void addLast(E e) {
-  if (!offerLast(e))
-   throw new IllegalStateException(&quot;Deque full&quot;);
- }
-
- public boolean offerLast(E e) {
-  if (e == null)
-   throw new NullPointerException();
-  Node&amp;lt;E&amp;gt; node = new Node&amp;lt;E&amp;gt;(e);
-  final ReentrantLock lock = this.lock;
-  lock.lock();
-  try {
-   return linkLast(node);
-  } finally {
-   lock.unlock();
-  }
- }
-
- private boolean linkLast(Node&amp;lt;E&amp;gt; node) {
-  // assert lock.isHeldByCurrentThread();
-  if (count &amp;gt;= capacity)
-   return false;
-
-  Node&amp;lt;E&amp;gt; l = last;
-  node.prev = l;
-  last = node;
-  if (first == null)
-   first = node;
-  else
-   l.next = node;
-
-  ++count;
-  notEmpty.signal();
-  return true;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里面中的信号，使用到了Condition，Condition的建立是：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;lock = new ReentrantLock(fair);
-  notEmpty = lock.newCondition();
-  notFull = lock.newCondition();
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;ReentrantLock 的 newCondition的方法是&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ReentrantLock.newCondition() {
-  return sync.newCondition();
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;还是原来的：Sync 实现：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;final ConditionObject newCondition() {
-   return new ConditionObject();
-  }
-返回的是AQS的一个内部类ConditionObject
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;ConditionObject 为AQS专门实现的一个类，具体我们只看两个关键的方法，在BlockingQueue中，使用的比较的多。&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void await() throws InterruptedException {
-   if (Thread.interrupted())
-    throw new InterruptedException();
-   Node node = addConditionWaiter();
-   // ！！！当调用await的时候，就已经释放了拥有的锁！！
-   int savedState = fullyRelease(node);
-   int interruptMode = 0;
-   while (!isOnSyncQueue(node)) {
-    LockSupport.park(this);
-    if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
-     break;
-   }
-   if (acquireQueued(node, savedState) &amp;amp;&amp;amp; interruptMode != THROW_IE)
-    interruptMode = REINTERRUPT;
-   if (node.nextWaiter != null) // clean up if cancelled
-    unlinkCancelledWaiters();
-   if (interruptMode != 0)
-    reportInterruptAfterWait(interruptMode);
-  }
-
-
-  // 增加到等待的队列里面
-  private Node addConditionWaiter() {
-   Node t = lastWaiter;
-   // If lastWaiter is cancelled, clean out.
-   if (t != null &amp;amp;&amp;amp; t.waitStatus != Node.CONDITION) {
-    unlinkCancelledWaiters();
-    t = lastWaiter;
-   }
-   Node node = new Node(Thread.currentThread(), Node.CONDITION);
-   if (t == null)
-    firstWaiter = node;
-   else
-    t.nextWaiter = node;
-   lastWaiter = node;
-   return node;
-  }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final void signal() {
-   if (!isHeldExclusively())
-    throw new IllegalMonitorStateException();
-   Node first = firstWaiter;
-   if (first != null)
-    doSignal(first);
-  }
-  
-  private void doSignal(Node first) {
-   do {
-    if ((firstWaiter = first.nextWaiter) == null)
-     lastWaiter = null;
-    first.nextWaiter = null;
-   } while (!transferForSignal(first) &amp;amp;&amp;amp; (first = firstWaiter) != null);
-  }
-  
-  final boolean transferForSignal(Node node) {
-   /*
-    * If cannot change waitStatus, the node has been cancelled.
-    */
-   if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
-    return false;
-
-   /*
-    * Splice onto queue and try to set waitStatus of predecessor to
-    * indicate that thread is (probably) waiting. If cancelled or
-    * attempt to set waitStatus fails, wake up to resync (in which
-    * case the waitStatus can be transiently and harmlessly wrong).
-    */
-   Node p = enq(node);
-   int ws = p.waitStatus;
-   if (ws &amp;gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
-    LockSupport.unpark(node.thread);
-   return true;
-  }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Fri, 23 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/23/concurrent-6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/23/concurrent-6/</guid>
-        
-        <category>Concurrent</category>
         
         
       </item>

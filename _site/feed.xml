@@ -5,12 +5,12 @@
     <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 04 Nov 2019 15:14:19 +0800</pubDate>
-    <lastBuildDate>Mon, 04 Nov 2019 15:14:19 +0800</lastBuildDate>
+    <pubDate>Thu, 07 Nov 2019 21:00:37 +0800</pubDate>
+    <lastBuildDate>Thu, 07 Nov 2019 21:00:37 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
-        <title>zookeeper学习分析：zookeeper单实例的启动</title>
+        <title>zookeeper的DataTree的落盘</title>
         <description>&lt;p&gt;我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -39,8 +39,8 @@
 &lt;p&gt;无论是单例还是集群。&lt;/p&gt;
 </description>
         <pubDate>Sun, 03 Nov 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/11/03/zoo/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/11/03/zoo/</guid>
+        <link>http://localhost:4000/2019/11/03/zoo2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/03/zoo2/</guid>
         
         <category>zookeeper</category>
         
@@ -48,9 +48,10 @@
       </item>
     
       <item>
-        <title>zookeeper代码片段学习</title>
-        <description>&lt;p&gt;一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
-&lt;!--more--&gt;&lt;/p&gt;
+        <title>zookeeper单实例的启动</title>
+        <description>&lt;p&gt;我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;p&gt;我们使用&lt;code class=&quot;highlighter-rouge&quot;&gt;ps -ef| grep zoo&lt;/code&gt;来过滤出来zookeeper的进程。
 &lt;img src=&quot;https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.jpg&quot; alt=&quot;进程的展示&quot; /&gt;&lt;/p&gt;
@@ -74,54 +75,243 @@
 &lt;p&gt;我们的启动类是：&lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.zookeeper.server.quorum.QuorumPeerMain&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;无论是单例还是集群。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//示例0:单实例ZK的启动过程 3
-    protected void initializeAndRun(String[] args) throws ConfigException, IOException, AdminServerException {
-        QuorumPeerConfig config = new QuorumPeerConfig();
-        // 第一阶段：配置文件解析（存疑点：zoo.cfg.dynamic.0 dynamic的设置）
-        if (args.length == 1) {
-        		//示例0:单实例ZK的启动过程 4
-            config.parse(args[0]);
-        }
-
-        /**
-         * ​ 3、然后启动DatadirCleanupManager线程，由于Zookeeper的任何一个变更操作(增、删、改)都将在transaction log中进行记录，
-         * 因为内存中的数据掉电后会丢失，必须写入到硬盘上的transaction log中；当写操作达到一定量或者一定时间间隔后，
-         * 会对内存中的数据进行一次快照并写入到硬盘上的snap log中，主要为了缩短启动时加载数据的时间从而加快系统启动，
-         * 另一方面避免transaction log日志数量过度膨胀。随着运行时间的增长生成的transaction log和snapshot将越来越多，
-         * 所以要定期清理.
-         * 
-         * DatadirCleanupManager就是启动一个TimeTask定时任务用于清理DataDir中的snapshot及对应的transaction log
-         * 默认的zoo.cfg 中 autopurge.purgeInterval=0 ，就是不开启 DatadirCleanupManager
-         * */
-        // Start and schedule the the purge task
-      //示例0:单实例ZK的启动过程 5 启动日志和snapshot的清理机制
-        DatadirCleanupManager purgeMgr = new DatadirCleanupManager(
-            config.getDataDir(),
-            config.getDataLogDir(),
-            config.getSnapRetainCount(),
-            config.getPurgeInterval());
-        purgeMgr.start();
-
-        //确定是否为cluster的一个判断的依据：quorumVerifier.getVotingMembers().size() &amp;gt; 1
-        //示例0:单实例ZK的启动过程 6 确定是单机还是集群的模式
-        if (args.length == 1 &amp;amp;&amp;amp; config.isDistributed()) {
-            runFromConfig(config);
-        } else {
-        	  // 单机版本的zookeeper的状态
-            LOG.warn(&quot;Either no config or no quorum defined in config, running &quot; + &quot; in standalone mode&quot;);
-            // there is only server in the quorum -- run as standalone
-            //示例0:单实例ZK的启动过程 7 单机实例的入口
-            ZooKeeperServerMain.main(args);
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sat, 02 Nov 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/11/02/zooCode1/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/11/02/zooCode1/</guid>
+        <link>http://localhost:4000/2019/11/02/zoo/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/02/zoo/</guid>
         
         <category>zookeeper</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>zookeeper代码片段学习</title>
+        <description>&lt;p&gt;一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Fri, 01 Nov 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/11/01/zooCode1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/01/zooCode1/</guid>
+        
+        <category>zookeeper</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Binary Indexed Trees 的介绍和学习</title>
+        <description>&lt;p&gt;binary indexed tree  一般翻译为树状数组，非常的好奇树状的数组是一个什么样式的？
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;介绍&quot;&gt;介绍&lt;/h4&gt;
+
+&lt;p&gt;我们常常使用一些数据结构使我们的算法更加的快，binary index tree 就是这样的一个数据结构。发明人为：Peter M. Fenwick 。该数据结构最早主要用于数据的压缩，在算法中，它通常用于&lt;strong&gt;存储频率和操纵累积频率表&lt;/strong&gt;。 我们将通过实例来说明该数据结构。&lt;/p&gt;
+
+&lt;h4 id=&quot;数据结构使用的场景&quot;&gt;数据结构使用的场景&lt;/h4&gt;
+
+&lt;p&gt;考虑一个数组a：【1，4，5，3，7，6，9，8，0，2】我们需要如下的两个操作：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;修改数组i的值，例如设置a[1] = 10, 表示为：modify(int i,int value)&lt;/li&gt;
+  &lt;li&gt;计算数组下标i到j的总和，例如计算a[2]+a[3]+a[4]+a[5] 的值，表示为：sum(int i,int j) 或者直接是sum(j) 表示从0到j&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;我们的目标就是实现这两个功能。&lt;/p&gt;
+
+&lt;p&gt;一般的操作来说，对于1，我们可以轻松的实现O(1)的时间复杂度，因为数组支持随机访问。 对于2，我们可以使用遍历的方法实现O(n)的时间复杂度。如果我们做了m次操作，最坏的情况下，都是操作2，那么时间复杂度就是O(m&lt;em&gt;n),但是利用一些数据结构，我们可以把最坏的情况，优化到O(m&lt;/em&gt;log(n))。&lt;/p&gt;
+
+&lt;p&gt;Note：针对上面的情况下，我们也能临时申请一个数组b，存储的是b[i] = (a[1]+a[2]+…+a[i]),这样的话，操作2的时间复杂度就会变为O(1),但是我们在修改a[1]的值后，对应的修改数组b的值的变动就会变为O（n）。所以我们需要一个折中的数据结构！&lt;/p&gt;
+
+&lt;p&gt;例如：RMQ 或者 BIT，其中BIT更加的容易实现，并且要求的空间会比RMQ要小，所以我们首先说明binary index tree。后面如果有机会，我们会学习RMQ数据结构。&lt;/p&gt;
+
+&lt;h4 id=&quot;符号解释&quot;&gt;符号解释&lt;/h4&gt;
+
+&lt;p&gt;再开始说明这个数据结构之前，我们首先说明一下约定的符合。&lt;/p&gt;
+
+&lt;p&gt;BIT：Binary indexed Tree&lt;/p&gt;
+
+&lt;p&gt;MaxIdx:源数组，也就是给定数组最大的下标值,等于数组的长度&lt;/p&gt;
+
+&lt;p&gt;f[i] : 源数组&lt;/p&gt;
+
+&lt;p&gt;c[i] : 简单的Sum，中间数组，c[i]=f[1] + f[2] + … + f[i]，把f数组中的树加起来。&lt;/p&gt;
+
+&lt;p&gt;tree[i] : 就是BIT数组中的i对应的值，标识一些数据的和。这个就是折中的数据结构。&lt;/p&gt;
+
+&lt;p&gt;num` : 标识num的反码（每一个二进制取反（1变为0，0变为1）的正数）&lt;/p&gt;
+
+&lt;p&gt;NOTE: We set f[0] = 0, c[0] = 0, tree[0] = 0, so sometimes we will ignore index 0.&lt;/p&gt;
+
+&lt;h4 id=&quot;基本思想&quot;&gt;基本思想&lt;/h4&gt;
+
+&lt;p&gt;每一个整数都可以标识为二进制，也就是说n可以标识为2的0次方+2的1次方+….+2的k次方的样式，实际上就是使用2进制进行表示。这就意味着：累积频率可以表示为子频率集的总和。也就是说n，可以用2的{0,1,….k}频次来进行表示。在我们的例子中，我们的集合中的元素，使用的是一些连续的非重叠的元素构成的。具体的解释如下：&lt;/p&gt;
+
+&lt;p&gt;令idx为BIT的索引。
+令r为二进制表示法中最后一个非零数字在idx中的位置，即r为idx的最低有效非零位的位置。 tree [idx]就是索引（idx-2 ^ r +1）到idx（包括端值）的源数组f对应的数组的总和。&lt;/p&gt;
+
+&lt;p&gt;详细的描述为：
+&lt;img src=&quot;https://t9qtdg.ch.files.1drv.com/y4mf4IVU339kjC2khbuY3ucoknZ_BkOTbLAIKcM6y0AJFVLzWIn5ZNpQm62GcqeeJlkDtx0eA6k8wXP5AS6KBixolvB2kayeqHk1jIFvcDL9SfeA6KeoxCadIbf9qIIkwyMYimDkyHKUpBNv5xY5-D0kiUqS3z1_QuteCZmBAYCg_hCAIhQ7ZV9_d5h8Y2hotm-N4xUVmzoc43fCjeOGB3dZw?width=1716&amp;amp;height=246&amp;amp;cropmode=none&quot; width=&quot;1716&quot; height=&quot;246&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中f 和 c 不需要做过多的描述，需要说明一下，tree的生成。tree的生成主要依靠的是f的下标，例如:
+f下标开始是1：tree[1] = f[1],
+然后2进制累计：f[1]+f[2] = tree[2],
+再然后就是： f[1]+f[2]+f[4] = tree[4]
+再然后就是：f[1]+f[2]+f[4]+f[8] = tree[8]
+……
+最后：f[1]+f[2]+f[4]+f[8]+f[16] = tree[16]&lt;/p&gt;
+
+&lt;p&gt;这样的话，tree中还没有填充完毕，对应的源数组的数据也没有使用完，那就是再来一轮，但是这轮中有一个特点就是要求连续，源数组中使用过的元素把这一轮截成一段一顿的，具体的标识为：&lt;/p&gt;
+
+&lt;p&gt;f[1],f[2]已经使用过了，从f[3]开始：tree[3]=f[3],接着应该f[3]+f[4],但是f[4] 已经使用过了，那么这段就结束了。&lt;/p&gt;
+
+&lt;p&gt;再从f[5] 重新开始，tree[5]=f[5],接着应该f[5]+f[6]= tree[6],在接着应该是f[5]+f[6]+f[8] 也就是 f[4+2的0次方]+f[4+2的1次方]+f[4+2的2次方] 但是f[8] 已经使用过了，就停止该轮。&lt;/p&gt;
+
+&lt;p&gt;再次重新开始，从f[7]开始,tree[7]=f[7]，然后f[8] 已经使用过了，就停止该轮。
+再次开始，从f[9]开始，tree[9]=f[9]，然后就是f[8+2的0次方]+ f[8+2的1次方] = f[9]+f[10]=tree[10],在接着，就是：f[8+2的0次方]+ f[8+2的1次方] + f[8+2的2次方] = f[9]+f[10]+f[12]=tree[12],,在接着，就是：f[8+2的0次方]+ f[8+2的1次方] + f[8+2的2次方]+f[8+2的3次方] = f[9]+f[10]+f[12]+f[16] 但是f[16] 已经使用过了，停止该轮。&lt;/p&gt;
+
+&lt;p&gt;再次开始，从f[11]开始,tree[11]=f[11]，然后f[12] 已经使用过了，就停止该轮。&lt;/p&gt;
+
+&lt;p&gt;再次开始，从f[13]开始,tree[13]=f[13]，然后f[14] 已经使用过了，就停止该轮。&lt;/p&gt;
+
+&lt;p&gt;再次开始，从f[15]开始,tree[15]=f[15]，然后f[16] 已经使用过了，就停止该轮。
+至此，f中的数据全部的使用完毕，tree中的数据也全部的设置完毕，具体的对应关系如下表：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://t9ou6w.ch.files.1drv.com/y4mg-aI9zx2Z17S-NYrAhs0c57JJrnNqvN2f5rNVIrkczYS1e9DEk8yZXSeU3SldApIZkwedJMkhiRtRnpxa6rNTO07IpLOj8aS-oVJkAVBggMSjGGCmyH-48tWkBx78ObplenunDl5lFwkuuhbUApt5DqFe69T0c00BAb-_G7Dp-2Bi6Bu1tCHpi5bYrdLQqbjKByumSx7U9D4-5pbs8Rfzg?width=1972&amp;amp;height=140&amp;amp;cropmode=none&quot; width=&quot;1972&quot; height=&quot;140&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;使用柱状图进行表达：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://idhbva.ch.files.1drv.com/y4m7yioge8YIhUwIVfjKT9B3UXBgdNMzCv-K1uxA5EacKIyiXIMgaek_oIwg9iMbyT9Nfio0KWQrgCpAk8joq_8l9B4UVozeW5ktzot7ekU43jWLCKMF6B5FlY92ZlGYc2mdpiNjMCTuPeFNJyyiXHYvQwBYachqk0Xi0nU2aTGQS1vTlR4shzBhFUECUiYOfqAlWqoQeT40HgWooWhKQ5wqw?width=684&amp;amp;height=1244&amp;amp;cropmode=none&quot; width=&quot;684&quot; height=&quot;1244&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;括号里面为源数组对应的数值，对应的数字为下标值，柱子代表和的相加项。&lt;/p&gt;
+
+&lt;p&gt;有了BIT的数组以后，如果我们需要操作2，得到下标为13的和，也就是求取1到13的和。表述为：sum(13),在二级制表达中，13=1101，有趣的是sum(13) = tree(1101)+tree(1100)+tree(1000) 括号内都是二进制表达。我们将在以后更详细地揭示这种联系&lt;/p&gt;
+
+&lt;h4 id=&quot;隔离最后一位&quot;&gt;隔离最后一位&lt;/h4&gt;
+
+&lt;p&gt;Note：为了简洁起见，我们将使用“最后一位”来指代相应整数二进制表达的时候，最后一个1. 例如100 的二进制表述为：110 0100，相对应的最后一位为：110 0&lt;strong&gt;1&lt;/strong&gt;00&lt;/p&gt;
+
+&lt;p&gt;BIT的算法要求数字的最后一位，所以我们需要一种更加高效的方法找到最后一位。例如，n为一个int数字，我们可以使用a1b来表示它的二进制，其中a标识二进制中最后一位1前面的数字，b标识二进制中最后一位1后面的0。 所以int数字n可以表述为：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+n = a1b = a0b+1
+
+//负数的在计算机中，使用补码进行表示 `表示反码的操作
+-n = (a1b)` + 1 = a`0b` + 1 // b为全0的序列
+   =  a`0(0...0)` +1
+   =  a`0(1...1) +1
+   =  a`1b
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据我们的推到，就可以使用JAVA中的&amp;amp;运算取出最后一位了，如下所示：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;       a1b       // 这个就是n
+&amp;amp;     a`1b       // 这个就是n的补码表示：反码+1，也就是-n
+——————–—————–
+= (0…0)1(0…0)
+
+这也即是 n &amp;amp; -n 就能够得到最后一位1的二进制表述了。
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;获取累计和sumint-j&quot;&gt;获取累计和：Sum(int j)&lt;/h4&gt;
+
+&lt;p&gt;为了计算出来sum(idx)对应的值，我们需要以下的步骤：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;初始化sum为0&lt;/li&gt;
+  &lt;li&gt;sum = sum+ tree[idx]&lt;/li&gt;
+  &lt;li&gt;从自身中减去idx的最后一位（即，将idx的最低有效非零位设置为零）;
+并在idx大于零时重复步骤2到3。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;使用JAVA代码表述为：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;int read(int idx){
+    int sum = 0;
+    while (idx &amp;gt; 0){
+        sum += tree[idx];
+        idx -= (idx &amp;amp; -idx);
+    }
+    return sum;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;以13位例子，操作的数据，如图所示：
+&lt;img src=&quot;https://idj2ma.ch.files.1drv.com/y4mwOH0dAkjm6T2v7GJd1LJ_BoMB-P7__RcfQq7QTQmBHFZ29rNeW6LYUlCZqZZt3bhfaMT5ox5xIqpbSqoe7g3rt68TwUU3uhwYSTVVns54uc0s1zAP9KSO4-eaDn4WZjkxIUxXVWcJD7wYAdqd728yStrJs_wm55089b1Wk-pcXUCyX2p40_snpV11oVSWDh1l44NqdJiOXGG6b79DM50mA?width=926&amp;amp;height=292&amp;amp;cropmode=none&quot; width=&quot;926&quot; height=&quot;292&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;所以，我们可以看到，&lt;strong&gt;获取累计和的操作的时间复杂度为O(log MaxIdx),代码的长度也只需要不到10行&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;修改源数组某一个值的更新操作modifyint-iint-value&quot;&gt;修改源数组某一个值的更新操作：modify(int i,int value)&lt;/h4&gt;
+
+&lt;p&gt;假设，我们修改了idx对应的值,相应的想法有两种：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;根据生成的规则，我们只需要修改idx，idx+2的0次方，idx+2的1次方，…, 直到超出Maidx或者遇到已经使用的idx就停下来。这种方法实现起来比较的复杂。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;我们换一个思路，&lt;strong&gt;我们在求解某一个idx的sum值的时候，可以确定这个idx关联的个序列，所以我们在更新的idx值，影响的也是那个序列，只需要更新相关联的那个序列即可。&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;对应的代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void update(int idx, int val){
+    while (idx &amp;lt;= MaxIdx){
+        tree[idx] += val;
+        idx += (idx &amp;amp; -idx);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后我们很容易得到，修改的时间复杂度为：O(log MaxIdx) 实现起来也非常的简单。&lt;/p&gt;
+
+&lt;h4 id=&quot;获得某一个位置的确定值&quot;&gt;获得某一个位置的确定值&lt;/h4&gt;
+
+&lt;p&gt;如果我们想获得源数组的某一个位置的值，我们不能直接的返回tree(idx).&lt;/p&gt;
+
+&lt;p&gt;一种的方法，就是我们保留着源数组，在生成tree数组的时候，从新的申请空间，这样的话，获得某一个位置的确定值就是O(1), 当然时间复杂度也就是线性的。&lt;/p&gt;
+
+&lt;p&gt;第二种方法，是不申请额外的空间，我们可以使用 read[idx]-read[idx-1]=f[idx] ,通过两次的获取操作（idx和idx-1）来计算f[idx] ，时间复杂度为2*log(MaxIdx).&lt;/p&gt;
+
+&lt;p&gt;第三种种方法是，运行时间复杂度比调用读取两次（降低一个恒定因子）要低。
+该方法背后的主要思想是基于以下观察:假设我们要计算两个索引之间的总和,sum(i,j), 对于两个索引中的每一个，请考虑从索引到根的路径。 这两个路径在某个索引处相遇（最晚在索引0处），此后它们重叠。 然后，我们可以计算沿这两个路径中的每个路径的相加之和，直到它们相遇并减去这两个和。 这样，我们就可以得出两个索引之间的频率之和。&lt;/p&gt;
+
+&lt;p&gt;sum[i] = tree[i]+tree[m]+tree[n]+…+tree[0]
+sum[j] = tree[j]+tree[k]+tree[p]+tree[n]…+tree[0]&lt;/p&gt;
+
+&lt;p&gt;我们将此观察结果转换为以下算法。&lt;/p&gt;
+
+&lt;p&gt;令x为索引，y = x-1。 
+我们可以将y表示为a0b（用二进制表示），其中b包含所有1。 
+那么，x是a1b（注意b由所有零组成）。 
+现在，考虑应用于x的算法的第一次迭代。 
+在第一次迭代中，该算法删除了x的最后一位，因此将x替换为z = a0b。&lt;/p&gt;
+
+&lt;p&gt;现在，让我们考虑函数读取的活动索引idx如何在输入y的每次迭代之间变化。
+读取的函数将idx的最后一位一一删除。
+经过几个步骤，活动索引idx变为a0b（提醒一下，最初idx等于y = a0b），与z相同。在这一点上，我们停止了两条路径相遇，一条路径来自x，另一条路径来自y。现在，我们可以编写类似于此讨论的算法。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;int readSingle(int idx) {
+	int sum = tree[idx]; // this sum will be decreased
+	if (idx &amp;gt; 0) { // the special case
+		int z = idx - (idx &amp;amp; -idx);
+		idx--; // idx is not important anymore, so instead y, you can use idx
+		while (idx != z) { // at some iteration idx (y) will become z
+			sum -= tree[idx];
+			// substruct tree frequency which is between y and &quot;the same path&quot;
+			idx -= (idx &amp;amp; -idx);
+		}
+	}
+	return sum;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Fri, 01 Nov 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/11/01/BinaryIndexedTrees/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/11/01/BinaryIndexedTrees/</guid>
+        
+        <category>LeetCode</category>
         
         
       </item>
@@ -849,173 +1039,6 @@ rotate the input matrix in-place such that it becomes:
         <pubDate>Sun, 25 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/25/leetcode48/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/25/leetcode48/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>并发知识梳理：5.Atomic 原子类，LockSupport支持类</title>
-        <description>&lt;p&gt;在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;首先我们来看Atomic原子类，自己把它分为三类的：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;基础类型：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference之类的。&lt;/li&gt;
-  &lt;li&gt;数组类型：AtomicIntegerArray，AtomicLongArray，AtomicReferenceArray之类的。&lt;/li&gt;
-  &lt;li&gt;成员变成之类的：AtomicIntegerFiledUpdate等&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;我们先从基础类说明：AtomicBoolean有三个主要的成员变量：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private static final Unsafe unsafe = Unsafe.getUnsafe();
-private static final long valueOffset;
-
-static {
-      try {
-         valueOffset = unsafe.objectFieldOffset
-            (AtomicBoolean.class.getDeclaredField(&quot;value&quot;));
-      } catch (Exception ex) { throw new Error(ex); }
-  }
-
-private volatile int value;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;主要的方法：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean get() {
-     return value != 0;
-}
-
-public final boolean compareAndSet(boolean expect, boolean update) {
-    int e = expect ? 1 : 0;
-    int u = update ? 1 : 0;
-    return unsafe.compareAndSwapInt(this, valueOffset, e, u);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;实现的原理就是，通过Unsafe，拿到Volatile修饰的成员变量value的内存地址，然后通过Unsafe的
-compareAndSet方法来设置value的值。&lt;/p&gt;
-
-&lt;p&gt;其他的基础类，基本就是这种模式的实现。&lt;/p&gt;
-
-&lt;p&gt;AtomicIntegerArray 的实现的源码，也是操作内存地址，但是因为是数组，所以有了些许的变化：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AtomicIntegerArray：
-
-private static final int base = unsafe.arrayBaseOffset(int[].class);
- private static final int shift;
- private final int[] array;
-
- static {
-  int scale = unsafe.arrayIndexScale(int[].class);
-  if ((scale &amp;amp; (scale - 1)) != 0)
-   throw new Error(&quot;data type scale not a power of two&quot;);
-  shift = 31 - Integer.numberOfLeadingZeros(scale);
- }
-
- private long checkedByteOffset(int i) {
-  if (i &amp;lt; 0 || i &amp;gt;= array.length)
-   throw new IndexOutOfBoundsException(&quot;index &quot; + i);
-
-  return byteOffset(i);
- }
-
- private static long byteOffset(int i) {
-  return ((long) i &amp;lt;&amp;lt; shift) + base;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们看一个具体的实现：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public final boolean compareAndSet(int i, int expect, int update) {
-  return compareAndSetRaw(checkedByteOffset(i), expect, update);
- }
-
- private boolean compareAndSetRaw(long offset, int expect, int update) {
-  return unsafe.compareAndSwapInt(array, offset, expect, update);
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;checkedByteOffset 就是根据i，确实能够&lt;code class=&quot;highlighter-rouge&quot;&gt;array[i]&lt;/code&gt; 对应的内存地址： &lt;code class=&quot;highlighter-rouge&quot;&gt;((long) i &amp;lt;&amp;lt; shift) + base&lt;/code&gt;
-其中shift 为 &lt;code class=&quot;highlighter-rouge&quot;&gt;31 - Integer.numberOfLeadingZeros(unsafe.arrayIndexScale(int[].class))&lt;/code&gt;
-就看计算公式，就让我们想起来数组的基础地址 + i* 每一个元素所占的步长的算法。&lt;/p&gt;
-
-&lt;p&gt;这也是其他的数组类原子类的基本操作了。&lt;/p&gt;
-
-</description>
-        <pubDate>Sat, 24 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/24/concurrent-7/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/24/concurrent-7/</guid>
-        
-        <category>Concurrent</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Leetcode:42  container water</title>
-        <description>&lt;p&gt;问题的描述为：
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped. Thanks Marcos for contributing this image!
-
-Example:
-
-Input: [0,1,0,2,1,0,1,3,2,1,2,1]
-Output: 6
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：主要在于观察图形的规律，有两种情况，一中为凹，一种为凸 ，但是这样的判断代码写起来非常的复杂。可以换另外的一种思路，观察总体的情况。&lt;/p&gt;
-
-&lt;p&gt;具体的代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public int trap(int[] height) {
-
-  int n = height.length;
-
-  int[] left = new int[n];
-  int[] right = new int[n];
-
-  int leftMax = Integer.MIN_VALUE;
-  int rightMax = Integer.MIN_VALUE;
-  // construct left max (including self) array
-  for (int i = 0; i &amp;lt; n; i++) {
-   if (height[i] &amp;gt; leftMax) {
-    leftMax = height[i];
-   }
-   left[i] = leftMax;
-  }
-
-  // construct right max (including self) array 
-  for (int i = n - 1; i &amp;gt;= 0; i--) {
-   if (height[i] &amp;gt; rightMax) {
-    rightMax = height[i];
-   }
-   right[i] = rightMax;
-  }
-
-  int water = 0;
-
-  // water trapped  
-  for (int i = 0; i &amp;lt; n; i++) {
-
-   int min = Math.min(left[i], right[i]);
-
-   water += (min - height[i]);
-  }
-
-  return water;
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sat, 24 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/24/leetcode42/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/24/leetcode42/</guid>
         
         <category>LeetCode</category>
         

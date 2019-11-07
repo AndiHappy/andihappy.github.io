@@ -193,13 +193,13 @@
             ">
     			
 <div class="post-preview">
-    <a href="/2019/11/03/zoo/">
+    <a href="/2019/11/03/zoo2/">
         <h2 class="post-title">
-            zookeeper学习分析：zookeeper单实例的启动
+            zookeeper的DataTree的落盘
         </h2>
         
         <h3 class="post-subtitle">
-            作为经典的分布式架构，分析zookeeper，学习其中的设计和架构
+            zookeeper源码的分析：zookeeper数据是如何持久化，启动的时候又是如何加载的
         </h3>
         
         <div class="post-content-preview">
@@ -228,7 +228,42 @@
 <hr>
 
 <div class="post-preview">
-    <a href="/2019/11/02/zooCode1/">
+    <a href="/2019/11/02/zoo/">
+        <h2 class="post-title">
+            zookeeper单实例的启动
+        </h2>
+        
+        <h3 class="post-subtitle">
+            zookeeper的源码的分析：作为经典的分布式架构，分析zookeeper，学习其中的设计和架构
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。
+
+
+
+我们使用ps -ef| grep zoo来过滤出来zookeeper的进程。
+
+
+其中的红圈中的就是进程的启动的JAVA类名和配置文件。
+
+    //示例0:单实例ZK的启动过程 2
+    public static void main(String[...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on November 2, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/11/01/zooCode1/">
         <h2 class="post-title">
             zookeeper代码片段学习
         </h2>
@@ -246,18 +281,45 @@
             一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
 
 
-我们使用ps -ef| grep zoo来过滤出来zookeeper的进程。
 
 
-其中的红圈中的就是进程的启动的JAVA类名和配置文件。
 
-    //示例0:单实例ZK的启动过程 2
-    public static void main(String[] args) {
-    	  args = new String[1...
         </div> -->
     </a>
     <p class="post-meta">
-        Posted by zhailzh on November 2, 2019
+        Posted by zhailzh on November 1, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/11/01/BinaryIndexedTrees/">
+        <h2 class="post-title">
+            Binary Indexed Trees 的介绍和学习
+        </h2>
+        
+        <h3 class="post-subtitle">
+            A Fenwick tree or binary indexed tree is a data structure that can efficiently update elements and calculate prefix sums in a table of numbers.
+        </h3>
+        
+        <div class="post-content-preview">
+        <p>binary indexed tree  一般翻译为树状数组，非常的好奇树状的数组是一个什么样式的？</p>
+
+
+        </div>
+        <!-- <div class="post-content-preview">
+            binary indexed tree  一般翻译为树状数组，非常的好奇树状的数组是一个什么样式的？
+
+
+介绍
+
+我们常常使用一些数据结构使我们的算法更加的快，binary index tree 就是这样的一个数据结构。发明人为：Peter M. Fenwick 。该数据结构最早主要用于数据的压缩，在算法中，它通常用于存储频率和操纵累积频率表。 我们将通过实例来说明该数据结构。
+
+数据结构使...
+        </div> -->
+    </a>
+    <p class="post-meta">
+        Posted by zhailzh on November 1, 2019
     </p>
 </div>
 <hr>
@@ -476,76 +538,12 @@ You have to rotate the image in-place, which means you have to modify the input 
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/08/24/concurrent-7/">
-        <h2 class="post-title">
-            并发知识梳理：5.Atomic 原子类，LockSupport支持类
-        </h2>
-        
-        <h3 class="post-subtitle">
-            并发支持类
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。
-
-
-
-首先我们来看Atomic原子类，自己把它分为三类的：
-
-  基础类型：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference之类的。
-  数组类型：Ato...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 24, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/24/leetcode42/">
-        <h2 class="post-title">
-            Leetcode:42  container water
-        </h2>
-        
-        <h3 class="post-subtitle">
-            解决问题的一种技巧：使用数组的下标
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>问题的描述为：
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            问题的描述为：
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
-
-
-
-
-The above elevation map is represe...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 24, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
 <ul class="pager">
     
-    <span class="page-number">第 1/8 页</span>
+    <span class="page-number">第 1/9 页</span>
     
     
     
@@ -609,7 +607,7 @@ The above elevation map is represe...
                             
                         
                             
-                                <a href="/tags/#LeetCode" title="LeetCode" rel="30">
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="31">
                                     LeetCode
                                 </a>
                             
@@ -621,7 +619,7 @@ The above elevation map is represe...
                             
                         
                             
-                                <a href="/tags/#zookeeper" title="zookeeper" rel="2">
+                                <a href="/tags/#zookeeper" title="zookeeper" rel="3">
                                     zookeeper
                                 </a>
                             

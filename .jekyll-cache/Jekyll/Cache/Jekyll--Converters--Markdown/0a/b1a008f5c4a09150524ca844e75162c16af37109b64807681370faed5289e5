@@ -1,4 +1,0 @@
-I"�<p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。</p>
-:ET

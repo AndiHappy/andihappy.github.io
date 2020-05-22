@@ -1,5 +1,0 @@
-I"�<p>线程之间的通信，在java中有两种：      <br />
-  一种是synchronized对应的wait，和notify；    <br />
-  另外一种，就是Lock中对应的Condition中的await和signal</p>
-
-:ET

@@ -1,5 +1,0 @@
-I"�<p>LeetCode 34. Find First and Last Position of Element in Sorted Array</p>
-
-<p>如果使用O(n)的遍历，根本就不会有什么难度了，但是题目中已经明确的标注了：Sorted Array，那么就不行了。</p>
-
-:ET

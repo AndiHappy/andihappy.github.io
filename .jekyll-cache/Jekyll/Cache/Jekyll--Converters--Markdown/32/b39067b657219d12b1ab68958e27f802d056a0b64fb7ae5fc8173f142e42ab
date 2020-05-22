@@ -1,3 +1,0 @@
-I"�<p>读写锁也是在同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）的基础上面实现的，不过就是复杂了点。</p>
-
-:ET

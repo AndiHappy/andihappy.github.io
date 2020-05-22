@@ -1,92 +1,59 @@
-# Site settings
+# ---------------- #
+#   Main Configs   #
+# ---------------- #
+baseurl: 
+url: "https://andihappy.github.io/"
+date_format: "ordinal"
 title: 飞翔的面包
-SEOTitle: 飞翔的面包 | FlyBread Blog
-header-img: img/home-bg1.jpg
-email: zhailzh@126.com
-description: "后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。"
-keyword: "Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务"
-url: "https://andihappy.github.io"              # your host, for absolute URL
-baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
+author: Happy Zhai 
 
+# ---------------- #
+#   RSS / Email    #
+# ---------------- #
+# subscribe_rss: /feed.xml
+# email: zlzdbf@gmail.com
 
-
-# SNS settings
-RSS: false
-#weibo_username:     xxxxx
-#zhihu_username:     xxxxx
-#github_username:    xxxxx
-#twitter_username:   xxxxx
-#facebook_username:  xxxxx
-# linkedin_username:  firstname-lastname-idxxxx
-
-
-
-# Build settings
-# from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
-highlighter: rouge
-permalink: pretty
-paginate: 10
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","README.zh.md"]
-anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
-
-
-
-# Gems
-# from PR#40, to support local preview for Jekyll 3.0
-# gems: [jekyll-paginate]
-plugins: [jekyll-paginate]
-
-
-
-# Markdown settings
-# replace redcarpet to kramdown,
-# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
-# document: http://jekyllrb.com/docs/configuration/#kramdown
+# ---------------- #
+#      Jekyll      #
+# ---------------- #
 markdown: kramdown
 kramdown:
-  input: GFM                            # use Github Flavored Markdown !important
+    input: GFM
+paginate: 20
+permalink: /:year/:month/:day/:title/
+gems:
+    - jekyll-paginate
+    - jekyll-sitemap
+    - jekyll-feed
+    - jemoji
+collections:
+    wiki:
+        output: true
+        permalink: /wiki/:path/
+
+# ---------------- #
+#      Comments    #
+# ---------------- #
+# support provider: disqus, gitment, gitalk
+comments_provider: gitalk
+# https://disqus.com
+# disqus:
+    # username: AndiHappy 
+# https://imsun.net/posts/gitment-introduction/
+gitment:
+    owner: AndiHappy 
+    repo: andihappy.github.io
+    oauth:
+        client_id: e261fd11c0ff17251934
+        client_secret: 445f1224d60428fa7b87bd01bc15500a4f15cf67
+# https://github.com/gitalk/gitalk#install
+gitalk:
+    owner: AndiHappy 
+    repo: andihappy.github.io
+    clientID: e261fd11c0ff17251934
+    clientSecret: 445f1224d60428fa7b87bd01bc15500a4f15cf67
+# 在使用其它评论组件时可点击显示 Disqus
+lazy_load_disqus : false
 
 
-
-# Disqus settings
-disqus_username: https-andihappy-github-io-2
-
-# Netease setttings
-netease_comment: true
-
-
-
-# Analytics settings
-# Baidu Analytics
-# ba_track_id: [your track id]
-
-# Google Analytics
-#ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-#ga_domain: huangxuan.me
-
-
-
-# Sidebar settings
-sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "谢谢代码，看见世界 <br>过去不悔 当下不杂 未来不忧"
-sidebar-avatar: /img/avatar-flyBrad.jpg    # use absolute URL, seeing it's used in both `/` and `/about/`
-
-
-
-# Featured Tags
-featured-tags: true                     # whether or not using Feature-Tags
-featured-tags-size: 0              # A tag will be featured if the size of it is more than this condition value
-
-# Featured category
-featured-category: true                     # whether or not using Feature-Tags
-featured-category-size: 1              # A tag will be featured if the size of it is more than this condition value
-
-
-# Progressive Web Apps
-chrome-tab-theme-color: "#000000"
-service-worker: true
-excerpt_separator: <!--more-->
-
-featured-condition-size: 1
-
-# Friends
+plugins: [jekyll-paginate]

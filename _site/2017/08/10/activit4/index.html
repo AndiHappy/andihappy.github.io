@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> activiti和设计模式(4)  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
+
+    <div class="main">
+        <h2> activiti和设计模式(4) </h2>
+        <p>此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。</p>
+
+<!--more-->
+<ol>
+  <li>首先是找到流程的定义：</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefinitionId(
+workFlowId).processDefinitionTenantId(orgId).singleResult();
+</code></pre></div></div>
+
+<p>有一个需要注意的问题，这种情况下查找的流程定义，ProcessDefinition没有进行解析彻底，只是数据库字段的映射。</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/400f810b94ca69ac6171fc1c29bed382.png" alt="" /></p>
+
+<ol>
+  <li>启动流程实例：</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ProcessInstance ins = runtimeService
+ .startProcessInstanceById(workFlowId, formId,variablesObject);
+</code></pre></div></div>
+
+<p>进入命令行：StartProcessInstanceCmd<ProcessInstance>，返回的是一个ProcessInstance,具体的代码是：</ProcessInstance></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessInstance execute(CommandContext commandContext) {
+// 找到部署管理器DeploymentManager
+  DeploymentManager deploymentManager = commandContext
+    .getProcessEngineConfiguration()//说明①
+    .getDeploymentManager();
+
+  // Find the process definition
+  ProcessDefinitionEntity processDefinition = null;
+  if (processDefinitionId != null) {
+    processDefinition = deploymentManager.findDeployedProcessDefinitionById(processDefinitionId);//说明②
+  }
+  // .......
+  //这个地方省略了依靠其他参变量寻找processDefiniton的代码
+
+  // Do not start process a process instance if the process definition is suspended
+  if (deploymentManager.isProcessDefinitionSuspended(processDefinition.getId())) {
+    throw new ActivitiException("Cannot start process instance. Process definition "
+            + processDefinition.getName() + " (id = " + processDefinition.getId() + ") is suspended");
+  }
+
+  // Start the process instance
+  ExecutionEntity processInstance = processDefinition.createProcessInstance(businessKey);//说明③
+
+  // now set the variables passed into the start command
+  initializeVariables(processInstance);//说明④
+
+  // now set processInstance name
+  if (processInstanceName != null) {
+    processInstance.setName(processInstanceName);
+    commandContext.getHistoryManager().recordProcessInstanceNameChange(processInstance.getId(), processInstanceName);
+  }
+
+  processInstance.start();//说明⑤
+
+  return processInstance;
+}
+
+</code></pre></div></div>
+
+<p>说明①：CommandContext,以及processEngineConfiguration 都是单例的模式，只不过从代码上面看，和一般的单例模式不太一样，找不到private的构造方法。</p>
+
+<p>说明②: 通过部署管理器寻找流程定义的过程：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>org.activiti.engine.impl.persistence.deploy.DeploymentManager.
+findDeployedProcessDefinitionById(String)
+</code></pre></div></div>
+<p>首先是到缓存中查找，如果缓存中没有，再到数据库中查找，这个缓存的大小，可以在引擎的配置文件中配置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;property name="processDefinitionCacheLimit" value="10" /&gt;
+</code></pre></div></div>
+<p>通过数据库查找的流程定义依然是没有完全解析的，具体的全部的解析的过程在什么地方呢？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ProcessDefinitionEntity resolveProcessDefinition(ProcessDefinitionEntity processDefinition) {
+    String processDefinitionId = processDefinition.getId();
+    String deploymentId = processDefinition.getDeploymentId();
+    processDefinition = processDefinitionCache.get(processDefinitionId);
+    if (processDefinition==null) {
+      DeploymentEntity deployment = Context
+        .getCommandContext()
+        .getDeploymentEntityManager()
+        .findDeploymentById(deploymentId);//在这个地方拿到具体的流程定义文件，resource红有值了。
+      deployment.setNew(false);
+      deploy(deployment, null);//具体的解析发生在这个过程中，activitis填充了解析的内容
+      processDefinition = processDefinitionCache.get(processDefinitionId);
+
+      if (processDefinition==null) {
+        throw new ActivitiException("deployment '"+deploymentId+"' didn't put process definition '"+processDefinitionId+"' in the cache");
+      }
+    }
+    return processDefinition;
+  }
+</code></pre></div></div>
+
+<p>说明③：activiti中没有ProcessInstanceEntity，有的只是ExecutionEntity。创建ExecutionEntity的时候，把历史数据全部的创建，并且插入了数据库中。</p>
+
+<p>另外还有流程实例创建的事件广播出去，这个使用的是观察者模式，这个模式在activiti中可谓是到处都是，主要用于事件的通知，订阅之类的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 实例数据创建
+ Context.getCommandContext().getHistoryManager()
+      .recordProcessInstanceStart(processInstance);
+
+      // 事件广播
+      if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+                ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processInstance));
+    }
+</code></pre></div></div>
+<p>说明④：关于流程实例中的变量Variables，需要单独拿出来说明一下。</p>
+
+<p>说明⑤：进入状态机的设计模式</p>
+
+        
+        <div class="post_footer">
+          <p>Published on Aug 10, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#activiti-desigen-pattern" title="activiti-desigen-pattern">activiti-desigen-pattern</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2017/08/10/activit3/">activiti和设计模式(3)</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2017/08/13/activit5/">activiti和设计模式(5)</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2017/08/10/activit4/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: '445f1224d60428fa7b87bd01bc15500a4f15cf67',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

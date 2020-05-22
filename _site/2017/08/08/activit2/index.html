@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> activiti和设计模式(2)  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
+
+    <div class="main">
+        <h2> activiti和设计模式(2) </h2>
+        <p>acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。</p>
+
+<!--more-->
+
+<p>activity服务的实现，很有自己的特色，show code:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="nc">ServiceImpl</span> <span class="kd">implements</span> <span class="nc">RuntimeService</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="nc">String</span> <span class="n">businessKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="nc">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+
+  <span class="o">}</span>
+
+<span class="err">……………</span>
+</code></pre></div></div>
+
+<p>这里面有两个很引人注意的地方：</p>
+
+<ol>
+  <li>commandExecutor 这个究竟是什么东西？</li>
+  <li>XXXXXCmd 的类型<br />
+  其实这都是 命令行模式 的实现类，不过activiti里面命令行模式和普通的命令行模式还有点差别的，具体的我们后面会说到。首先看命令行模式：</li>
+</ol>
+
+<blockquote>
+  <p>In object-oriented programming, the command pattern is a behavioral design pattern in which <strong>an object is used to encapsulate all information needed to perform an action or trigger an event at a later time.</strong> This information includes the method name, the object that owns the method and values for the method parameters.</p>
+</blockquote>
+
+<p>命令行主要针对的是一个动作或者触发的封装</p>
+
+<blockquote>
+  <p>Four terms always associated with the command pattern are command, receiver, invoker and client.</p>
+</blockquote>
+
+<blockquote>
+  <p>A command object knows about receiver and invokes a method of the receiver. Values for parameters of the receiver method are stored in the command,</p>
+</blockquote>
+
+<blockquote>
+  <p>the receiver object to execute these methods is also stored in the command object by aggregation. The receiver then does the work when the execute() method in command is called.</p>
+</blockquote>
+
+<blockquote>
+  <p>An invoker object knows how to execute a command, and optionally does bookkeeping about the command execution. The invoker does not know anything about a concrete command, it knows only about command interface.</p>
+</blockquote>
+
+<blockquote>
+  <p>Invoker object(s), command objects and receiver objects are held by a client object, the client decides which receiver objects it assigns to the command objects, and which commands it assigns to the invoker. The client decides which commands to execute at which points. To execute a command, it passes the command object to the invoker object.</p>
+</blockquote>
+
+<p>共有四部分：command 命令，receiver 接受方，invoker 执行方，client，客户端也就是调用方。</p>
+
+<blockquote>
+  <p>Using command objects makes it easier to construct general components that need to delegate, sequence or execute method calls at a time of their choosing without the need to know the class of the method or the method parameters. Using an invoker object allows bookkeeping about command executions to be conveniently performed, as well as implementing different modes for commands, which are managed by the invoker object, without the need for the client to be aware of the existence of bookkeeping or modes.</p>
+</blockquote>
+
+<p>我们来看一下，RunTimeService的实现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeServiceImpl</span> <span class="kd">extends</span> <span class="nc">ServiceImpl</span> <span class="kd">implements</span> <span class="nc">RuntimeService</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceByKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="n">processDefinitionKey</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceImpl</span> <span class="o">{</span>
+
+    <span class="kd">protected</span> <span class="nc">ProcessEngineConfigurationImpl</span> <span class="n">processEngineConfiguration</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">ServiceImpl</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">ServiceImpl</span><span class="o">(</span><span class="nc">ProcessEngineConfigurationImpl</span> <span class="n">processEngineConfiguration</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">processEngineConfiguration</span> <span class="o">=</span> <span class="n">processEngineConfiguration</span><span class="o">;</span>
+    <span class="o">}</span>
+
+  <span class="kd">protected</span> <span class="nc">CommandExecutor</span> <span class="n">commandExecutor</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nc">CommandExecutor</span> <span class="nf">getCommandExecutor</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCommandExecutor</span><span class="o">(</span><span class="nc">CommandExecutor</span> <span class="n">commandExecutor</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">commandExecutor</span> <span class="o">=</span> <span class="n">commandExecutor</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们可以分析命令行模式的四个角色：</p>
+
+<ol>
+  <li>客户端，Client ，即RuntimeServiceImpl，包含了命令行，接收方。确定了调用的入口：</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Autowired
+  public RuntimeService runtimeService;
+  ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variablesObject);
+</code></pre></div></div>
+
+<ol>
+  <li>命令行，这个比较的明显,StartProcessInstanceCmd类，就像上面所说的：<strong>Values for parameters of the receiver method are stored in the command</strong> 代码：</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;,</span> <span class="nc">Serializable</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">String</span> <span class="n">processDefinitionId</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">String</span> <span class="n">businessKey</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">String</span> <span class="n">tenantId</span><span class="o">;</span>
+  <span class="kd">protected</span> <span class="nc">String</span> <span class="n">processInstanceName</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">StartProcessInstanceCmd</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionKey</span><span class="o">,</span> <span class="nc">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
+   <span class="nc">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">processDefinitionKey</span> <span class="o">=</span> <span class="n">processDefinitionKey</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">processDefinitionId</span> <span class="o">=</span> <span class="n">processDefinitionId</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">businessKey</span> <span class="o">=</span> <span class="n">businessKey</span><span class="o">;</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">variables</span> <span class="o">=</span> <span class="n">variables</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>实现的是命令行接口：Command<T></T></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandContext</span> <span class="n">commandContext</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>剩下两个是：Invoker，和receiver 不是很好的区分，但是我们从RuntimeServiceImpl里面的类名称，可以探究一二：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected CommandExecutor commandExecutor;
+</code></pre></div></div>
+
+<p>可以看出来：ComandExecutor 是执行者，另外我们从receiver的定义中：</p>
+
+<p>the receiver object to execute these methods is also stored in the command object by aggregation. The receiver then does the work when the execute() method in command is called.</p>
+
+<p>也能够看出来：CommandContext 是 receiver .</p>
+
+<p>下面让我们梳理一下，具体的执行的过程，也说明一下activiti的命令行模式的特殊的地方：</p>
+
+<ol>
+  <li>准备工作：receiver已经在引擎中配置完毕了:</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // 初始化引擎的时候，初始化了CommandContextFactory工厂类
+  protected void initCommandContextFactory() {
+  if (commandContextFactory==null) {
+   commandContextFactory = new CommandContextFactory();
+  }
+  commandContextFactory.setProcessEngineConfiguration(this);
+  }
+  //在factory中，可以根据command直接的创建CommandContext
+  public CommandContext createCommandContext(Command&lt;?&gt; cmd) {
+  return new CommandContext(cmd, processEngineConfiguration);
+  }
+</code></pre></div></div>
+
+<p>0.1 执行者也是在命令行初始化之前完成的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** this will be initialized during the configurationComplete() */
+ protected CommandExecutor commandExecutor;
+
+ // 执行者的设计，就是一个链式拦截器
+ protected void initCommandExecutor() {
+    if (commandExecutor==null) {
+      CommandInterceptor first = initInterceptorChain(commandInterceptors);
+      commandExecutor = new CommandExecutorImpl(getDefaultCommandConfig(), first);
+    }
+  }
+</code></pre></div></div>
+
+<p>所以现在只剩下，建立命令行了：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>new StartProcessInstanceCmd&lt;ProcessInstance&gt;(processDefinitionKey, null, null, null)
+</code></pre></div></div>
+
+<p>具体的执行的过程是： 一个命令是怎么在 client,receiver,invoker 之间运转的，明天分析</p>
+
+        
+        <div class="post_footer">
+          <p>Published on Aug 08, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#activiti-desigen-pattern" title="activiti-desigen-pattern">activiti-desigen-pattern</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2017/08/02/activit1/">activiti和设计模式(1)</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2017/08/10/activit20/">activiti和设计模式(2.1)</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2017/08/08/activit2/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: '445f1224d60428fa7b87bd01bc15500a4f15cf67',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

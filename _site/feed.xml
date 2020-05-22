@@ -2,12 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>飞翔的面包</title>
-    <description>后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。</description>
+    <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 07 Nov 2019 21:00:37 +0800</pubDate>
-    <lastBuildDate>Thu, 07 Nov 2019 21:00:37 +0800</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <pubDate>Fri, 22 May 2020 15:03:56 +0800</pubDate>
+    <lastBuildDate>Fri, 22 May 2020 15:03:56 +0800</lastBuildDate>
+    <generator>Jekyll v4.0.1</generator>
+    
+      <item>
+        <title>我们能够再次出发了，为了2020的第二个小目标</title>
+        <description>&lt;p&gt;迎接2020年第二个小目标&lt;/p&gt;
+</description>
+        <pubDate>Wed, 20 May 2020 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/05/20/hello-world-again/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/05/20/hello-world-again/</guid>
+        
+        
+        <category>心情</category>
+        
+      </item>
     
       <item>
         <title>zookeeper的DataTree的落盘</title>
@@ -954,91 +967,6 @@ The order of your output does not matter.&lt;/p&gt;
         <pubDate>Mon, 26 Aug 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/08/26/leetcode49/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/08/26/leetcode49/</guid>
-        
-        <category>LeetCode</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Leetcode:48. Rotate Image</title>
-        <description>&lt;p&gt;问题的描述为：
-You are given an n x n 2D matrix representing an image.&lt;/p&gt;
-
-&lt;p&gt;Rotate the image by 90 degrees (clockwise).&lt;/p&gt;
-
-&lt;p&gt;Note:&lt;/p&gt;
-
-&lt;p&gt;You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-Example 1:
-
-Given input matrix = 
-[
-  [1,2,3],
-  [4,5,6],
-  [7,8,9]
-],
-
-rotate the input matrix in-place such that it becomes:
-[
-  [7,4,1],
-  [8,5,2],
-  [9,6,3]
-]
-Example 2:
-
-Given input matrix =
-[
-  [ 5, 1, 9,11],
-  [ 2, 4, 8,10],
-  [13, 3, 6, 7],
-  [15,14,12,16]
-], 
-
-rotate the input matrix in-place such that it becomes:
-[
-  [15,13, 2, 5],
-  [14, 3, 4, 1],
-  [12, 6, 8, 9],
-  [16, 7,10,11]
-]
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;思路：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1 2 3     7 8 9     7 4 1
-4 5 6  =&amp;gt; 4 5 6  =&amp;gt; 8 5 2
-7 8 9     1 2 3     9 6 3
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;具体的代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void rotate(int[][] matrix) {
-    int s = 0, e = matrix.length - 1;
-    while(s &amp;lt; e){
-        int[] temp = matrix[s];
-        matrix[s] = matrix[e];
-        matrix[e] = temp;
-        s++; e--;
-    }
-
-    for(int i = 0; i &amp;lt; matrix.length; i++){
-        for(int j = i+1; j &amp;lt; matrix[i].length; j++){
-            int temp = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = temp;
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sun, 25 Aug 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/08/25/leetcode48/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/25/leetcode48/</guid>
         
         <category>LeetCode</category>
         

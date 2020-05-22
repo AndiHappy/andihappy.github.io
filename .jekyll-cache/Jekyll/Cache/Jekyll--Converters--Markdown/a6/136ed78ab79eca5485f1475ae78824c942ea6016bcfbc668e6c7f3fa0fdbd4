@@ -1,0 +1,8 @@
+I"<p>redis主要操作的数据有五种，String，List，Map，Set，sort Set 简称为ZSet。这五类的操作的数据的底层
+是如何运行的。
+redis为什么这么快？
+redis的集群的模式
+redis的内存管理模式
+redis的持久化操作等常见的问题。</p>
+
+:ET

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> netty in action 读书笔记  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
+
+    <div class="main">
+        <h2> netty in action 读书笔记 </h2>
+        <p>netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
+<!--more--></p>
+<ol>
+  <li>the system must scale up to 150,000 concurrent users with no loss of performance。</li>
+</ol>
+
+<p>scale up 负载</p>
+
+<ol>
+  <li>If you can say with confidence, “Sure, no problem,” then hats off to you。</li>
+</ol>
+
+<p>hats off to you</p>
+
+<ol>
+  <li>next steps were probably to browse the site, download the code, peruse the Javadocs and a few blogs, and start hacking. If you already had solid network programming experience, you probably made good progress；</li>
+</ol>
+
+<p>High-performance systems like the one in our example require more than first-class coding skills; they demand expertise in several complex areas: networking, multithreading, and concurrency.</p>
+
+<p>Java开始提供的Socket连接，只支持阻塞形式的IO。</p>
+
+<p>Socket server = new ServerSocket(8080).accept();</p>
+
+<p>accept的APIDOC中有一句：The method blocks until a connection is made.
+accept() blocks until a connection is established on the ServerSocket b, then returns a new Socket for communication between the client and the server. The ServerSocket then resumes（重新恢复） listening for incoming connections.</p>
+
+<p>这种方式的利弊：      <br />
+First, at any point many threads could be dormant（休眠）, just waiting for input or output data to appear on the line.      <br />
+因为 new BufferedReader(new InputStreamReader(this.socket.getInputStream())).readerLine() 没有数据的时候，会被阻塞的</p>
+
+<p>Second,each thread requires an allocation of stack memory whose default size ranges from 64 KB to 1 MB, depending on the OS.           <br />
+如果每一个Client的连接是新建一个socket连接的话，那么需要给这个socket分配64kb到1MB的内存</p>
+
+<p>Third, even if a Java virtual machine (JVM) can physically support a very large number of threads, the overhead of context-switching will begin to be troublesome long before that limit is reached, say by the time you reach 10,000 connections.        <br />
+JVM线程数的限制以及多开的线程造成的线程切换造成的花销。      <br />
+在这种通信的模型下面，基本上保持着每一个client对应一个线程，所以对大规模的同时连接，JVM的线程数是一种限制</p>
+
+<p>第二种的变形，只是在服务端提供线程池的方式来处理客户端的接入，这样的话，对JVM的线程限制数就有了一种解决方案。          <br />
+这种情况下，如果某些线程处理数据比较的慢，那么这些线程会夯在线程池中，可能就会影响其他客户端的接入和其他线程数据的处理</p>
+
+<p>JDK1.4 2002发布，支持NIO模型。         <br />
+Java support for non-blocking I/O was introduced in 2002, with the JDK 1.4 package java.nio，which provide considerably more control over the utilization of network resources.</p>
+
+<p>The class java.nio.channels.Selector is the linchpin（关键） of Java’s non-blocking I/O implementation.          <br />
+It uses the event notification API to indicate which, among a set of non-blocking sockets, are ready for I/O.</p>
+
+<p>利弊：
+■ Many connections can be handled with fewer threads, and thus with far less overhead due to memory management and context-switching.          <br />
+较少的线程就能够处理接入和数据处理，然后线程切换和内存管理变得比较的简单      <br />
+■ Threads can be retargeted to other tasks when there is no I/O to handle.  <br />
+没有IO线程进行处理的时候，线程能够重定向处理其他的任务。</p>
+
+<p>这种通信模型下，主要的是基于：Selector，SocketChannel，Buffer     <br />
+这种通信模型，已经能够基本支持网络通信的需要，但是IO通信过程中可靠，重连，断网重链等问题仍需要自己进行开发。</p>
+
+<p>JDK1.7 升级了NIO，变为了NIO2，提供了异步io的通道         <br />
+NIO2.0 的异步套接字通道是真正的异步非阻塞I/O,它对应UNIX 网络编程中的事件驱动I/O (AIO)，它不需要通过多路复用器(Selector) 对注册的通道进行轮询操作即可实现异步读写，从而简化了NIO 的编程模型。</p>
+
+<p>In particular, processing and dispatching I/O reliably and efficiently under heavy load is a cumbersome（笨重的） and error-prone task best left to a high-performance networking expert—Netty</p>
+
+<p>We’ve learned from long and painful experience that the direct use of low-level APIs exposes complexity and introduces a critical dependency on skills that tend to be in short supply.Hence, a fundamental concept of object orientation: hide the complexity of underlying imple- mentations behind simpler abstractions.
+This principle has stimulated the development of numerous frameworks that encapsulate solutions to common programming tasks, many of them germane to distributed systems development. It’s probably safe to assert that all professional Java developers are familiar with at least one of these.</p>
+
+<p>对于框架的封装，对于我们Developer，不知道是一件好事还是坏事？</p>
+
+<p>In essence, a system that is both asynchronous and event-driven exhibits a particular and, to us, extremely valuable kind of behavior: it can respond to events occurring at any time and in any order.        <br />
+异步的事件处理系统         <br />
+This capability is critical for achieving the highest levels of scalability</p>
+
+<p>Non-blocking network calls free us from having to wait for the completion of an operation.         <br />
+Fully asynchronous I/O builds on this feature and carries it a step further: an asynchronous method returns immediately and notifies the user when it is complete, directly or at a later time.</p>
+
+<p>Selectors allow us to monitor many connections for events with many fewer threads.</p>
+
+<p>Putting these elements together, with non-blocking I/O we can handle very large numbers of events much more rapidly and economically than would be possible with blocking I/O. From the point of view of networking, this is key to the kind of systems we want to build,and as you’ll see, it is also key to Netty’s design from the ground up.</p>
+
+<p>netty设计的关键在于非阻塞的网络通信和Selector感知连接等不同的事件</p>
+
+<p>netty的主要的模块：           <br />
+■ Channels：管道           <br />
+■ Callbacks：A callback is simply a method, a reference to which has been provided to another method.           <br />
+■ Futures:A Future provides another way to notify an application when an operation has com- pleted. This object acts as a placeholder for the result of an asynchronous operation; it will complete at some point in the future and provide access to the result.           <br />
+■ Events and handlers</p>
+
+<p>Channels：For now, think of a Channel as a vehicle for incoming (inbound) and outgoing (out- bound) data. As such, it can be open or closed, connected or disconnected.           <br />
+管道           <br />
+Callbacks are used in a broad range of programming situations and represent one of the most common ways to notify an interested party that an operation has completed.   <br />
+回调   <br />
+In fact, callbacks and Futures are complementary mecha- nisms; in combination they make up one of the key building blocks of Netty itself       <br />
+Future这个可以翻译为未来值？</p>
+
+<p>Netty is a networking framework,so events are categorized by their relevance to inbound or outbound data flow.  <br />
+Events that may be triggered by inbound data or an associated change of state include  <br />
+■ Active or inactive connections   <br />
+■ Data reads  <br />
+■ User events <br />
+■ Error events <br />
+An outbound event is the result of an operation that will trigger an action in the future, which may be  <br />
+■ Opening or closing a connection to a remote peer  <br />
+■ Writing or flushing data to a socket</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/82d4921691f30a71bea6f4b204353f8b.png" alt="envent" /></p>
+
+<p>Netty’s asynchronous programming model is built on the concepts of Futures and callbacks, with the dispatching of events to handler methods happening at a deeper level. Taken together, these elements provide a processing environment that allows the logic of your application to evolve independently of any concerns with network operations. This is a key goal of Netty’s design approach</p>
+
+<p>netty 是建立在 Future和Callback，以及把各种类型的事件交由Handler处理的基础上的。这种机制保证了应用与网路通信模块之间的相对的独立，这也是netty设计过程中一个比较重要的点。</p>
+
+<p>Netty abstracts the Selector away from the application by firing events, eliminating all the handwritten dispatch code that would otherwise be required. Under the covers, an EventLoop is assigned to each Channel to handle all of the events, including    <br />
+■ Registration of interesting events    <br />
+■ Dispatching events to ChannelHandlers    <br />
+■ Scheduling further actions</p>
+
+<p>Netty抽闲Selector的作用，消除了分发代码的编写，这里的分发代码指的是：Selector在接到Socket的事件的时候，需要触发相对应的逻辑，例如：connect事件对应的连接逻辑，读事件对应的数据请求逻辑等等。</p>
+
+<p>抽象成了一个对象：EventLoop，这个EventLoop还是比较的重要的一个抽象类。</p>
+
+<p>The EventLoop itself is driven by only one thread that handles all of the I/O events for one Channel and does not change during the lifetime of the EventLoop. This simple and powerful design eliminates any concern you might have about synchronization in your ChannelHandlers, so you can focus on providing the right logic to be executed when there is interesting data to process. As we’ll see when we explore Netty’s thread- ing model in detail, the API is simple and compact.</p>
+
+<p>EventLoop本身是一个线程来进行维护，我们只需要关心ChannelHandlers中我们感兴趣的数据即可。这种简单的模型保证了API的简单和简洁</p>
+
+        
+        <div class="post_footer">
+          <p>Published on Dec 01, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#读书笔记" title="读书笔记">读书笔记</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2017/12/01/nettyinaction0/">netty in action 读书笔记</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2017/12/01/TimerTask/">定时任务的说明</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2017/12/01/nettyinaction0%E7%9A%84%E5%89%AF%E6%9C',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: '445f1224d60428fa7b87bd01bc15500a4f15cf67',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

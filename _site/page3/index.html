@@ -1,822 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="技术,programmer,翟,andiHappy," />
+        <meta name="description" content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 飞翔的面包  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="后台服务、微服务、架构、黑客与画家 | 飞翔的面包 JAVA Developer Andi Happy andiHappy | 这里是 飞翔的面包 的个人博客，与你一起发现更大的世界。">
-    <meta name="keywords"  content="Andi Happy andiHappy, 飞翔的面包, FlyBread Blog, 博客, 个人网站, 互联网, 后端，服务">
-    <meta name="theme-color" content="#000000">
-    
-    <title>飞翔的面包 | FlyBread Blog</title>
-
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/pwa/manifest.json">
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.ico">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/page3/">
-
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
-
-    <!-- Pygments Github CSS -->
-    <link rel="stylesheet" href="/css/syntax.css">
-
-    <!-- Custom Fonts -->
-    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
-    <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-
-    <!-- Hux Delete, sad but pending in China
-    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
-    css'>
-    -->
-
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- ga & ba script hoook -->
-    <script></script>
-</head>
-
-
-<!-- hack iOS CSS :active style -->
-<body ontouchstart="">
-
-    <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">飞翔的面包</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div id="huxblog_navbar">
-            <div class="navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="/">首页</a>
-                    </li>
-                    <li>
-                        <a href="/about/">关于</a>
-                    </li>
-                    <li>
-                        <a href="/tags">标签</a>
-                    </li>
-                    <li>
-                        <a href="/category/">杂记</a>
-                    </li>
-                   <!--  
-                    <li>
-                        <a href="/category/">杂记</a>
-                    </li>
-                    
-                    <li>
-                        <a href="/portfolio/">Portfolio</a>
-                    </li>
-                    
-                    <li>
-                        <a href="/tags/">Tags</a>
-                    </li>
-                     -->
-                </ul>
-            </div>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container -->
-</nav>
-<script>
-    // Drop Bootstarp low-performance Navbar
-    // Use customize navbar with high-quality material design animation
-    // in high-perf jank-free CSS3 implementation
-    var $body   = document.body;
-    var $toggle = document.querySelector('.navbar-toggle');
-    var $navbar = document.querySelector('#huxblog_navbar');
-    var $collapse = document.querySelector('.navbar-collapse');
-
-    var __HuxNav__ = {
-        close: function(){
-            $navbar.className = " ";
-            // wait until animation end.
-            setTimeout(function(){
-                // prevent frequently toggle
-                if($navbar.className.indexOf('in') < 0) {
-                    $collapse.style.height = "0px"
-                }
-            },400)
-        },
-        open: function(){
-            $collapse.style.height = "auto"
-            $navbar.className += " in";
-        }
-    }
-
-    // Bind Event
-    $toggle.addEventListener('click', function(e){
-        if ($navbar.className.indexOf('in') > 0) {
-            __HuxNav__.close()
-        }else{
-            __HuxNav__.open()
-        }
-    })
-
-    /**
-     * Since Fastclick is used to delegate 'touchstart' globally
-     * to hack 300ms delay in iOS by performing a fake 'click',
-     * Using 'e.stopPropagation' to stop 'touchstart' event from 
-     * $toggle/$collapse will break global delegation.
-     * 
-     * Instead, we use a 'e.target' filter to prevent handler
-     * added to document close HuxNav.  
-     *
-     * Also, we use 'click' instead of 'touchstart' as compromise
-     */
-    document.addEventListener('click', function(e){
-        if(e.target == $toggle) return;
-        if(e.target.className == 'icon-bar') return;
-        __HuxNav__.close();
-    })
-</script>
-
-
-    <!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/home-bg1.jpg')">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading">
-                    <h1>飞翔的面包</h1>
-                    <!--<hr class="small">-->
-                    <span class="subheading">JUST DO IT</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-
-<!-- USE SIDEBAR -->
-    <!-- PostList Container -->
-    		<div class="
-                col-lg-8 col-lg-offset-1
-                col-md-8 col-md-offset-1
-                col-sm-12
-                col-xs-12
-                postlist-container
-            ">
-    			
-<div class="post-preview">
-    <a href="/2019/08/20/concurrent-4/">
-        <h2 class="post-title">
-            并发知识梳理：3. 通过具体的应用展示锁的实现机制
-        </h2>
-        
-        <h3 class="post-subtitle">
-            AQS和ReentrantLock
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。
-
-
-
-ReentrantLock
-
-关于可重入锁带着两个问题，去分析的：
-
-  怎么判断的重入，如何增加锁的次数的。
-  重入次数的判断，释放锁的时候，如果消减锁的次数，释放以后，其他的等待的线程是如何响应的
-
-
-ReentrantLock lock 方法
-public Ree...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 20, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/19/leetcode30/">
-        <h2 class="post-title">
-            LeetCode 30. Substring with Concatenation of All Words
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 30. Substring with Concatenation of All Words</p>
-
-<p>hard</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 30. Substring with Concatenation of All Words
-
-hard
-
-
-
-LeetCode 30. Substring with Concatenation of All Words
-
-描述：
-
-You are given a string, s, and a list of words, words, that are all of t...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 19, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode29/">
-        <h2 class="post-title">
-            LeetCode 29. Divide Two Integers
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 29 题的分析和总结：  29. Divide Two Integers</p>
-
-<p>迭代循环</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 29 题的分析和总结：  29. Divide Two Integers
-
-迭代循环
-
-
-
-LeetCode 29. Divide Two Integers
-
-描述：
-
-Given two integers dividend and divisor, divide two integers without using multiplication, division and...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode28/">
-        <h2 class="post-title">
-            LeetCode28   Implement strStr()
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 28 题的分析和总结：  Implement strStr()</p>
-
-<p>字符串操作</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 28 题的分析和总结：  Implement strStr()
-
-字符串操作
-
-
-
-LeetCode 28. Implement strStr()
-
-描述：
-
-Implement strStr().
-
-Return the index of the first occurrence of needle in haystack, or -1 if needle is not ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode27/">
-        <h2 class="post-title">
-            LeetCode27  Remove Element
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 27 题的分析和总结： Remove Element</p>
-
-<p>数组操作</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 27 题的分析和总结： Remove Element
-
-数组操作
-
-
-
-LeetCode 26.  Remove Element
-
-描述：
-
-Given an array nums and a value val, remove all instances of that value in-place and return the new length.
-
-Do not a...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/18/leetcode26/">
-        <h2 class="post-title">
-            LeetCode26  Remove Duplicates from Sorted Array
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array</p>
-
-<p>数组操作</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 26 题的分析和总结： Remove Duplicates from Sorted Array
-
-数组操作
-
-
-
-LeetCode 26.  Remove Duplicates from Sorted Array
-
-描述：
-
-Given a sorted array nums, remove the duplicates in-place such that each el...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-3/">
-        <h2 class="post-title">
-            并发知识梳理：2. Lock
-        </h2>
-        
-        <h3 class="post-subtitle">
-            锁的实现架构AQS
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。
-
-
-
-Lock
-
-Lock接口和Condition接口的均为锁相关的两个接口，具体的说明：
-
-  Lock implementations provide more extensive locking operations than can be obtained using syn...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-2/">
-        <h2 class="post-title">
-            并发知识梳理：1. synchronized，volatile
-        </h2>
-        
-        <h3 class="post-subtitle">
-            JVM支持的关键字
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>synchronized 关键字作为并发理念中，最最基础的部分，需要首先搞明白。</p>
-
-<p>Volatile 关键字，又做了哪些工作和Synchronized 有什么不同？</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            synchronized 关键字作为并发理念中，最最基础的部分，需要首先搞明白。
-
-Volatile 关键字，又做了哪些工作和Synchronized 有什么不同？
-
-
-
-首先还是实例代码：
-
-class Producer extends Thread {
-	static final int MAXQUEUE = 5;
-	private Vector&lt;String&gt; messag...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-1/">
-        <h2 class="post-title">
-            并发知识梳理：概述
-        </h2>
-        
-        <h3 class="post-subtitle">
-            简述梳理的过程
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。
-
-
-
-并发的东西，涉及的比较的多，自己只能从自己所知的角度来说明，来复习。
-
-从是否设计到一个JVM，还是多个JVM的角度划分：
-
-
-  
-    单机版本的并发
-  
-
-
-
-  
-    多机版本的并发
-  
-
-
-我们首先说单机版本的并发支持，这个主要就是JDK支持的并发模型了。JDK的并发的模型：...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/16/leetcode25/">
-        <h2 class="post-title">
-            LeetCode25
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-        <p>LeetCode 25题的分析和总结：Reverse Nodes in k-Group</p>
-
-<p>递归</p>
-
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 25题的分析和总结：Reverse Nodes in k-Group
-
-递归
-
-
-
-LeetCode 25. Reverse Nodes in k-Group
-
-描述：
-
-Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
-
-k i...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 16, 2019
-    </p>
-</div>
-<hr>
-
-
-<!-- Pager -->
-
-<ul class="pager">
-    
-    <span class="page-number">第 3/9 页</span>
-    
-    
-    <li class="previous">
-        <a href="/page2">&larr; Newer Posts</a>
-    </li>
-    
-    
-    <li class="next">
-        <a href="/page4">Older Posts &rarr;</a>
-    </li>
-    
-</ul>
-
-
-    		</div>
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-3 col-lg-offset-0
-                col-md-3 col-md-offset-0
-                col-sm-12
-                col-xs-12
-                sidebar-container
-            ">
-                <!-- Featured Tags -->
-                
-                <section>
-                    <hr class="hidden-sm hidden-xs">
-                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
-                    <div class="tags">
-                         
-                            
-                                <a href="/tags/#记录" title="记录" rel="1">
-                                    记录
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#学习" title="学习" rel="23">
-                                    学习
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#温故而知新" title="温故而知新" rel="1">
-                                    温故而知新
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#定时任务" title="定时任务" rel="1">
-                                    定时任务
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#redis" title="redis" rel="1">
-                                    redis
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#JDK" title="JDK" rel="10">
-                                    JDK
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#LeetCode" title="LeetCode" rel="31">
-                                    LeetCode
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#Concurrent" title="Concurrent" rel="7">
-                                    Concurrent
-                                </a>
-                            
-                        
-                            
-                                <a href="/tags/#zookeeper" title="zookeeper" rel="3">
-                                    zookeeper
-                                </a>
-                            
-                        
-                    </div>
-                </section>
-                
-
-                <!-- Short About -->
-                <section class="visible-md visible-lg">
-                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
-                    <div class="short-about">
-                        
-                            <img src="/img/avatar-flyBrad.jpg" />
-                        
-                        
-                            <p>谢谢代码，看见世界 <br>过去不悔 当下不杂 未来不忧</p>
-                        
-                        <!-- SNS Link -->
-                        <ul class="list-inline">
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                        </ul>
-                    </div>
-                </section>
-                <!-- Friends Blog -->
-                
-    		</div>
-        
-	</div>
-</div>
-
-
-    <!-- Footer -->
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <ul class="list-inline text-center">
-                    
-                    
-
-                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
-                    
-                    
-
-
-                    
-                    
-                    
-                </ul>
-                <p class="copyright text-muted">
-                    Theme modify by <a href="http://huangxuan.me">飞翔的面包</a> |
-                    <iframe
-                        style="margin-left: 2px; margin-bottom:-5px;"
-                        frameborder="0" scrolling="0" width="100px" height="20px"
-                        src="https://ghbtns.com/github-btn.html?user=andihappy&repo=andihappy.github.io&type=star&count=true" >
-                    </iframe>
-                </p>
-            </div>
-        </div>
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
     </div>
-</footer>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
 
-<!-- jQuery -->
-<script src="/js/jquery.min.js "></script>
+    <div class="main">
+        <h2>  飞翔的面包  </h2>
+        <div class="postlist">
+    
+    <div class="overview">
+        <div class="date">Aug 12, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2/">LeetCode10</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 12, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2-3/">LeetCode11</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 12, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2-2/">LeetCode09</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 11, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/11/day2/">JDK8的新特性2</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 10, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/10/jdk-day0/">JDK8的新特性1</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 09, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/09/datastruct/">树形数据结构</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 07, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/07/netty/">编码编不下去了怎么办？</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 06, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/06/hashmap/">沉下心来分析HashMap的源码（五）红黑树的删除</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 05, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/05/hashmap/">沉下心来分析HashMap的源码（四）红黑树的插入</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 04, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/04/hashmap0/">沉下心来分析HashMap的源码（三）学习红黑树</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 03, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/03/hashmap/">沉下心来分析HashMap的源码（二）</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Aug 02, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/08/02/hashmap/">沉下心来分析HashMap的源码</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Jul 01, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/07/01/readingbook/">怎么读书</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Apr 15, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/04/15/remotework/">远程工作language的选择</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Apr 09, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/04/09/whymongoDBSuccess/">为什么RethinkDB失败了？</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Mar 01, 2019</div>
+        <div class="detail"><a href="http://localhost:4000/2019/03/01/redis-data/">redis梳理</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Dec 07, 2017</div>
+        <div class="detail"><a href="http://localhost:4000/2017/12/07/nettyinaction7/">netty in action 读书笔记</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Dec 06, 2017</div>
+        <div class="detail"><a href="http://localhost:4000/2017/12/06/nettyinaction6/">netty in action 读书笔记</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Dec 05, 2017</div>
+        <div class="detail"><a href="http://localhost:4000/2017/12/05/nettyinaction5/">netty in action 读书笔记</a></div>
+    </div>
+    
+    <div class="overview">
+        <div class="date">Dec 04, 2017</div>
+        <div class="detail"><a href="http://localhost:4000/2017/12/04/nettyinaction4/">netty in action 读书笔记</a></div>
+    </div>
+    
+</div>
+<div id="post-pagination" class="paginator">
 
-<!-- Bootstrap Core JavaScript -->
-<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
-<script src="/js/bootstrap.min.js "></script>
+  
+    
+    <a href="http://localhost:4000/page2"><前页</a>
+    
+  
 
-<!-- Custom Theme JavaScript -->
-<script src="/js/hux-blog.min.js "></script>
+      
+      <a href="http://localhost:4000/">1</a>
+      
 
-<!-- Service Worker -->
+    
+      
+      <a href="http://localhost:4000/page2">2</a>
+      
+    
+      
+      <span class="current-page">3</span>
+      
+    
+      
+      <a href="http://localhost:4000/page4">4</a>
+      
+    
+      
+      <a href="http://localhost:4000/page5">5</a>
+      
+    
 
-<script src="/js/snackbar.js "></script>
-<script src="/js/sw-registration.js "></script>
-
-
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-
-<!--
-     Because of the native support for backtick-style fenced code blocks
-     right within the Markdown is landed in Github Pages,
-     From V1.6, There is no need for Highlight.js,
-     so Huxblog drops it officially.
-
-     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
-     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
-     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
--->
-<!--
-    <script>
-        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
-            hljs.initHighlightingOnLoad();
-        })
-    </script>
-    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
--->
+  
+    <a class="next" href="http://localhost:4000/page4">后页></a>
+  
+  (共82篇)
+</div>
 
 
-<!-- jquery.tagcloud.js -->
-<script>
-    // only load tagcloud.js in tag.html
-    if($('#tag_cloud').length !== 0){
-        async('/js/jquery.tagcloud.js',function(){
-            $.fn.tagcloud.defaults = {
-                //size: {start: 1, end: 1, unit: 'em'},
-                color: {start: '#bbbbee', end: '#0085a1'},
-            };
-            $('#tag_cloud a').tagcloud();
-        })
-    }
-</script>
-
-<!--fastClick.js -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
-        var $nav = document.querySelector("nav");
-        if($nav) FastClick.attach($nav);
-    })
-</script>
-
-
-<!-- Google Analytics -->
-
-
-
-<!-- Baidu Tongji -->
-
-
-
-
-<!-- Side Catalog -->
-
-
-
-
-<!-- Image to hack wechat -->
-<img src="/img/icon_wechat.png" width="0" height="0" />
-<!-- Migrate from head to bottom, no longer block render and still work -->
-
-</body>
-
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
 </html>
+

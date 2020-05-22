@@ -40,18 +40,18 @@ comments_provider: gitalk
 # disqus:
     # username: AndiHappy 
 # https://imsun.net/posts/gitment-introduction/
-gitment:
-    owner: AndiHappy 
-    repo: andihappy.github.io
-    oauth:
-        client_id: e261fd11c0ff17251934
-        client_secret: 445f1224d60428fa7b87bd01bc15500a4f15cf67
+# gitment:
+#     owner: AndiHappy 
+#     repo: andihappy.github.io
+#     oauth:
+#         client_id: e261fd11c0ff17251934
+#         client_secret: d6d09672a7172a9b422ec63898d542d00d441bd1
 # https://github.com/gitalk/gitalk#install
 gitalk:
     owner: AndiHappy 
     repo: andihappy.github.io
     clientID: e261fd11c0ff17251934
-    clientSecret: 445f1224d60428fa7b87bd01bc15500a4f15cf67
+    clientSecret: d6d09672a7172a9b422ec63898d542d00d441bd1
 # 在使用其它评论组件时可点击显示 Disqus
 lazy_load_disqus : false
 

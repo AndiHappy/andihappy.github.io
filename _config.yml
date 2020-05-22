@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl: 
-url: "https://andihappy.github.io/"
+url: "https://andihappy.github.io"
 date_format: "ordinal"
 title: 飞翔的面包
 author: Happy Zhai 

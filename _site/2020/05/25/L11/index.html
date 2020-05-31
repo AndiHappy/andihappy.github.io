@@ -5,7 +5,7 @@
         <meta name="keywords" content="LeetCode" />
         <meta name="description" content="Container With Most Water" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> 20200525算法-L11-Container With Most Water  </title>
+        <title> L11-Container With Most Water  </title>
         <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
         <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
         <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
@@ -27,8 +27,66 @@
 </div>
 
     <div class="main">
-        <h2> 20200525算法-L11-Container With Most Water </h2>
-        
+        <h2> L11-Container With Most Water </h2>
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 11. Container With Most Water
+ * 
+ * 
+ * Given n non-negative integers a1, a2, ..., an , where each represents a point
+ * at coordinate (i, ai). n vertical lines are drawn such that the two endpoints
+ * of line i is at (i, ai) and (i, 0). Find two lines, which together with
+ * x-axis forms a container, such that the container contains the most water.
+ * 
+ * The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In
+ * this case, the max area of water (blue section) the container can contain is
+ * 49.
+ * 
+ * 
+ * 
+ * Example:
+ * 
+ * Input: [1,8,6,2,5,4,8,3,7] Output: 49
+ * 
+ * Note: You may not slant the container and n is at least 2.
+ * 
+ * 
+ **/</span>
+</code></pre></div></div>
+
+<p>使用什么方式解决问题?</p>
+
+<p>array two point</p>
+
+<p>遇到的问题，如何确定循环时候的变量？</p>
+
+<p>代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">L11</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L11</span><span class="o">.</span><span class="na">maxArea</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">1</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">7</span><span class="o">}));</span>
+
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">maxArea</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">from</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">height</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">masRes</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span> <span class="o">(</span><span class="n">from</span> <span class="o">&lt;</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">height</span><span class="o">[</span><span class="n">from</span><span class="o">],</span> <span class="n">height</span><span class="o">[</span><span class="n">end</span><span class="o">])</span> <span class="o">*</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">from</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">&gt;</span> <span class="n">masRes</span><span class="o">)</span>
+				<span class="n">masRes</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">height</span><span class="o">[</span><span class="n">from</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">height</span><span class="o">[</span><span class="n">end</span><span class="o">])</span> <span class="o">{</span>
+				<span class="n">end</span><span class="o">--;</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">from</span><span class="o">++;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">masRes</span><span class="o">;</span>
+	<span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre></div></div>
 
         
         <div class="post_footer">
@@ -43,13 +101,13 @@
             
             <li>
                 <span>上一篇</span>
-                <a href="/2020/05/24/summary-plan/">2020年05月24日的计划</a>
+                <a href="/2020/05/25/L10/">20200525算法-L10-Regular Expression Matching</a>
             </li>
             
             
             <li>
                 <span>下一篇</span>
-                <a href="/2020/05/25/destory-plan/">2020年05月25日的懊悔</a>
+                <a href="/2020/05/31/plan2/">2020年05月31日</a>
             </li>
             
         </ul>

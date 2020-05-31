@@ -58,11 +58,11 @@ the superior functionality and flexibility of ByteBuf as compared to the JDK’s
 
 <p>Channel是线程安全的。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="nc">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-<span class="kd">final</span> <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"your data"</span><span class="o">,</span>
-    <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">).</span><span class="na">retain</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="n">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+<span class="kd">final</span> <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"your data"</span><span class="o">,</span>
+    <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">).</span><span class="na">retain</span><span class="o">();</span>
 <span class="c1">//新建的线程可以随便的调用</span>
-<span class="nc">Runnable</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
+<span class="n">Runnable</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">.</span><span class="na">duplicate</span><span class="o">());</span>
@@ -147,20 +147,20 @@ These are some of the advantages of the ByteBuf API:
 
 <p>第三中的类型是混合类型，实现的类型是：CompositeByteBuf。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="nc">ByteBuf</span> <span class="n">heapBuf</span> <span class="o">=</span> <span class="nc">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>    
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">ByteBuf</span> <span class="n">heapBuf</span> <span class="o">=</span> <span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>    
 
-		<span class="nc">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>   
+		<span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>   
 
-		<span class="nc">CompositeByteBuf</span> <span class="n">bytes</span> <span class="o">=</span> <span class="nc">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
-		<span class="n">heapBuf</span> <span class="o">=</span> <span class="nc">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>
-		<span class="n">bytes</span> <span class="o">=</span> <span class="nc">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">()</span> <span class="o">;</span>
-		<span class="nc">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
+		<span class="n">CompositeByteBuf</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">UnpooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
+		<span class="n">heapBuf</span> <span class="o">=</span> <span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">heapBuffer</span><span class="o">();</span>
+		<span class="n">bytes</span> <span class="o">=</span> <span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">()</span> <span class="o">;</span>
+		<span class="n">PooledByteBufAllocator</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
 </code></pre></div></div>
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/c1598edefd37939bcb469ccac6bf11cc.png" alt="CompositeByteBuf" /></p>
 
 <p>CompositeByteBuf may not allow access to a backing array, so accessing the data in a CompositeByteBuf resembles the direct buffer pattern, as shown next.</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">CompositeByteBuf</span> <span class="n">compBuf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CompositeByteBuf</span> <span class="n">compBuf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">compositeBuffer</span><span class="o">();</span>
 <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">compBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">();</span>
 <span class="kt">byte</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
 <span class="n">compBuf</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="n">compBuf</span><span class="o">.</span><span class="na">readerIndex</span><span class="o">(),</span> <span class="n">array</span><span class="o">);</span>
@@ -216,8 +216,8 @@ These are some of the advantages of the ByteBuf API:
 You can obtain a reference to a ByteBufAllocator either from a Channel (each of which can have a distinct instance) or through the ChannelHandlerContext that is bound to a ChannelHandler.    <br />
 使用ByteBufAllocator分配ByteBuf,ByteBufAllocator的引用可以通过Channel来进行获得。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
-<span class="nc">ByteBufAllocator</span> <span class="n">allocator2</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+<span class="n">ByteBufAllocator</span> <span class="n">allocator2</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
 </code></pre></div></div>
 
 <p>Netty provides two implementations of ByteBufAllocator: PooledByteBufAllocator and UnpooledByteBufAllocator. The former pools ByteBuf instances to improve per- formance and minimize memory fragmentation. This implementation uses an effi- cient approach to memory allocation known as jemalloc4 that has been adopted by a number of modern OSes. The latter implementation doesn’t pool ByteBuf instances and returns a new instance every time it’s called.</p>
@@ -230,10 +230,10 @@ Unpooled 工具类。</p>
 <p>Reference counting is a technique for optimizing memory use and performance by releasing the resources held by an object when it is no longer referenced by other objects.    <br />
 引用计算</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">...;</span>
-<span class="nc">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Channel</span> <span class="n">channel</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">ByteBufAllocator</span> <span class="n">allocator</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">alloc</span><span class="o">();</span>
 <span class="o">....</span>
-<span class="nc">ByteBuf</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">allocator</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
+<span class="n">ByteBuf</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">allocator</span><span class="o">.</span><span class="na">directBuffer</span><span class="o">();</span>
 <span class="k">assert</span> <span class="n">buffer</span><span class="o">.</span><span class="na">refCnt</span><span class="o">()</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
 <span class="o">...</span>
 </code></pre></div></div>

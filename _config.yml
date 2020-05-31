@@ -21,7 +21,8 @@ kramdown:
     input: GFM
 paginate: 20
 permalink: /:year/:month/:day/:title/
-gems:
+#gems:
+plugins:
     - jekyll-paginate
     - jekyll-sitemap
     - jekyll-feed

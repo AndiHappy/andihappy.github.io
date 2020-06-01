@@ -33,8 +33,8 @@
 
 <p>spring的启动是从一个java类的main函数开始的，这个应该没有异议：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">SpringApplication</span> <span class="n">application</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SpringApplication</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span> <span class="n">application</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SpringApplication</span><span class="o">(</span><span class="nc">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 		<span class="n">application</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
 	<span class="o">}</span>
 </code></pre></div></div>
@@ -43,22 +43,22 @@
 
 <p>启动新建的类</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">Object</span><span class="o">...</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="nc">Object</span><span class="o">...</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">initialize</span><span class="o">(</span><span class="n">sources</span><span class="o">);</span>
 	<span class="o">}</span>
 
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">sources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">sources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;();</span>
 <span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">"unchecked"</span><span class="o">,</span> <span class="s">"rawtypes"</span> <span class="o">})</span>
-	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">Object</span><span class="o">[]</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="nc">Object</span><span class="o">[]</span> <span class="n">sources</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span> <span class="o">(</span><span class="n">sources</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">sources</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">this</span><span class="o">.</span><span class="na">sources</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">sources</span><span class="o">));</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">sources</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">sources</span><span class="o">));</span>
 		<span class="o">}</span>
 		<span class="c1">//推断是否是WEB环境</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">webEnvironment</span> <span class="o">=</span> <span class="n">deduceWebEnvironment</span><span class="o">();</span>
 		<span class="c1">//应用上下文初始化实例 的加载</span>
-		<span class="n">setInitializers</span><span class="o">((</span><span class="n">Collection</span><span class="o">)</span> <span class="n">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+		<span class="n">setInitializers</span><span class="o">((</span><span class="nc">Collection</span><span class="o">)</span> <span class="n">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
 		<span class="c1">//监听器</span>
-		<span class="n">setListeners</span><span class="o">((</span><span class="n">Collection</span><span class="o">)</span> <span class="n">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+		<span class="n">setListeners</span><span class="o">((</span><span class="nc">Collection</span><span class="o">)</span> <span class="n">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
 		<span class="c1">//推断出启动类</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="n">deduceMainApplicationClass</span><span class="o">();</span>
 	<span class="o">}</span>
@@ -66,7 +66,7 @@
 
 <p>推断是否是WEB环境的判断就是，看看能否加出来：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">WEB_ENVIRONMENT_CLASSES</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"javax.servlet.Servlet"</span><span class="o">,</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="no">WEB_ENVIRONMENT_CLASSES</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"javax.servlet.Servlet"</span><span class="o">,</span>
 			<span class="s">"org.springframework.web.context.ConfigurableWebApplicationContext"</span> <span class="o">};</span>
 </code></pre></div></div>
 
@@ -83,16 +83,16 @@
 <p>根据运行的堆栈，查找到启动的类！</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-	<span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">deduceMainApplicationClass</span><span class="o">()</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">deduceMainApplicationClass</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">try</span> <span class="o">{</span>
-			<span class="n">StackTraceElement</span><span class="o">[]</span> <span class="n">stackTrace</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">().</span><span class="na">getStackTrace</span><span class="o">();</span>
-			<span class="k">for</span> <span class="o">(</span><span class="n">StackTraceElement</span> <span class="n">stackTraceElement</span> <span class="o">:</span> <span class="n">stackTrace</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">StackTraceElement</span><span class="o">[]</span> <span class="n">stackTrace</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">().</span><span class="na">getStackTrace</span><span class="o">();</span>
+			<span class="k">for</span> <span class="o">(</span><span class="nc">StackTraceElement</span> <span class="n">stackTraceElement</span> <span class="o">:</span> <span class="n">stackTrace</span><span class="o">)</span> <span class="o">{</span>
 				<span class="k">if</span> <span class="o">(</span><span class="s">"main"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">stackTraceElement</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">()))</span> <span class="o">{</span>
-					<span class="k">return</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">stackTraceElement</span><span class="o">.</span><span class="na">getClassName</span><span class="o">());</span>
+					<span class="k">return</span> <span class="nc">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">stackTraceElement</span><span class="o">.</span><span class="na">getClassName</span><span class="o">());</span>
 				<span class="o">}</span>
 			<span class="o">}</span>
 		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="nc">ClassNotFoundException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// Swallow and continue</span>
 		<span class="o">}</span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
@@ -109,16 +109,16 @@
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */</span>
-	<span class="kd">public</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">StopWatch</span> <span class="n">stopWatch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StopWatch</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="nc">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">StopWatch</span> <span class="n">stopWatch</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StopWatch</span><span class="o">();</span>
 		<span class="n">stopWatch</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
-		<span class="n">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 		<span class="n">configureHeadlessProperty</span><span class="o">();</span>
 		<span class="c1">// listeners 发不的是application启动的event</span>
-		<span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="n">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+		<span class="nc">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="n">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
 		<span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">();</span>
 		<span class="k">try</span> <span class="o">{</span>
-			<span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultApplicationArguments</span><span class="o">(</span>
+			<span class="nc">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultApplicationArguments</span><span class="o">(</span>
 					<span class="n">args</span><span class="o">);</span>
       <span class="c1">// 创建执行的上下文环境</span>
 			<span class="n">context</span> <span class="o">=</span> <span class="n">createAndRefreshContext</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
@@ -131,7 +131,7 @@
 			<span class="o">}</span>
 			<span class="k">return</span> <span class="n">context</span><span class="o">;</span>
 		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 			<span class="n">handleRunFailure</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
 		<span class="o">}</span>
@@ -143,12 +143,12 @@
   <li>创建并且刷新配置上下文：</li>
 </ol>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">private</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">createAndRefreshContext</span><span class="o">(</span>
-			<span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span><span class="o">,</span>
-			<span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">ConfigurableApplicationContext</span> <span class="n">context</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">private</span> <span class="nc">ConfigurableApplicationContext</span> <span class="nf">createAndRefreshContext</span><span class="o">(</span>
+			<span class="nc">SpringApplicationRunListeners</span> <span class="n">listeners</span><span class="o">,</span>
+			<span class="nc">ApplicationArguments</span> <span class="n">applicationArguments</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span><span class="o">;</span>
 		<span class="c1">// Create and configure the environment</span>
-		<span class="n">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="n">getOrCreateEnvironment</span><span class="o">();</span>
+		<span class="nc">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="n">getOrCreateEnvironment</span><span class="o">();</span>
 		<span class="n">configureEnvironment</span><span class="o">(</span><span class="n">environment</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">.</span><span class="na">getSourceArgs</span><span class="o">());</span>
 		<span class="n">listeners</span><span class="o">.</span><span class="na">environmentPrepared</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
 		<span class="k">if</span> <span class="o">(</span><span class="n">isWebEnvironment</span><span class="o">(</span><span class="n">environment</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">webEnvironment</span><span class="o">)</span> <span class="o">{</span>
@@ -156,7 +156,7 @@
 		<span class="o">}</span>
 
 		<span class="c1">//打印Spring boot的流程</span>
-		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">bannerMode</span> <span class="o">!=</span> <span class="n">Banner</span><span class="o">.</span><span class="na">Mode</span><span class="o">.</span><span class="na">OFF</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">bannerMode</span> <span class="o">!=</span> <span class="nc">Banner</span><span class="o">.</span><span class="na">Mode</span><span class="o">.</span><span class="na">OFF</span><span class="o">)</span> <span class="o">{</span>
 			<span class="n">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
 		<span class="o">}</span>
 
@@ -176,9 +176,9 @@
 				<span class="n">applicationArguments</span><span class="o">);</span>
 
 		<span class="c1">// Load the sources</span>
-		<span class="n">Set</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">sources</span> <span class="o">=</span> <span class="n">getSources</span><span class="o">();</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">sources</span><span class="o">,</span> <span class="s">"Sources must not be empty"</span><span class="o">);</span>
-		<span class="n">load</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sources</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">sources</span><span class="o">.</span><span class="na">size</span><span class="o">()]));</span>
+		<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">sources</span> <span class="o">=</span> <span class="n">getSources</span><span class="o">();</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">sources</span><span class="o">,</span> <span class="s">"Sources must not be empty"</span><span class="o">);</span>
+		<span class="n">load</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">sources</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">[</span><span class="n">sources</span><span class="o">.</span><span class="na">size</span><span class="o">()]));</span>
 		<span class="n">listeners</span><span class="o">.</span><span class="na">contextLoaded</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
 
 		<span class="c1">// Refresh the context</span>
@@ -187,7 +187,7 @@
 			<span class="k">try</span> <span class="o">{</span>
 				<span class="n">context</span><span class="o">.</span><span class="na">registerShutdownHook</span><span class="o">();</span>
 			<span class="o">}</span>
-			<span class="k">catch</span> <span class="o">(</span><span class="n">AccessControlException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">catch</span> <span class="o">(</span><span class="nc">AccessControlException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 				<span class="c1">// Not allowed in some environments.</span>
 			<span class="o">}</span>
 		<span class="o">}</span>
@@ -199,9 +199,9 @@
 
 <p>最主要的调用的方法</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">(</span><span class="n">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">isInstanceOf</span><span class="o">(</span><span class="n">AbstractApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">applicationContext</span><span class="o">);</span>
-		<span class="o">((</span><span class="n">AbstractApplicationContext</span><span class="o">)</span> <span class="n">applicationContext</span><span class="o">).</span><span class="na">refresh</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">(</span><span class="nc">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">isInstanceOf</span><span class="o">(</span><span class="nc">AbstractApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">applicationContext</span><span class="o">);</span>
+		<span class="o">((</span><span class="nc">AbstractApplicationContext</span><span class="o">)</span> <span class="n">applicationContext</span><span class="o">).</span><span class="na">refresh</span><span class="o">();</span>
 	<span class="o">}</span>
 </code></pre></div></div>
 
@@ -209,7 +209,7 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">,</span> <span class="n">IllegalStateException</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">refresh</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">BeansException</span><span class="o">,</span> <span class="nc">IllegalStateException</span> <span class="o">{</span>
 		<span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">startupShutdownMonitor</span><span class="o">)</span> <span class="o">{</span>
 		<span class="err">。。。。。。。。。。</span>
 
@@ -225,7 +225,7 @@
 				<span class="n">finishRefresh</span><span class="o">();</span>
 			<span class="o">}</span>
 
-			<span class="k">catch</span> <span class="o">(</span><span class="n">BeansException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">catch</span> <span class="o">(</span><span class="nc">BeansException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 				<span class="err">。。。。。。。。。。。。</span>
 			<span class="k">finally</span> <span class="o">{</span>
 				<span class="c1">// Reset common introspection caches in Spring's core, since we</span>
@@ -245,7 +245,7 @@
 		<span class="k">try</span> <span class="o">{</span>
 			<span class="n">createEmbeddedServletContainer</span><span class="o">();</span><span class="c1">//创建servlet的容器</span>
 		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">ApplicationContextException</span><span class="o">(</span><span class="s">"Unable to start embedded container"</span><span class="o">,</span>
 					<span class="n">ex</span><span class="o">);</span>
 		<span class="o">}</span>
@@ -253,10 +253,10 @@
 
 	<span class="c1">// 创建servlet的容器</span>
 	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">createEmbeddedServletContainer</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">EmbeddedServletContainer</span> <span class="n">localContainer</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">embeddedServletContainer</span><span class="o">;</span> <span class="c1">//servlet的容器的具有的特征：start，stop，getport</span>
-		<span class="n">ServletContext</span> <span class="n">localServletContext</span> <span class="o">=</span> <span class="n">getServletContext</span><span class="o">();</span>
+		<span class="nc">EmbeddedServletContainer</span> <span class="n">localContainer</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">embeddedServletContainer</span><span class="o">;</span> <span class="c1">//servlet的容器的具有的特征：start，stop，getport</span>
+		<span class="nc">ServletContext</span> <span class="n">localServletContext</span> <span class="o">=</span> <span class="n">getServletContext</span><span class="o">();</span>
 		<span class="k">if</span> <span class="o">(</span><span class="n">localContainer</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">localServletContext</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">EmbeddedServletContainerFactory</span> <span class="n">containerFactory</span> <span class="o">=</span> <span class="n">getEmbeddedServletContainerFactory</span><span class="o">();</span>
+			<span class="nc">EmbeddedServletContainerFactory</span> <span class="n">containerFactory</span> <span class="o">=</span> <span class="n">getEmbeddedServletContainerFactory</span><span class="o">();</span>
 			<span class="k">this</span><span class="o">.</span><span class="na">embeddedServletContainer</span> <span class="o">=</span> <span class="n">containerFactory</span>
 					<span class="o">.</span><span class="na">getEmbeddedServletContainer</span><span class="o">(</span><span class="n">getSelfInitializer</span><span class="o">());</span>
 		<span class="o">}</span>
@@ -264,7 +264,7 @@
 			<span class="k">try</span> <span class="o">{</span>
 				<span class="n">getSelfInitializer</span><span class="o">().</span><span class="na">onStartup</span><span class="o">(</span><span class="n">localServletContext</span><span class="o">);</span>
 			<span class="o">}</span>
-			<span class="k">catch</span> <span class="o">(</span><span class="n">ServletException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">catch</span> <span class="o">(</span><span class="nc">ServletException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 				<span class="k">throw</span> <span class="k">new</span> <span class="nf">ApplicationContextException</span><span class="o">(</span><span class="s">"Cannot initialize servlet context"</span><span class="o">,</span>
 						<span class="n">ex</span><span class="o">);</span>
 			<span class="o">}</span>
@@ -281,15 +281,15 @@
 
 <p>新建tomcat servlet 容器的时候，直接的把tomcat启动！！</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">TomcatEmbeddedServletContainer</span><span class="o">(</span><span class="n">Tomcat</span> <span class="n">tomcat</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">autoStart</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">tomcat</span><span class="o">,</span> <span class="s">"Tomcat Server must not be null"</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="nf">TomcatEmbeddedServletContainer</span><span class="o">(</span><span class="nc">Tomcat</span> <span class="n">tomcat</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">autoStart</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">tomcat</span><span class="o">,</span> <span class="s">"Tomcat Server must not be null"</span><span class="o">);</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">tomcat</span> <span class="o">=</span> <span class="n">tomcat</span><span class="o">;</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">autoStart</span> <span class="o">=</span> <span class="n">autoStart</span><span class="o">;</span>
 		<span class="n">initialize</span><span class="o">();</span>
 	<span class="o">}</span>
 
-	<span class="kd">private</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">EmbeddedServletContainerException</span> <span class="o">{</span>
-		<span class="n">TomcatEmbeddedServletContainer</span><span class="o">.</span><span class="na">logger</span>
+	<span class="kd">private</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">EmbeddedServletContainerException</span> <span class="o">{</span>
+		<span class="nc">TomcatEmbeddedServletContainer</span><span class="o">.</span><span class="na">logger</span>
 				<span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Tomcat initialized with port(s): "</span> <span class="o">+</span> <span class="n">getPortsDescription</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
 		<span class="k">try</span> <span class="o">{</span>
 			<span class="n">addInstanceIdToEngineName</span><span class="o">();</span>
@@ -307,7 +307,7 @@
 			<span class="c1">// blocking non-daemon to stop immediate shutdown</span>
 			<span class="n">startDaemonAwaitThread</span><span class="o">();</span>
 		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">EmbeddedServletContainerException</span><span class="o">(</span><span class="s">"Unable to start embedded Tomcat"</span><span class="o">,</span>
 					<span class="n">ex</span><span class="o">);</span>
 		<span class="o">}</span>

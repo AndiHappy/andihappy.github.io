@@ -67,14 +67,14 @@ future.cancel(mayInterruptIfRunning)
 <p>当前执行的线程，当前的Channel，EventLoop 这三者是什么的关系？？</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-		<span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">futrueres</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">eventLoop</span><span class="o">().</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="n">thread</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>    
+		<span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">futrueres</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">eventLoop</span><span class="o">().</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="n">thread</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>    
 
 
-    <span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">ScheduledFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">schedule</span><span class="o">(</span><span class="kd">final</span> <span class="n">ScheduledFutureTask</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">&lt;</span><span class="no">V</span><span class="o">&gt;</span> <span class="nc">ScheduledFuture</span><span class="o">&lt;</span><span class="no">V</span><span class="o">&gt;</span> <span class="nf">schedule</span><span class="o">(</span><span class="kd">final</span> <span class="nc">ScheduledFutureTask</span><span class="o">&lt;</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">inEventLoop</span><span class="o">())</span> <span class="o">{</span>
             <span class="n">scheduledTaskQueue</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="n">task</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="n">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
                 <span class="nd">@Override</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
                     <span class="n">scheduledTaskQueue</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="n">task</span><span class="o">);</span>
@@ -87,7 +87,7 @@ future.cancel(mayInterruptIfRunning)
 
 
  <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">inEventLoop</span><span class="o">(</span><span class="n">Thread</span> <span class="n">thread</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">inEventLoop</span><span class="o">(</span><span class="nc">Thread</span> <span class="n">thread</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">thread</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="na">thread</span><span class="o">;</span>
     <span class="o">}</span>
 </code></pre></div></div>

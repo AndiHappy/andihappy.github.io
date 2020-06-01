@@ -50,11 +50,11 @@ NioSocketChannel</p>
 
 <p>netty针对socket操作的抽象出来的是Channel，具体的集成关系：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractChannel</span> <span class="kd">extends</span> <span class="n">DefaultAttributeMap</span> <span class="kd">implements</span> <span class="n">Channel</span>
-<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioChannel</span> <span class="kd">extends</span> <span class="n">AbstractChannel</span>
-<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioByteChannel</span> <span class="kd">extends</span> <span class="n">AbstractNioChannel</span>
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SocketChannel</span> <span class="kd">extends</span> <span class="n">Channel</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioSocketChannel</span> <span class="kd">extends</span> <span class="n">AbstractNioByteChannel</span> <span class="kd">implements</span> <span class="n">io</span><span class="o">.</span><span class="na">netty</span><span class="o">.</span><span class="na">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">.</span><span class="na">SocketChannel</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractChannel</span> <span class="kd">extends</span> <span class="nc">DefaultAttributeMap</span> <span class="kd">implements</span> <span class="nc">Channel</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioChannel</span> <span class="kd">extends</span> <span class="nc">AbstractChannel</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractNioByteChannel</span> <span class="kd">extends</span> <span class="nc">AbstractNioChannel</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SocketChannel</span> <span class="kd">extends</span> <span class="nc">Channel</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioSocketChannel</span> <span class="kd">extends</span> <span class="nc">AbstractNioByteChannel</span> <span class="kd">implements</span> <span class="n">io</span><span class="o">.</span><span class="na">netty</span><span class="o">.</span><span class="na">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">.</span><span class="na">SocketChannel</span>
 </code></pre></div></div>
 
 <p>The EventLoop defines Netty’s core abstraction for handling events that occur during the lifetime of a connection。</p>

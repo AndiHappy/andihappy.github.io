@@ -45,11 +45,11 @@
  * 之后 TimerThread 更新最近一个要执行的任务，继续休眠。但由于所有任务都是由同一个线程来调度，因此所有任务都是串行执行的，
  * 同一时间只能有一个任务在执行，前一个任务的延迟或异常都将会影响到之后的任务。
  * */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TimerTest</span> <span class="kd">extends</span> <span class="n">TimerTask</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TimerTest</span> <span class="kd">extends</span> <span class="nc">TimerTask</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">String</span> <span class="n">jobName</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">String</span> <span class="n">jobName</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
 
-	<span class="kd">public</span> <span class="nf">TimerTest</span><span class="o">(</span><span class="n">String</span> <span class="n">jobName</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nf">TimerTest</span><span class="o">(</span><span class="nc">String</span> <span class="n">jobName</span><span class="o">)</span> <span class="o">{</span>
 		<span class="kd">super</span><span class="o">();</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">jobName</span> <span class="o">=</span> <span class="n">jobName</span><span class="o">;</span>
 	<span class="o">}</span>
@@ -58,29 +58,29 @@
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">try</span> <span class="o">{</span>
 			<span class="c1">//如果一个线程执行的过程中休眠会影响其他的线程的执行</span>
-			<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100000</span><span class="o">);</span>
-		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100000</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// TODO Auto-generated catch block</span>
 			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
 		<span class="o">}</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"execute "</span> <span class="o">+</span> <span class="n">jobName</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"execute "</span> <span class="o">+</span> <span class="n">jobName</span><span class="o">);</span>
 	<span class="o">}</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Timer</span><span class="o">();</span>
 		<span class="kt">long</span> <span class="n">delay1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">;</span>
 		<span class="kt">long</span> <span class="n">period1</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
 		<span class="c1">// 从现在开始 1 秒钟之后，每隔 1 秒钟执行一次 job1</span>
-		<span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="k">new</span> <span class="n">TimerTest</span><span class="o">(</span><span class="s">"job1"</span><span class="o">),</span> <span class="n">delay1</span><span class="o">,</span> <span class="n">period1</span><span class="o">);</span>
+		<span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="k">new</span> <span class="nc">TimerTest</span><span class="o">(</span><span class="s">"job1"</span><span class="o">),</span> <span class="n">delay1</span><span class="o">,</span> <span class="n">period1</span><span class="o">);</span>
 
 		<span class="kt">long</span> <span class="n">delay2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">;</span>
 		<span class="kt">long</span> <span class="n">period2</span> <span class="o">=</span> <span class="mi">2000</span><span class="o">;</span>
 		<span class="c1">// 从现在开始 2 秒钟之后，每隔 2 秒钟执行一次 job2</span>
-		<span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="k">new</span> <span class="n">TimerTask</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="k">new</span> <span class="nc">TimerTask</span><span class="o">()</span> <span class="o">{</span>
 
 			<span class="nd">@Override</span>
 			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-				<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"第二个线程的执行完毕！"</span><span class="o">);</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"第二个线程的执行完毕！"</span><span class="o">);</span>
 			<span class="o">}</span>
 		<span class="o">},</span> <span class="n">delay2</span><span class="o">,</span> <span class="n">period2</span><span class="o">);</span>
 
@@ -94,29 +94,29 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ScheduledExecutorUtil</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="n">ScheduledExecutorUtil</span> <span class="nf">getInstance</span><span class="o">(){</span>
-		<span class="k">return</span> <span class="n">ScheduledExecutorUtilHoler</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">ScheduledExecutorUtil</span> <span class="nf">getInstance</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="nc">ScheduledExecutorUtilHoler</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
 	<span class="o">}</span>
 
 	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ScheduledExecutorUtilHoler</span><span class="o">{</span>
-		<span class="kd">private</span> <span class="kd">static</span>  <span class="n">ScheduledExecutorUtil</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ScheduledExecutorUtil</span><span class="o">();</span>
+		<span class="kd">private</span> <span class="kd">static</span>  <span class="nc">ScheduledExecutorUtil</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ScheduledExecutorUtil</span><span class="o">();</span>
 	<span class="o">}</span>
-	<span class="kd">private</span> <span class="n">ScheduledThreadPoolExecutor</span> <span class="n">scheduExec</span> <span class="o">=</span> <span class="o">(</span><span class="n">ScheduledThreadPoolExecutor</span><span class="o">)</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newScheduledThreadPool</span><span class="o">(</span><span class="mi">10</span><span class="o">);;</span>
-	<span class="kd">private</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">result</span>  <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;&gt;();</span>
-	<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">putScheduledTask</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">task</span><span class="o">,</span><span class="kt">int</span> <span class="n">time</span><span class="o">,</span><span class="n">TimeUnit</span> <span class="n">timeunit</span><span class="o">,</span><span class="n">String</span> <span class="n">taskName</span><span class="o">){</span>
-		<span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">scheduExec</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span><span class="n">time</span><span class="o">,</span><span class="n">timeunit</span><span class="o">);</span>
+	<span class="kd">private</span> <span class="nc">ScheduledThreadPoolExecutor</span> <span class="n">scheduExec</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ScheduledThreadPoolExecutor</span><span class="o">)</span> <span class="nc">Executors</span><span class="o">.</span><span class="na">newScheduledThreadPool</span><span class="o">(</span><span class="mi">10</span><span class="o">);;</span>
+	<span class="kd">private</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">result</span>  <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;&gt;();</span>
+	<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">putScheduledTask</span><span class="o">(</span><span class="nc">Runnable</span> <span class="n">task</span><span class="o">,</span><span class="kt">int</span> <span class="n">time</span><span class="o">,</span><span class="nc">TimeUnit</span> <span class="n">timeunit</span><span class="o">,</span><span class="nc">String</span> <span class="n">taskName</span><span class="o">){</span>
+		<span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">scheduExec</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span><span class="n">time</span><span class="o">,</span><span class="n">timeunit</span><span class="o">);</span>
 		<span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">taskName</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
 		<span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">taskName</span><span class="o">);</span>
 	<span class="o">}</span>
 
 	<span class="kd">private</span> <span class="nf">ScheduledExecutorUtil</span><span class="o">(){</span>
 		<span class="c1">//定时清理result中已经执行完毕的定时任务</span>
-		<span class="n">scheduExec</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">scheduExec</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
 			<span class="nd">@Override</span>
 			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 				<span class="k">if</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
-					<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">taskname</span> <span class="o">:</span> <span class="n">result</span><span class="o">.</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
-						<span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">task</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">taskname</span><span class="o">);</span>
+					<span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">taskname</span> <span class="o">:</span> <span class="n">result</span><span class="o">.</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
+						<span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">task</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">taskname</span><span class="o">);</span>
 						<span class="k">if</span><span class="o">(</span><span class="n">task</span><span class="o">.</span><span class="na">isCancelled</span><span class="o">()</span> <span class="o">||</span> <span class="n">task</span><span class="o">.</span><span class="na">isDone</span><span class="o">()){</span>
 							<span class="n">result</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">taskname</span><span class="o">);</span>
 						<span class="o">}</span>
@@ -124,14 +124,14 @@
 				<span class="o">}</span>
 
 			<span class="o">}</span>
-		<span class="o">},</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MINUTES</span><span class="o">);</span>
+		<span class="o">},</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MINUTES</span><span class="o">);</span>
 	<span class="o">}</span>
 
-	<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">cancelScheduledTask</span><span class="o">(</span><span class="n">String</span> <span class="n">taskName</span><span class="o">){</span>
+	<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">cancelScheduledTask</span><span class="o">(</span><span class="nc">String</span> <span class="n">taskName</span><span class="o">){</span>
 		<span class="k">if</span><span class="o">(!</span><span class="n">result</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">taskName</span><span class="o">)){</span>
 			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
 		<span class="o">}</span><span class="k">else</span><span class="o">{</span>
-			<span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">task</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">taskName</span><span class="o">);</span>
+			<span class="nc">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">task</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">taskName</span><span class="o">);</span>
 			<span class="k">if</span><span class="o">(</span><span class="n">task</span><span class="o">.</span><span class="na">isCancelled</span><span class="o">()){</span>
 				<span class="n">result</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">taskName</span><span class="o">);</span>
 				<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
@@ -153,26 +153,26 @@
 		<span class="n">scheduExec</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
 	<span class="o">}</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="kd">final</span> <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-		<span class="n">ScheduledExecutorUtil</span> <span class="n">test</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ScheduledExecutorUtil</span><span class="o">();</span>
-		<span class="n">test</span><span class="o">.</span><span class="na">putScheduledTask</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kd">final</span> <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+		<span class="nc">ScheduledExecutorUtil</span> <span class="n">test</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ScheduledExecutorUtil</span><span class="o">();</span>
+		<span class="n">test</span><span class="o">.</span><span class="na">putScheduledTask</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
 			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-				<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timerOne,the time:"</span> <span class="o">+</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timerOne,the time:"</span> <span class="o">+</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">));</span>
 				<span class="k">try</span> <span class="o">{</span>
-					<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">);</span>
-				<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+					<span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">);</span>
+				<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
 					<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
 				<span class="o">}</span>
 			<span class="o">}</span>
-		<span class="o">},</span> <span class="mi">20000</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span><span class="s">"test1"</span><span class="o">);</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="na">cancelScheduledTask</span><span class="o">(</span><span class="s">"test1"</span><span class="o">));</span>
-		<span class="n">test</span><span class="o">.</span><span class="na">putScheduledTask</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+		<span class="o">},</span> <span class="mi">20000</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span><span class="s">"test1"</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="na">cancelScheduledTask</span><span class="o">(</span><span class="s">"test1"</span><span class="o">));</span>
+		<span class="n">test</span><span class="o">.</span><span class="na">putScheduledTask</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
 			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-				<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timerTwo,the time:"</span> <span class="o">+</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timerTwo,the time:"</span> <span class="o">+</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">));</span>
 			<span class="o">}</span>
-		<span class="o">},</span> <span class="mi">10000</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span><span class="s">"test2"</span><span class="o">);</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="na">cancelScheduledTask</span><span class="o">(</span><span class="s">"test1"</span><span class="o">));</span>
+		<span class="o">},</span> <span class="mi">10000</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span><span class="s">"test2"</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="na">cancelScheduledTask</span><span class="o">(</span><span class="s">"test1"</span><span class="o">));</span>
 	<span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>

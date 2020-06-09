@@ -87,7 +87,7 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">L13</span> <span class="o">{</span>
 	
-	<span class="kd">static</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">comvertMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;();</span>
+	<span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Character</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">comvertMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Character</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;();</span>
 	<span class="kd">static</span> <span class="o">{</span>
 		<span class="n">comvertMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="sc">'a'</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 		<span class="n">comvertMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="sc">'I'</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
@@ -102,20 +102,20 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 	<span class="cm">/**
 	 * @param args
 	 */</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 		
-		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"III"</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"III"</span><span class="o">));</span>
 
-		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"IV"</span><span class="o">));</span>
-		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"IX"</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"IV"</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"IX"</span><span class="o">));</span>
 
-		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"LVIII"</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"LVIII"</span><span class="o">));</span>
 		
-		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"MCMXCIV"</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L13</span><span class="o">.</span><span class="na">romanToInt</span><span class="o">(</span><span class="s">"MCMXCIV"</span><span class="o">));</span>
 
 	<span class="o">}</span>
 	
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">romanToInt</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">romanToInt</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
 		<span class="kt">char</span><span class="o">[]</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">();</span>
 		<span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tmp</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>

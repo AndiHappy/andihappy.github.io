@@ -47,7 +47,7 @@
      * @param a the array to be sorted
      */</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">DualPivotQuicksort</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="n">DualPivotQuicksort</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
     <span class="o">}</span>
 </code></pre></div></div>
 
@@ -56,7 +56,7 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="kt">int</span> <span class="n">right</span><span class="o">,</span>
                      <span class="kt">int</span><span class="o">[]</span> <span class="n">work</span><span class="o">,</span> <span class="kt">int</span> <span class="n">workBase</span><span class="o">,</span> <span class="kt">int</span> <span class="n">workLen</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// Use Quicksort on small arrays</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="no">QUICKSORT_THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="n">QUICKSORT_THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
@@ -65,7 +65,7 @@
          * Index run[i] is the start of i-th run
          * (ascending or descending sequence).
          */</span>
-        <span class="kt">int</span><span class="o">[]</span> <span class="n">run</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">MAX_RUN_COUNT</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">run</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">MAX_RUN_COUNT</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
         <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">run</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
 
         <span class="c1">// Check if the array is nearly sorted</span>
@@ -78,7 +78,7 @@
                     <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">hi</span><span class="o">];</span> <span class="n">a</span><span class="o">[</span><span class="n">hi</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
                 <span class="o">}</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c1">// equal</span>
-                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="no">MAX_RUN_LENGTH</span><span class="o">;</span> <span class="o">++</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">];</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MAX_RUN_LENGTH</span><span class="o">;</span> <span class="o">++</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">];</span> <span class="o">)</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(--</span><span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
                         <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
                         <span class="k">return</span><span class="o">;</span>
@@ -90,7 +90,7 @@
              * The array is not highly structured,
              * use Quicksort instead of merge sort.
              */</span>
-            <span class="k">if</span> <span class="o">(++</span><span class="n">count</span> <span class="o">==</span> <span class="no">MAX_RUN_COUNT</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(++</span><span class="n">count</span> <span class="o">==</span> <span class="n">MAX_RUN_COUNT</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
                 <span class="k">return</span><span class="o">;</span>
             <span class="o">}</span>
@@ -117,7 +117,7 @@
             <span class="n">workBase</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">odd</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">work</span><span class="o">,</span> <span class="n">workBase</span><span class="o">,</span> <span class="n">blen</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">work</span><span class="o">,</span> <span class="n">workBase</span><span class="o">,</span> <span class="n">blen</span><span class="o">);</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
             <span class="n">bo</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">work</span><span class="o">;</span>

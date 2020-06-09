@@ -18,7 +18,7 @@
     <div class="nav_nav">
         <a class="nav_a1" href="http://localhost:4000/">首页</a>
         <a href="http://localhost:4000/categories/">分类</a>
-        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
         <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
         <!-- <a href="http://localhost:4000/links/">链接</a> -->
         <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
@@ -71,13 +71,13 @@ java -Dio.netty.leakDetectionLevel=ADVANCED</p>
 
 <p>A ChannelHandler can modify the layout of a ChannelPipeline in real time by add- ing, removing, or replacing other ChannelHandlers. (It can remove itself from the ChannelPipeline as well.) This is one of the most important capabilities of the ChannelHandler。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>		<span class="n">ChannelPipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">pipeline</span><span class="o">();</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>		<span class="nc">ChannelPipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">pipeline</span><span class="o">();</span>
 		<span class="n">pipeline</span><span class="o">.</span><span class="na">addLast</span><span class="o">(</span><span class="s">"handler1"</span><span class="o">,</span> <span class="n">firstHandler</span><span class="o">);</span>
-		<span class="n">pipeline</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="s">"handler2"</span><span class="o">,</span> <span class="k">new</span> <span class="n">SecondHandler</span><span class="o">());</span>
-		<span class="n">pipeline</span><span class="o">.</span><span class="na">addLast</span><span class="o">(</span><span class="s">"handler3"</span><span class="o">,</span> <span class="k">new</span> <span class="n">ThirdHandler</span><span class="o">());</span>
+		<span class="n">pipeline</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="s">"handler2"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">SecondHandler</span><span class="o">());</span>
+		<span class="n">pipeline</span><span class="o">.</span><span class="na">addLast</span><span class="o">(</span><span class="s">"handler3"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ThirdHandler</span><span class="o">());</span>
 		<span class="n">pipeline</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="s">"handler3"</span><span class="o">);</span>
 		<span class="n">pipeline</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">firstHandler</span><span class="o">);</span>
-		<span class="n">pipeline</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"handler2"</span><span class="o">,</span> <span class="s">"handler4"</span><span class="o">,</span> <span class="k">new</span> <span class="n">FourthHandler</span><span class="o">())</span>
+		<span class="n">pipeline</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"handler2"</span><span class="o">,</span> <span class="s">"handler4"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">FourthHandler</span><span class="o">())</span>
 </code></pre></div></div>
 
 <p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/a58c6c9f711778b569f8a419c5453730.png" alt="channelContext的操作的event的流程" /></p>

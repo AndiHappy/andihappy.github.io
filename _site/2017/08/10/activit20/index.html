@@ -18,7 +18,7 @@
     <div class="nav_nav">
         <a class="nav_a1" href="http://localhost:4000/">首页</a>
         <a href="http://localhost:4000/categories/">分类</a>
-        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
         <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
         <!-- <a href="http://localhost:4000/links/">链接</a> -->
         <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
@@ -33,12 +33,12 @@
 
 <p>首先是启动的代码：</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//调用方：</span>
-<span class="n">ProcessInstance</span> <span class="n">ins</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceById</span><span class="o">(</span><span class="n">workFlowId</span><span class="o">,</span> <span class="n">formId</span><span class="o">,</span><span class="n">variablesObject</span><span class="o">);</span>      
+<span class="nc">ProcessInstance</span> <span class="n">ins</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceById</span><span class="o">(</span><span class="n">workFlowId</span><span class="o">,</span> <span class="n">formId</span><span class="o">,</span><span class="n">variablesObject</span><span class="o">);</span>      
 
 <span class="c1">//调用的入口：</span>
-<span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">startProcessInstanceById</span><span class="o">(</span><span class="n">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
-    <span class="n">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="n">ProcessInstance</span><span class="o">&gt;(</span><span class="kc">null</span><span class="o">,</span>
+<span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceById</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
+    <span class="nc">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="kc">null</span><span class="o">,</span>
         <span class="n">processDefinitionId</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
   <span class="o">}</span>
 </code></pre></div></div>
@@ -130,7 +130,7 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
 </code></pre></div></div>
 
 <p>这个三个拦截链都做了什么呢？第一个就是日志记录，虽然个人感觉比较的无聊，但是也可能是一个扩展的示例：LogInterceptor</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(!</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
       <span class="c1">// do nothing here if we cannot log</span>
       <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
@@ -150,8 +150,8 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
 
 <p>第二个链：CommandContextInterceptor 主要是构建命令运行的执行的环境：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">CommandContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">();</span>  
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+   <span class="nc">CommandContext</span> <span class="n">context</span> <span class="o">=</span> <span class="nc">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">();</span>  
    <span class="kt">boolean</span> <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
    <span class="c1">// We need to check the exception, because the transaction can be in a rollback state,</span>
    <span class="c1">// and some other command is being fired to compensate (eg. decrementing job retries)</span>
@@ -164,10 +164,10 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
    <span class="o">}</span>
    <span class="k">try</span> <span class="o">{</span>
      <span class="c1">// Push on stack</span>
-     <span class="n">Context</span><span class="o">.</span><span class="na">setCommandContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
-     <span class="n">Context</span><span class="o">.</span><span class="na">setProcessEngineConfiguration</span><span class="o">(</span><span class="n">processEngineConfiguration</span><span class="o">);</span>
+     <span class="nc">Context</span><span class="o">.</span><span class="na">setCommandContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+     <span class="nc">Context</span><span class="o">.</span><span class="na">setProcessEngineConfiguration</span><span class="o">(</span><span class="n">processEngineConfiguration</span><span class="o">);</span>
      <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
      <span class="n">context</span><span class="o">.</span><span class="na">exception</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
      <span class="k">try</span> <span class="o">{</span>
@@ -176,9 +176,9 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
        <span class="o">}</span>
      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
        <span class="c1">// Pop from stack</span>
-       <span class="n">Context</span><span class="o">.</span><span class="na">removeCommandContext</span><span class="o">();</span>
-       <span class="n">Context</span><span class="o">.</span><span class="na">removeProcessEngineConfiguration</span><span class="o">();</span>
-       <span class="n">Context</span><span class="o">.</span><span class="na">removeBpmnOverrideContext</span><span class="o">();</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeCommandContext</span><span class="o">();</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeProcessEngineConfiguration</span><span class="o">();</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeBpmnOverrideContext</span><span class="o">();</span>
      <span class="o">}</span>
    <span class="o">}</span>
    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
@@ -193,26 +193,26 @@ protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInter
 
 <p>第三个链：CommandInvoker 命令行的执行：</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">Command</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">());</span>
+  <span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">());</span>
   <span class="o">}</span>
 </code></pre></div></div>
 
 <p>可以看到最终执行的过程，还是到了每一个的command类中，这也是符合预期的。此例中最终进入StartProcessInstanceCmd类中，执行代码:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">DeploymentManager</span> <span class="n">deploymentManager</span> <span class="o">=</span> <span class="n">commandContext</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">DeploymentManager</span> <span class="n">deploymentManager</span> <span class="o">=</span> <span class="n">commandContext</span>
       <span class="o">.</span><span class="na">getProcessEngineConfiguration</span><span class="o">()</span>
       <span class="o">.</span><span class="na">getDeploymentManager</span><span class="o">();</span>
 
     <span class="c1">// Find the process definition</span>
-    <span class="n">ProcessDefinitionEntity</span> <span class="n">processDefinition</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">ProcessDefinitionEntity</span> <span class="n">processDefinition</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">processDefinitionId</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
       <span class="n">processDefinition</span> <span class="o">=</span> <span class="n">deploymentManager</span><span class="o">.</span><span class="na">findDeployedProcessDefinitionById</span><span class="o">(</span><span class="n">processDefinitionId</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="err">。。。。。。。。</span>
     <span class="c1">// Start the process instance</span>
-    <span class="n">ExecutionEntity</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">processDefinition</span><span class="o">.</span><span class="na">createProcessInstance</span><span class="o">(</span><span class="n">businessKey</span><span class="o">);</span>
+    <span class="nc">ExecutionEntity</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">processDefinition</span><span class="o">.</span><span class="na">createProcessInstance</span><span class="o">(</span><span class="n">businessKey</span><span class="o">);</span>
 		<span class="err">。。。。。。。。</span>
     <span class="n">processInstance</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 

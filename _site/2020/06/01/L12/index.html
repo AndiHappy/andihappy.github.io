@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="LeetCode" />
+        <meta name="description" content="Integer to Roman" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> L12-Integer to Roman  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
+
+    <div class="main">
+        <h2> L12-Integer to Roman </h2>
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+
+12. Integer to Roman
+
+Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+
+Symbol       Value
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+
+Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+
+I can be placed before V (5) and X (10) to make 4 and 9. 
+X can be placed before L (50) and C (100) to make 40 and 90. 
+C can be placed before D (500) and M (1000) to make 400 and 900.
+
+Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
+
+Example 1:
+
+Input: 3
+Output: "III"
+Example 2:
+
+Input: 4
+Output: "IV"
+Example 3:
+
+Input: 9
+Output: "IX"
+Example 4:
+
+Input: 58
+Output: "LVIII"
+Explanation: L = 50, V = 5, III = 3.
+Example 5:
+
+Input: 1994
+Output: "MCMXCIV"
+Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
+ * 
+ **/</span>
+</code></pre></div></div>
+
+<p>转化，理解题意</p>
+
+<p>代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">L12</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="nc">String</span> <span class="no">M</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="s">""</span><span class="o">,</span> <span class="s">"M"</span><span class="o">,</span> <span class="s">"MM"</span><span class="o">,</span> <span class="s">"MMM"</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="nc">String</span> <span class="no">C</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="s">""</span><span class="o">,</span> <span class="s">"C"</span><span class="o">,</span> <span class="s">"CC"</span><span class="o">,</span> <span class="s">"CCC"</span><span class="o">,</span> <span class="s">"CD"</span><span class="o">,</span> <span class="s">"D"</span><span class="o">,</span> <span class="s">"DC"</span><span class="o">,</span> <span class="s">"DCC"</span><span class="o">,</span> <span class="s">"DCCC"</span><span class="o">,</span> <span class="s">"CM"</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="nc">String</span> <span class="no">X</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="s">""</span><span class="o">,</span> <span class="s">"X"</span><span class="o">,</span> <span class="s">"XX"</span><span class="o">,</span> <span class="s">"XXX"</span><span class="o">,</span> <span class="s">"XL"</span><span class="o">,</span> <span class="s">"L"</span><span class="o">,</span> <span class="s">"LX"</span><span class="o">,</span> <span class="s">"LXX"</span><span class="o">,</span> <span class="s">"LXXX"</span><span class="o">,</span> <span class="s">"XC"</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="nc">String</span> <span class="no">I</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="s">""</span><span class="o">,</span> <span class="s">"I"</span><span class="o">,</span> <span class="s">"II"</span><span class="o">,</span> <span class="s">"III"</span><span class="o">,</span> <span class="s">"IV"</span><span class="o">,</span> <span class="s">"V"</span><span class="o">,</span> <span class="s">"VI"</span><span class="o">,</span> <span class="s">"VII"</span><span class="o">,</span> <span class="s">"VIII"</span><span class="o">,</span> <span class="s">"IX"</span><span class="o">};</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">intToRoman</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+	   <span class="k">return</span> <span class="no">M</span><span class="o">[</span><span class="n">num</span><span class="o">/</span><span class="mi">1000</span><span class="o">]</span> <span class="o">+</span> <span class="no">C</span><span class="o">[(</span><span class="n">num</span><span class="o">%</span><span class="mi">1000</span><span class="o">)/</span><span class="mi">100</span><span class="o">]</span> <span class="o">+</span> <span class="no">X</span><span class="o">[(</span><span class="n">num</span><span class="o">%</span><span class="mi">100</span><span class="o">)/</span><span class="mi">10</span><span class="o">]</span> <span class="o">+</span> <span class="no">I</span><span class="o">[</span><span class="n">num</span><span class="o">%</span><span class="mi">10</span><span class="o">];</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L12</span><span class="o">.</span><span class="na">intToRoman</span><span class="o">(</span><span class="mi">3456</span><span class="o">));</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+        
+        <div class="post_footer">
+          <p>Published on Jun 01, 2020 in categories 
+          
+          <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2020/06/01/sorts/">Arrays的sort方法</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2020/06/01/L13/">L13-roman To Int</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2020/06/01/L12/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

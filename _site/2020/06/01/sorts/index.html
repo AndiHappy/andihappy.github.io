@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="sort" />
+        <meta name="description" content="Arrays的sort方法" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> Arrays的sort方法  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
+        <!-- <a href="http://localhost:4000/links/">链接</a> -->
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>
+</div>
+
+    <div class="main">
+        <h2> Arrays的sort方法 </h2>
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * Sorts the specified array into ascending numerical order.
+     * 将指定的数组按照升序排列
+     * 
+     * &lt;p&gt;Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
+     * offers O(n log(n)) performance on many data sets that cause other
+     * quicksorts to degrade to quadratic performance, and is typically
+     * faster than traditional (one-pivot) Quicksort implementations.
+     * 
+     * 实现的算法称为：双轴快速排序，性能是O(nlog(n))，比传统的单抽快排算法要快,
+     * 另外还在使其他快排算法降级的数据集合上面，表现比较好。
+     * 
+     * that cause other quicksorts to degrade to quadratic performance
+     * 这个that是修饰 many data sets。因为快排在有些数据上面，表现的比较差
+     * 
+     * @param a the array to be sorted
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DualPivotQuicksort</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>双轴快排算法的实现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="kt">int</span> <span class="n">right</span><span class="o">,</span>
+                     <span class="kt">int</span><span class="o">[]</span> <span class="n">work</span><span class="o">,</span> <span class="kt">int</span> <span class="n">workBase</span><span class="o">,</span> <span class="kt">int</span> <span class="n">workLen</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Use Quicksort on small arrays</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="no">QUICKSORT_THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="cm">/*
+         * Index run[i] is the start of i-th run
+         * (ascending or descending sequence).
+         */</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">run</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">MAX_RUN_COUNT</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">run</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+
+        <span class="c1">// Check if the array is nearly sorted</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">right</span><span class="o">;</span> <span class="n">run</span><span class="o">[</span><span class="n">count</span><span class="o">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span> <span class="c1">// ascending</span>
+                <span class="k">while</span> <span class="o">(++</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">]);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span> <span class="c1">// descending</span>
+                <span class="k">while</span> <span class="o">(++</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&gt;=</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">]);</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">run</span><span class="o">[</span><span class="n">count</span><span class="o">]</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">k</span><span class="o">;</span> <span class="o">++</span><span class="n">lo</span> <span class="o">&lt;</span> <span class="o">--</span><span class="n">hi</span><span class="o">;</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">hi</span><span class="o">];</span> <span class="n">a</span><span class="o">[</span><span class="n">hi</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c1">// equal</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="no">MAX_RUN_LENGTH</span><span class="o">;</span> <span class="o">++</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="n">a</span><span class="o">[</span><span class="n">k</span><span class="o">];</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(--</span><span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="cm">/*
+             * The array is not highly structured,
+             * use Quicksort instead of merge sort.
+             */</span>
+            <span class="k">if</span> <span class="o">(++</span><span class="n">count</span> <span class="o">==</span> <span class="no">MAX_RUN_COUNT</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Check special cases</span>
+        <span class="c1">// Implementation note: variable "right" is increased by 1.</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">run</span><span class="o">[</span><span class="n">count</span><span class="o">]</span> <span class="o">==</span> <span class="n">right</span><span class="o">++)</span> <span class="o">{</span> <span class="c1">// The last run contains one element</span>
+            <span class="n">run</span><span class="o">[++</span><span class="n">count</span><span class="o">]</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// The array is already sorted</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Determine alternation base for merge</span>
+        <span class="kt">byte</span> <span class="n">odd</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="o">(</span><span class="n">n</span> <span class="o">&lt;&lt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span> <span class="n">odd</span> <span class="o">^=</span> <span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">// Use or create temporary array b for merging</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">b</span><span class="o">;</span>                 <span class="c1">// temp array; alternates with a</span>
+        <span class="kt">int</span> <span class="n">ao</span><span class="o">,</span> <span class="n">bo</span><span class="o">;</span>              <span class="c1">// array offsets from 'left'</span>
+        <span class="kt">int</span> <span class="n">blen</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="o">;</span> <span class="c1">// space needed for b</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">work</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">workLen</span> <span class="o">&lt;</span> <span class="n">blen</span> <span class="o">||</span> <span class="n">workBase</span> <span class="o">+</span> <span class="n">blen</span> <span class="o">&gt;</span> <span class="n">work</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">blen</span><span class="o">];</span>
+            <span class="n">workBase</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">odd</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">left</span><span class="o">,</span> <span class="n">work</span><span class="o">,</span> <span class="n">workBase</span><span class="o">,</span> <span class="n">blen</span><span class="o">);</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+            <span class="n">bo</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">work</span><span class="o">;</span>
+            <span class="n">ao</span> <span class="o">=</span> <span class="n">workBase</span> <span class="o">-</span> <span class="n">left</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">work</span><span class="o">;</span>
+            <span class="n">ao</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="n">bo</span> <span class="o">=</span> <span class="n">workBase</span> <span class="o">-</span> <span class="n">left</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Merging</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">last</span><span class="o">;</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">;</span> <span class="n">count</span> <span class="o">=</span> <span class="n">last</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="o">(</span><span class="n">last</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">count</span><span class="o">;</span> <span class="n">k</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kt">int</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">run</span><span class="o">[</span><span class="n">k</span><span class="o">],</span> <span class="n">mi</span> <span class="o">=</span> <span class="n">run</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="o">];</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">run</span><span class="o">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="o">],</span> <span class="n">p</span> <span class="o">=</span> <span class="n">i</span><span class="o">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">mi</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">q</span> <span class="o">&gt;=</span> <span class="n">hi</span> <span class="o">||</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">mi</span> <span class="o">&amp;&amp;</span> <span class="n">a</span><span class="o">[</span><span class="n">p</span> <span class="o">+</span> <span class="n">ao</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">[</span><span class="n">q</span> <span class="o">+</span> <span class="n">ao</span><span class="o">])</span> <span class="o">{</span>
+                        <span class="n">b</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">bo</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">p</span><span class="o">++</span> <span class="o">+</span> <span class="n">ao</span><span class="o">];</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="n">b</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">bo</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">q</span><span class="o">++</span> <span class="o">+</span> <span class="n">ao</span><span class="o">];</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                <span class="n">run</span><span class="o">[++</span><span class="n">last</span><span class="o">]</span> <span class="o">=</span> <span class="n">hi</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">((</span><span class="n">count</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">right</span><span class="o">,</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">run</span><span class="o">[</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="o">];</span> <span class="o">--</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">lo</span><span class="o">;</span>
+                    <span class="n">b</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">bo</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">ao</span><span class="o">]</span>
+                <span class="o">);</span>
+                <span class="n">run</span><span class="o">[++</span><span class="n">last</span><span class="o">]</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="kt">int</span><span class="o">[]</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
+            <span class="kt">int</span> <span class="n">o</span> <span class="o">=</span> <span class="n">ao</span><span class="o">;</span> <span class="n">ao</span> <span class="o">=</span> <span class="n">bo</span><span class="o">;</span> <span class="n">bo</span> <span class="o">=</span> <span class="n">o</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+
+        
+        <div class="post_footer">
+          <p>Published on Jun 01, 2020 in categories 
+          
+          <a href="http://localhost:4000/categories/#源码" title="源码">源码</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2020/05/31/plan2/">2020年05月31日</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2020/06/01/L12/">L12-Integer to Roman</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2020/06/01/sorts/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

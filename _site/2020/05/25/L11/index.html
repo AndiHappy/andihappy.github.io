@@ -18,7 +18,7 @@
     <div class="nav_nav">
         <a class="nav_a1" href="http://localhost:4000/">首页</a>
         <a href="http://localhost:4000/categories/">分类</a>
-        <a class="nav_a1" href="http://localhost:4000/wiki/">维基</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
         <!-- 暂时的注释掉，后面放开，启动自己的一个计划 -->
         <!-- <a href="http://localhost:4000/links/">链接</a> -->
         <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
@@ -64,15 +64,15 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">L11</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">L11</span><span class="o">.</span><span class="na">maxArea</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">1</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">7</span><span class="o">}));</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">L11</span><span class="o">.</span><span class="na">maxArea</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">1</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">7</span><span class="o">}));</span>
 
 	<span class="o">}</span>
 
 	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">maxArea</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
 		<span class="kt">int</span> <span class="n">from</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">height</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">masRes</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 		<span class="k">while</span> <span class="o">(</span><span class="n">from</span> <span class="o">&lt;</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
-			<span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">height</span><span class="o">[</span><span class="n">from</span><span class="o">],</span> <span class="n">height</span><span class="o">[</span><span class="n">end</span><span class="o">])</span> <span class="o">*</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">from</span><span class="o">);</span>
+			<span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">height</span><span class="o">[</span><span class="n">from</span><span class="o">],</span> <span class="n">height</span><span class="o">[</span><span class="n">end</span><span class="o">])</span> <span class="o">*</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">from</span><span class="o">);</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">&gt;</span> <span class="n">masRes</span><span class="o">)</span>
 				<span class="n">masRes</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">height</span><span class="o">[</span><span class="n">from</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">height</span><span class="o">[</span><span class="n">end</span><span class="o">])</span> <span class="o">{</span>

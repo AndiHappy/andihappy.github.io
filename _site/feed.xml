@@ -5,9 +5,50 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 13 Jun 2020 12:11:19 +0800</pubDate>
-    <lastBuildDate>Sat, 13 Jun 2020 12:11:19 +0800</lastBuildDate>
+    <pubDate>Sun, 21 Jun 2020 01:59:55 +0800</pubDate>
+    <lastBuildDate>Sun, 21 Jun 2020 01:59:55 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>2020年06月21日 突然的感触</title>
+        <description>&lt;p&gt;这个纯粹是看到了一个帖子有感写下来的。&lt;/p&gt;
+
+&lt;p&gt;帖子的地址：https://www.v2ex.com/t/682557#reply369&lt;/p&gt;
+
+&lt;p&gt;大致的意思就是我们怎么样才能够，活的有目标，你的最终的目标是什么，如果想要你干一件
+你以为的最牛B的事情，应该是什么？
+来吧, 直面内心吧, 讲讲自己的小目标&lt;/p&gt;
+
+&lt;p&gt;看到了这个帖子，想到自己三番五次的计划，然后放弃的悲惨的自我计划！&lt;/p&gt;
+
+&lt;p&gt;刚刚溜达的时候，就在想自己到底想要做成一件什么事情尼？&lt;/p&gt;
+
+&lt;p&gt;自己原来想过做类似Atom的产品，选择了通用的Electron，但是也是纠结了很久，结果是不了了之
+再向前，我还想发展一个第二语言，Python，js，包括go，c，c++都有考虑过，后来选中了js，然后不了了之&lt;/p&gt;
+
+&lt;p&gt;自己看到这个帖子，最有感触的一句话就是：如果过去一天看一点，现在也应该是Linux内核的半神了。&lt;/p&gt;
+
+&lt;p&gt;是啊，如果当初知道朝着一个方向努力，也不会落到现在这个地步啊。&lt;/p&gt;
+
+&lt;p&gt;我到底想要做什么尼？&lt;/p&gt;
+
+&lt;p&gt;这是一个问题，需要好好的想一想啊&lt;/p&gt;
+
+&lt;p&gt;如果想楼主一样，我就去研究Linux的源码，但是你研究了源码之后，可以找到这个工作吗？&lt;/p&gt;
+
+&lt;p&gt;还是磨炼自己的Electron，支持自己的算法吗？&lt;/p&gt;
+
+&lt;p&gt;有时候，想想自己只是别扭！&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 21 Jun 2020 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/06/21/plan3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/06/21/plan3/</guid>
+        
+        
+        <category>心情</category>
+        
+      </item>
     
       <item>
         <title>L16-3Sum Closest</title>
@@ -854,38 +895,6 @@ mmm
         
         
         <category>LeetCode</category>
-        
-      </item>
-    
-      <item>
-        <title>2020年05月25日的懊悔</title>
-        <description>&lt;ol&gt;
-  &lt;li&gt;gost配置，Best:配置一个能够长期使用的VPN环境。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;VPN配置完成以后，大约半小时以后被封禁，不在折腾VPN，后续如果有需要买现成
-的服务！&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;LeetCode，前10道题目. BEST: 必须完成项。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;大致的看了一遍，还是有很多的“疙瘩”，不值怎么样才能够彻底的理解，已经决定了每一道题做一个页面
-找起来比较的容易，并且更加的详细说明“疙瘩”的地方！&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;算法4，下载PDF文件。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;上传到resource中，GitHub也能够当做仓库使用！&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 25 May 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/05/25/destory-plan/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/05/25/destory-plan/</guid>
-        
-        
-        <category>路线,心情</category>
         
       </item>
     

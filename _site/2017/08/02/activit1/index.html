@@ -49,30 +49,30 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">EngineServices</span> <span class="o">{</span>
 
-  <span class="n">RepositoryService</span> <span class="nf">getRepositoryService</span><span class="o">();</span>
+  <span class="nc">RepositoryService</span> <span class="nf">getRepositoryService</span><span class="o">();</span>
 
-  <span class="n">RuntimeService</span> <span class="nf">getRuntimeService</span><span class="o">();</span>
+  <span class="nc">RuntimeService</span> <span class="nf">getRuntimeService</span><span class="o">();</span>
 
-  <span class="n">FormService</span> <span class="nf">getFormService</span><span class="o">();</span>
+  <span class="nc">FormService</span> <span class="nf">getFormService</span><span class="o">();</span>
 
-  <span class="n">TaskService</span> <span class="nf">getTaskService</span><span class="o">();</span>
+  <span class="nc">TaskService</span> <span class="nf">getTaskService</span><span class="o">();</span>
 
-  <span class="n">HistoryService</span> <span class="nf">getHistoryService</span><span class="o">();</span>
+  <span class="nc">HistoryService</span> <span class="nf">getHistoryService</span><span class="o">();</span>
 
-  <span class="n">IdentityService</span> <span class="nf">getIdentityService</span><span class="o">();</span>
+  <span class="nc">IdentityService</span> <span class="nf">getIdentityService</span><span class="o">();</span>
 
-  <span class="n">ManagementService</span> <span class="nf">getManagementService</span><span class="o">();</span>
+  <span class="nc">ManagementService</span> <span class="nf">getManagementService</span><span class="o">();</span>
 
-  <span class="n">DynamicBpmnService</span> <span class="nf">getDynamicBpmnService</span><span class="o">();</span>
+  <span class="nc">DynamicBpmnService</span> <span class="nf">getDynamicBpmnService</span><span class="o">();</span>
 
-  <span class="n">ProcessEngineConfiguration</span> <span class="nf">getProcessEngineConfiguration</span><span class="o">();</span>
+  <span class="nc">ProcessEngineConfiguration</span> <span class="nf">getProcessEngineConfiguration</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>我们可以从EngineServer得到各个服务的，官网上面具体的调用的案例也证明了这一点，例如启动一个流程的代码：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RuntimeService</span> <span class="n">runtimeService</span> <span class="o">=</span> <span class="n">processEngine</span><span class="o">.</span><span class="na">getRuntimeService</span><span class="o">();</span>
-<span class="n">ProcessInstance</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceByKey</span><span class="o">(</span><span class="s">"vacationRequest"</span><span class="o">,</span> <span class="n">variables</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">RuntimeService</span> <span class="n">runtimeService</span> <span class="o">=</span> <span class="n">processEngine</span><span class="o">.</span><span class="na">getRuntimeService</span><span class="o">();</span>
+<span class="nc">ProcessInstance</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceByKey</span><span class="o">(</span><span class="s">"vacationRequest"</span><span class="o">,</span> <span class="n">variables</span><span class="o">);</span>
 </code></pre></div></div>
 
 <p>我们可以明显的看出来，这个就是一个封装，针对引擎提供各个功能的分模块的封装，从接口的代码可以看出来分为了：     <br />
@@ -105,13 +105,13 @@ wrap a poorly designed collection of APIs with a single well-designed API.</p>
 
 <p>其实activi在组织API的时候，采用了两次的Facade Pattern，第一次把各个功能归类，形成一个个的服务，例如在RepositoryService中包含了：</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-  <span class="n">DeploymentBuilder</span> <span class="nf">createDeployment</span><span class="o">();</span>
-  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">deleteDeploymentCascade</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">cascade</span><span class="o">);</span>
-  <span class="kt">void</span> <span class="nf">setDeploymentCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">);</span>
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getDeploymentResourceNames</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">);</span>
-  <span class="n">InputStream</span> <span class="nf">getResourceAsStream</span><span class="o">(</span><span class="n">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="n">String</span> <span class="n">resourceName</span><span class="o">);</span>    
+  <span class="nc">DeploymentBuilder</span> <span class="nf">createDeployment</span><span class="o">();</span>
+  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">);</span>
+  <span class="kt">void</span> <span class="nf">deleteDeploymentCascade</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">);</span>
+  <span class="kt">void</span> <span class="nf">deleteDeployment</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">cascade</span><span class="o">);</span>
+  <span class="kt">void</span> <span class="nf">setDeploymentCategory</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="nc">String</span> <span class="n">category</span><span class="o">);</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getDeploymentResourceNames</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">);</span>
+  <span class="nc">InputStream</span> <span class="nf">getResourceAsStream</span><span class="o">(</span><span class="nc">String</span> <span class="n">deploymentId</span><span class="o">,</span> <span class="nc">String</span> <span class="n">resourceName</span><span class="o">);</span>    
   <span class="err">。。。。。。</span>
 </code></pre></div></div>
 

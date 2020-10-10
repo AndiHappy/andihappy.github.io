@@ -38,7 +38,7 @@
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given n pairs of parentheses, 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given n pairs of parentheses, 
 write a function to generate 
 all combinations of well-formed parentheses.
 
@@ -55,7 +55,7 @@ For example, given n = 3, a solution set is:
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>一开始的思路是插入，寻找插入的位置：
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>一开始的思路是插入，寻找插入的位置：
 |（|）|
 |（|）|（|）|
 后来代码累出来之后，错误百出。
@@ -66,7 +66,7 @@ For example, given n = 3, a solution set is:
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;String&gt; generateParenthesis(int n) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;String&gt; generateParenthesis(int n) {
         List&lt;String&gt; list = new ArrayList&lt;String&gt;();
         backtrack(list, "", 0, 0, n);
         return list;

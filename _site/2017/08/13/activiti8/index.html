@@ -34,7 +34,7 @@
 <!--more-->
 首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehaviorFactory {
 
   public abstract NoneStartEventActivityBehavior createNoneStartEventActivityBehavior(StartEvent startEvent);
 
@@ -111,22 +111,22 @@
 
 <p>默认的实现是：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="n">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="n">ActivityBehaviorFactory</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultActivityBehaviorFactory</span> <span class="kd">extends</span> <span class="nc">AbstractBehaviorFactory</span> <span class="kd">implements</span> <span class="nc">ActivityBehaviorFactory</span> <span class="o">{</span>
 
   <span class="c1">// Start event</span>
-  <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">EXCEPTION_MAP_FIELD</span> <span class="o">=</span> <span class="s">"mapExceptions"</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="nc">String</span> <span class="no">EXCEPTION_MAP_FIELD</span> <span class="o">=</span> <span class="s">"mapExceptions"</span><span class="o">;</span>
 
-  <span class="kd">public</span> <span class="n">NoneStartEventActivityBehavior</span> <span class="nf">createNoneStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nc">NoneStartEventActivityBehavior</span> <span class="nf">createNoneStartEventActivityBehavior</span><span class="o">(</span><span class="nc">StartEvent</span> <span class="n">startEvent</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">new</span> <span class="nf">NoneStartEventActivityBehavior</span><span class="o">();</span>
   <span class="o">}</span>
 
-  <span class="kd">public</span> <span class="n">EventSubProcessStartEventActivityBehavior</span> <span class="nf">createEventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">StartEvent</span> <span class="n">startEvent</span><span class="o">,</span> <span class="n">String</span> <span class="n">activityId</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nc">EventSubProcessStartEventActivityBehavior</span> <span class="nf">createEventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="nc">StartEvent</span> <span class="n">startEvent</span><span class="o">,</span> <span class="nc">String</span> <span class="n">activityId</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">new</span> <span class="nf">EventSubProcessStartEventActivityBehavior</span><span class="o">(</span><span class="n">activityId</span><span class="o">);</span>
   <span class="o">}</span>
 
   <span class="c1">// Task</span>
 
-  <span class="kd">public</span> <span class="n">TaskActivityBehavior</span> <span class="nf">createTaskActivityBehavior</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nc">TaskActivityBehavior</span> <span class="nf">createTaskActivityBehavior</span><span class="o">(</span><span class="nc">Task</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">new</span> <span class="nf">TaskActivityBehavior</span><span class="o">();</span>
   <span class="o">}</span>
 <span class="o">...........</span>

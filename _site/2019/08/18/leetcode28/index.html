@@ -38,7 +38,7 @@
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Implement strStr().
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Implement strStr().
 
 Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
 
@@ -59,12 +59,12 @@ For the purpose of this problem, we will return 0 when needle is an empty string
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>needle 为null的时候，返回的是0
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>needle 为null的时候，返回的是0
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int strStr(String haystack, String needle) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int strStr(String haystack, String needle) {
 		if (needle == null || "".equals(needle))
 			return 0;
 		char[] haystackc = haystack.toCharArray();
@@ -93,7 +93,7 @@ private boolean meetCondition(char[] haystackc, int i, char[] neddlec, int j) {
 
 <p>JAVA 的JDK里面的 String的API方法：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int indexOf(String str) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int indexOf(String str) {
         return indexOf(str, 0);
     }
 
@@ -161,10 +161,10 @@ char[] target
 这两个就不说了，关键是sourceOffset，sourceCount，targetOffset，targetCount和fromIndex 定义的比较的赏心悦目。
 另外就是整个算法的逻辑比较清晰，首先异常处理，然后确定首次的匹配开始i，然后i之后的判断。还有一点就是缩写的使用：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> while (++i &lt;= max &amp;&amp; source[i] != first);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> while (++i &lt;= max &amp;&amp; source[i] != first);
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for (int k = targetOffset + 1; j &lt; end &amp;&amp; source[j]== target[k]; j++, k++);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for (int k = targetOffset + 1; j &lt; end &amp;&amp; source[j]== target[k]; j++, k++);
 </code></pre></div></div>
 
         

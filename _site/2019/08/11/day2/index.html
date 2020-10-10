@@ -32,7 +32,7 @@
 
 <!--more-->
 <p>示例代码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; myList =
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; myList =
     Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
 myList
@@ -59,7 +59,7 @@ myList
 
 <h3 id="stream的使用">Stream的使用</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Lists是Guava中的一个工具类
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Lists是Guava中的一个工具类
 List&lt;Integer&gt; nums = Lists.newArrayList(1,null,3,4,null,6);
 nums.stream().filter(num -&gt; num != null).count();
 </code></pre></div></div>
@@ -88,13 +88,13 @@ nums.stream().filter(num -&gt; num != null).count();
 
 <p>of方法：有两个overload方法，一个接受变长参数，一个接口单一值，例如：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream&lt;Integer&gt; integerStream = Stream.of(1, 2, 3, 5);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream&lt;Integer&gt; integerStream = Stream.of(1, 2, 3, 5);
 Stream&lt;String&gt; stringStream = Stream.of("taobao");
 </code></pre></div></div>
 
 <p>generator方法：生成一个无限长度的Stream，其元素的生成是通过给定的Supplier（这个接口可以看成一个对象的工厂，每次调用返回一个给定类型的对象）</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Stream.generate(new Supplier&lt;Double&gt;() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Stream.generate(new Supplier&lt;Double&gt;() {
    	@Override
    	public Double get() {
 		return Math.random();
@@ -107,7 +107,7 @@ Stream.generate(() -&gt; Math.random());
 
 <p>iterate方法：也是生成无限长度的Stream，和generator不同的是，其元素的生成是重复对给定的种子值(seed)调用用户指定函数来生成的。其中包含的元素可以认为是：seed，f(seed),f(f(seed))无限循环。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream.iterate(1, item -&gt; item + 1)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream.iterate(1, item -&gt; item + 1)
       .limit(10)
       .forEach(System.out::println);
 </code></pre></div></div>
@@ -120,7 +120,7 @@ Stream.generate(() -&gt; Math.random());
   <li>distinct: 对于Stream中包含的元素进行去重操作（去重逻辑依赖元素的equals方法）</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; l = Stream.of("a","b","c","b").distinct()
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; l = Stream.of("a","b","c","b").distinct()
                        .collect(Collectors.toList());
 System.out.println(l); //[a, b, c]
 </code></pre></div></div>
@@ -129,7 +129,7 @@ System.out.println(l); //[a, b, c]
   <li>filter: 对于Stream中包含的元素使用给定的过滤函数进行过滤操作，新生成的Stream只包含符合条件的元素</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = IntStream.range(1,10)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = IntStream.range(1,10)
         .filter( i -&gt; i % 2 == 0)
         .boxed()
         .collect(Collectors.toList());
@@ -140,7 +140,7 @@ System.out.println(l); //[2, 4, 6, 8]
   <li>map: 对于Stream中包含的元素使用给定的转换函数进行转换操作，新生成的Stream只包含转换生成的元素。这个方法有三个对于原始类型的变种方法，分别是：mapToInt，mapToLong和mapToDouble。</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = Stream.of('a','b','c')
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = Stream.of('a','b','c')
         .map( c -&gt; c.hashCode())
         .collect(Collectors.toList());
 System.out.println(l); //[97, 98, 99]
@@ -150,7 +150,7 @@ System.out.println(l); //[97, 98, 99]
   <li>flatMap：和map类似，不同的是其每个元素转换得到的是Stream对象，会把子Stream中的元素压缩到父集合中。</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;List&lt;Integer&gt;&gt; ins = Arrays.asList(
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;List&lt;Integer&gt;&gt; ins = Arrays.asList(
 				Arrays.asList(1, 2, 3, 4, 5), 
 				Arrays.asList(1, 2, 3, 4, 5), 
 				Arrays.asList(1, 2, 3, 4, 5));
@@ -180,7 +180,7 @@ System.out.println(l);
   <li>limit方法指定数量的元素的流。对于串行流，这个方法是有效的，这是因为它只需返回前n个元素即可，但是对于有序的并行流，它可能花费相对较长的时间，如果你不在意有序，可以将有序并行流转换为无序的，可以提高性能。</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = IntStream.range(1,100).limit(5)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; l = IntStream.range(1,100).limit(5)
         .boxed()
         .collect(Collectors.toList());
 </code></pre></div></div>
@@ -189,7 +189,7 @@ System.out.println(l);
   <li>peek方法方法会使用一个Consumer消费流中的元素，但是返回的流还是包含原来的流中的元素</li>
 </ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String[] arr = new String[]{"a","b","c","d"};
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String[] arr = new String[]{"a","b","c","d"};
 Arrays.stream(arr)
         .peek(System.out::println) //a,b,c,d
         .count();
@@ -200,7 +200,7 @@ Arrays.stream(arr)
   <li>skip返回丢弃了前n个元素的流，如果流中的元素小于或者等于n，则返回空的流。</li>
   <li>count方法返回流中的元素的数量</li>
   <li>forEach遍历流的每一个元素，执行指定的action。它是一个终点操作，和peek方法不同。这个方法不担保按照流的encounter order顺序执行，如果对于有序流按照它的encounter order顺序执行，你可以使用forEachOrdered方法。
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream.of(1,2,3,4,5).forEach(System.out::println);
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Stream.of(1,2,3,4,5).forEach(System.out::println);
 </code></pre></div>    </div>
   </li>
   <li>
@@ -233,7 +233,7 @@ findFirst()返回第一个元素，如果流为空，返回空的Optional。</p>
 <h4 id="可变汇聚">可变汇聚</h4>
 <p>可变汇聚对应的只有一个方法：collect，正如其名字显示的，它可以把Stream中的要有元素收集到一个结果容器中（比如Collection）。先看一下最通用的collect方法的定义（还有其他override方法）：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;R&gt; R collect(
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;R&gt; R collect(
     Supplier&lt;R&gt; supplier,
     BiConsumer&lt;R, ? super T&gt; accumulator,
     BiConsumer&lt;R, R&gt; combiner
@@ -245,7 +245,7 @@ Supplier supplier是一个工厂函数，用来生成一个新的容器；
 BiConsumer accumulator也是一个函数，用来把Stream中的元素添加到结果容器中；
 BiConsumer combiner还是一个函数，用来把中间状态的多个结果容器合并成为一个（并发的时候会用到）。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; nums = Lists.newArrayList(1,1,null,2,3,4,null,5,6,7,8,9,10);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; nums = Lists.newArrayList(1,1,null,2,3,4,null,5,6,7,8,9,10);
 
 List&lt;Integer&gt; numsWithoutNull = nums.stream()
     .filter(num -&gt; num != null)
@@ -262,7 +262,7 @@ List&lt;Integer&gt; numsWithoutNull = nums.stream()
 
 <p>但是上面的collect方法调用也有点太复杂了，没关系！我们来看一下collect方法另外一个override的版本，其依赖<a href="http://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html">Collector</a>。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;R, A&gt; R collect(Collector&lt;? super T, A, R&gt; collector);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;R, A&gt; R collect(Collector&lt;? super T, A, R&gt; collector);
 </code></pre></div></div>
 
 <p>这样清爽多了！Java8还给我们提供了Collector的工具类–<a href="http://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html">Collectors</a>，其中已经定义了一些静态工厂方法，比如：</p>
@@ -272,7 +272,7 @@ Collectors.toList()收集到List中
 Collectors.toSet()收集到Set中。
 这样的静态方法还有很多，这里就不一一介绍了，大家可以直接去看JavaDoc。下面看看使用Collectors对于代码的简化：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; numsWithoutNull = nums.stream().filter(num -&gt; num != null)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; numsWithoutNull = nums.stream().filter(num -&gt; num != null)
                     .collect(Collectors.toList());
 </code></pre></div></div>
 
@@ -280,24 +280,24 @@ Collectors.toSet()收集到Set中。
 
 <p>reduce方法：reduce方法非常的通用，后面介绍的count，sum等都可以使用其实现。reduce方法有三个override的方法，本文介绍两个最常用的.先来看reduce方法的第一种形式，其方法定义如下：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);
 </code></pre></div></div>
 
 <p>接受一个BinaryOperator类型的参数，在使用的时候我们可以用lambda表达式来。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
 System.out.println("ints sum is:" + ints.stream().reduce((sum, item) -&gt; sum + item).get());
 </code></pre></div></div>
 
 <p>可以看到reduce方法接受一个函数，这个函数有两个参数，第一个参数是上次函数执行的返回值（也称为中间结果），第二个参数是stream中的元素，这个函数把这两个值相加，得到的和会被赋值给下次执行这个函数的第一个参数。要注意的是：<strong>第一次执行的时候第一个参数的值是Stream的第一个元素，第二个参数是Stream的第二个元素</strong>。这个方法返回值类型是Optional，这是Java8防止出现NPE的一种可行方法，这里就简单的认为是一个容器，其中可能会包含0个或者1个对象。</p>
 
 <p>reduce方法还有一个很常用的变种：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);
 </code></pre></div></div>
 
 <p>这个定义上上面已经介绍过的基本一致，不同的是：它允许用户提供一个循环计算的初始值，如果Stream为空，就直接返回该值。而且这个方法不会返回Optional，因为其不会出现null值。下面直接给出例子，就不再做说明了。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Integer&gt; ints = Lists.newArrayList(1,2,3,4,5,6,7,8,9,10);
 System.out.println("ints sum is:" + ints.stream().reduce(0, (sum, item) -&gt; sum + item));
 </code></pre></div></div>
 

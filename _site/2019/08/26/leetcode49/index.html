@@ -32,7 +32,7 @@
 Given an array of strings, group anagrams together.
 <!--more--></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
 
 Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
 Output:
@@ -50,7 +50,7 @@ The order of your output does not matter.</p>
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>关键在于，有相同字符确定的不同字符串怎么的确定？
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>关键在于，有相同字符确定的不同字符串怎么的确定？
 如果把hashcode变成字母的和，是不是直接的判断hashcode的值就行了？
 
 转念在一想不行，例如：duh, ill 值是相同的，
@@ -62,7 +62,7 @@ The order of your output does not matter.</p>
 </code></pre></div></div>
 
 <p>具体的代码：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public static List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] strs) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public static List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] strs) {
   if (strs == null || strs.length == 0) {
    return null;
   }

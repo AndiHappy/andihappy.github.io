@@ -36,7 +36,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
 
 Note:
 
@@ -56,12 +56,12 @@ A solution set is:
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，同一个思路
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，同一个思路
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;List&lt;Integer&gt;&gt; fourSum(int[] nums, int target) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;List&lt;Integer&gt;&gt; fourSum(int[] nums, int target) {
       List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;List&lt;Integer&gt;&gt;();
     List&lt;Integer&gt; l;
     Arrays.sort(nums);
@@ -115,7 +115,7 @@ A solution set is:
 
 <p>题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, remove the n-th node from the end of list and return its head.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a linked list, remove the n-th node from the end of list and return its head.
 
 Example:
 
@@ -133,12 +133,12 @@ Could you do this in one pass?
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单题目，注意链表的表头的处理，下标的处理
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单题目，注意链表的表头的处理，下标的处理
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode removeNthFromEnd_copy(ListNode head, int n) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ListNode removeNthFromEnd_copy(ListNode head, int n) {
 	ListNode tmp = new ListNode(-1);
 	ListNode first = tmp;ListNode second = tmp;
 	tmp.next = head;
@@ -160,7 +160,7 @@ Could you do this in one pass?
 
 <p>题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters 
 '(', ')', '{', '}', '[' and ']', 
 determine if the input string is valid.
 
@@ -194,12 +194,12 @@ Output: true
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>典型的栈的应用，但是有两种不同的思路。
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>典型的栈的应用，但是有两种不同的思路。
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//正常的思路
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//正常的思路
 public boolean isValid(String s) {
 	if(s == null || s.length() &lt;= 0){
    		return true;

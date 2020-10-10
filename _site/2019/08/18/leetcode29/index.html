@@ -38,7 +38,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
 
 Return the quotient after dividing dividend by divisor.
 
@@ -62,12 +62,12 @@ Assume we are dealing with an environment which could only store integers within
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>迭代逻辑，不使用乘除，取余的计算，我们还可以使用加法，位移运算等。
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>迭代逻辑，不使用乘除，取余的计算，我们还可以使用加法，位移运算等。
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide_copy(int dividend, int divisor) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide_copy(int dividend, int divisor) {
     if (dividend == Integer.MIN_VALUE &amp;&amp; divisor == -1) {
         return Integer.MAX_VALUE;
     }
@@ -107,7 +107,7 @@ private int divideHelper(int dividend, int divisor){
 
 <p>本来还有一个采用加法循环res的值，但是如果是除以1的话，会有超时的问题，所以才有了位移的操作。关于这个为什么是负数的操作，下面有一个正数的操作，但是报错了：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide(int dividend, int divisor) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public int divide(int dividend, int divisor) {
 		//首先判定符号的问题
 		boolean flag = (dividend &gt; 0 &amp;&amp; divisor &gt; 0) || (dividend &lt; 0 &amp;&amp; divisor &lt; 0);
 		int dividends = 0;
@@ -138,7 +138,7 @@ private int divideHelper(int dividend, int divisor){
 
 <p>错误的根由在于 (Integer.MAX_VALUE），(Integer.MIN_VALUE) 一个是 -2147483648，一个是2147483647，这道题目下，如果不使用Long值，修改为负数比较合适。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Solution {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Solution {
     		public int divide(int dividend, int divisor) {
 		//首先判定符号的问题
 		boolean flag = (dividend &gt; 0 &amp;&amp; divisor &gt; 0) || (dividend &lt; 0 &amp;&amp; divisor &lt; 0);

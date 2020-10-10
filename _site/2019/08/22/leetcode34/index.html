@@ -36,7 +36,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.
 
 Your algorithm's runtime complexity must be in the order of O(log n).
 
@@ -54,11 +54,11 @@ Output: [-1,-1]
 </code></pre></div></div>
 
 <p>思路：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>那就使用二分查找出第一个值，最后一个值。原本的思路。
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>那就使用二分查找出第一个值，最后一个值。原本的思路。
 </code></pre></div></div>
 
 <p>具体的代码如下：首先是按照思路来的，一种类似作弊的思路，前后加减0.5</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int[] searchRange(int[] nums, int target) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int[] searchRange(int[] nums, int target) {
         double left = target - 0.5, right = target + 0.5;
         int l = bs(nums, left), r = bs(nums, right);
         if(l == r) return new int[]{-1, -1};
@@ -128,7 +128,7 @@ Why does this trick work? When we use mid = (i+j)/2, the mid is rounded to the l
 
 <p>All this reasoning boils down to the following simple code:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 vector&lt;int&gt; searchRange(int A[], int n, int target) {
     int i = 0, j = n - 1;
     vector&lt;int&gt; ret(2, -1);

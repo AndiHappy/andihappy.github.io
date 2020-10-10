@@ -36,7 +36,7 @@
 
 <p>首先还是实例代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Producer extends Thread {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Producer extends Thread {
 	static final int MAXQUEUE = 5;
 	private Vector&lt;String&gt; messages = new Vector&lt;String&gt;();
 
@@ -117,7 +117,7 @@ class Consumer extends Thread {
 
 <p>在HotSpot虚拟机中，monitor是由ObjectMonitor实现，使用C++编写实现，具体代码在HotSpot虚拟机源码ObjectMonitor.hpp文件中。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ObjectMonitor() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ObjectMonitor() {
     _header       = NULL;
     _count        = 0;    // 记录该线程获取锁的次数
     _waiters      = 0,

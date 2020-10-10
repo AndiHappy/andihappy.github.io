@@ -39,7 +39,7 @@ You are given an n x n 2D matrix representing an image.</p>
 
 <!--more-->
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 Example 1:
 
 Given input matrix = 
@@ -77,13 +77,13 @@ rotate the input matrix in-place such that it becomes:
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 2 3     7 8 9     7 4 1
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 2 3     7 8 9     7 4 1
 4 5 6  =&gt; 4 5 6  =&gt; 8 5 2
 7 8 9     1 2 3     9 6 3
 </code></pre></div></div>
 
 <p>具体的代码：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void rotate(int[][] matrix) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void rotate(int[][] matrix) {
     int s = 0, e = matrix.length - 1;
     while(s &lt; e){
         int[] temp = matrix[s];

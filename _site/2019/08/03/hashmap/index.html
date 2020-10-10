@@ -44,10 +44,10 @@
    *     2.3.2  不相同则是判断Node值的类型
    *     		2.3.2.1 如果Node值的类性是：TreeNode，标识为一颗红黑树的类型，调用putTreeVal
    */</span>
-  <span class="kd">final</span> <span class="no">V</span> <span class="nf">putVal</span><span class="o">(</span><span class="kt">int</span> <span class="n">hash</span><span class="o">,</span> <span class="no">K</span> <span class="n">key</span><span class="o">,</span> <span class="no">V</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyIfAbsent</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">evict</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">final</span> <span class="n">V</span> <span class="nf">putVal</span><span class="o">(</span><span class="kt">int</span> <span class="n">hash</span><span class="o">,</span> <span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyIfAbsent</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">evict</span><span class="o">)</span> <span class="o">{</span>
 
-      <span class="nc">Node</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;[]</span> <span class="n">tab</span><span class="o">;</span>
-      <span class="nc">Node</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">;</span>
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;[]</span> <span class="n">tab</span><span class="o">;</span>
+      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">;</span>
       <span class="kt">int</span> <span class="n">n</span><span class="o">,</span><span class="cm">/* n 代表的是原始的hashmap中 table 的 length值*/</span> <span class="n">i</span><span class="o">;</span>
 
       <span class="k">if</span> <span class="o">((</span><span class="n">tab</span> <span class="o">=</span> <span class="n">table</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">(</span><span class="n">n</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
@@ -57,16 +57,16 @@
       <span class="k">if</span> <span class="o">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="o">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">hash</span><span class="o">])</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="c1">//①</span>
           <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
       <span class="k">else</span> <span class="o">{</span>
-          <span class="nc">Node</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">e</span><span class="o">;</span>
-          <span class="no">K</span> <span class="n">k</span><span class="o">;</span>
+          <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">e</span><span class="o">;</span>
+          <span class="n">K</span> <span class="n">k</span><span class="o">;</span>
           <span class="c1">// p=table[i]; hash值相同，k值和p的key值一样，直接的替换</span>
           <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;((</span><span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">)</span> <span class="o">==</span> <span class="n">key</span> <span class="o">||</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">k</span><span class="o">))))</span><span class="c1">//②</span>
              <span class="c1">//替换value值</span>
              <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
-          <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="nc">TreeNode</span><span class="o">)</span><span class="c1">//③</span>
+          <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="n">TreeNode</span><span class="o">)</span><span class="c1">//③</span>
              <span class="c1">// 如果有值，并且Node的类型是TreeNode类型，调用TreeNode的putTreeVal</span>
              <span class="c1">// TODO 暂时的放弃这个分支的分析</span>
-              <span class="n">e</span> <span class="o">=</span> <span class="o">((</span><span class="nc">TreeNode</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;)</span><span class="n">p</span><span class="o">).</span><span class="na">putTreeVal</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+              <span class="n">e</span> <span class="o">=</span> <span class="o">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span><span class="n">V</span><span class="o">&gt;)</span><span class="n">p</span><span class="o">).</span><span class="na">putTreeVal</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
           <span class="k">else</span> <span class="o">{</span>
             <span class="c1">// ④</span>
             <span class="c1">// 如果不是TreeNode，那就是一个链表的类型</span>
@@ -74,7 +74,7 @@
                   <span class="k">if</span> <span class="o">((</span><span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">next</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                       <span class="n">p</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
                       <span class="c1">// 如果达到了7个，开始变换数据结构</span>
-                      <span class="k">if</span> <span class="o">(</span><span class="n">binCount</span> <span class="o">&gt;=</span> <span class="no">TREEIFY_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="c1">// -1 for 1st</span>
+                      <span class="k">if</span> <span class="o">(</span><span class="n">binCount</span> <span class="o">&gt;=</span> <span class="n">TREEIFY_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="c1">// -1 for 1st</span>
                           <span class="c1">//传入的参数竟然是table和hash值</span>
                           <span class="n">treeifyBin</span><span class="o">(</span><span class="n">tab</span><span class="o">,</span> <span class="n">hash</span><span class="o">);</span>
                       <span class="k">break</span><span class="o">;</span>
@@ -87,7 +87,7 @@
           <span class="o">}</span>
 
           <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// existing mapping for key</span>
-              <span class="no">V</span> <span class="n">oldValue</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">value</span><span class="o">;</span>
+              <span class="n">V</span> <span class="n">oldValue</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">value</span><span class="o">;</span>
               <span class="k">if</span> <span class="o">(!</span><span class="n">onlyIfAbsent</span> <span class="o">||</span> <span class="n">oldValue</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
                   <span class="n">e</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
 <span class="c1">//               afterNodeAccess(e);</span>
@@ -104,12 +104,12 @@
 
 <p>这里面最重要的就是③ 和 ④ 两种情况，其中4种的 <strong>treeifyBin(tab, hash)</strong>  会首先被触发，在链表元素为七的时候，也就是：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>k0 -&gt; k1 -&gt; k2 -&gt; k3 -&gt; k4 -&gt; k5 -&gt; k6
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>k0 -&gt; k1 -&gt; k2 -&gt; k3 -&gt; k4 -&gt; k5 -&gt; k6
 </code></pre></div></div>
 
 <p>在k6 加入的时候，节点到达了7个的时候，触发：treeifyBin</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash) {
   	 	this.table = tab;
        int n, index; Node&lt;K,V&gt; e;
 //       if (tab == null || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)
@@ -141,12 +141,12 @@
 
 <p>从这里我们可以得到③的类型判断的逻辑了，如果节点是TreeNode节点的类型，那么数组内存储的就是一个红黑树了：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (p instanceof TreeNode)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (p instanceof TreeNode)
 </code></pre></div></div>
 
 <p>直接的调用，红黑树的插入操作了：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
 </code></pre></div></div>
 
 <p>关于红黑树的逻辑，我们下篇接着说，这篇我们主要集中在Map的数据结构。</p>
@@ -157,7 +157,7 @@
 
 <p>直接上代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public V remove(Object key) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public V remove(Object key) {
     Node&lt;K,V&gt; e;
     return (e = removeNode(hash(key), key, null, false, true)) == null ?
         null : e.value;
@@ -166,7 +166,7 @@
 
 <p>hash 算法为同一个算法</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
     Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, index;
 
     if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (p = tab[index = (n - 1) &amp; hash]) != null) {
@@ -214,7 +214,7 @@
 
 <p>节点的转化，肯定在红黑的删除操作中，由于红黑树的删除的操作比较的复杂，所以我们直接看我们关心的逻辑即可：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> final void removeTreeNode(MyMap&lt;K,V&gt; map, Node&lt;K,V&gt;[] tab,boolean movable) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> final void removeTreeNode(MyMap&lt;K,V&gt; map, Node&lt;K,V&gt;[] tab,boolean movable) {
 
    。。。。。。。。
    if (root == null || (movable&amp;&amp; (root.right == null|| (rl = root.left) == null || rl.left == null))) {
@@ -228,7 +228,7 @@
 
 <p>判断也比较有意思</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; untreeify(MyMap&lt;K,V&gt; map) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final Node&lt;K,V&gt; untreeify(MyMap&lt;K,V&gt; map) {
     Node&lt;K,V&gt; hd = null, tl = null;
     for (Node&lt;K,V&gt; q = this; q != null; q = q.next) {
         Node&lt;K,V&gt; p = map.replacementNode(q, null);

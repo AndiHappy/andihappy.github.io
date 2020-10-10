@@ -32,7 +32,7 @@
 <!--more-->
 题目的描述为：Given an unsorted array nums, reorder it such that nums[0] &lt; nums[1] &gt; nums[2] &lt; nums[3]….</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example 1:
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example 1:
 
 Input: nums = [1, 5, 1, 1, 6, 4]
 Output: One possible answer is [1, 4, 1, 5, 1, 6].
@@ -51,7 +51,7 @@ Can you do it in O(n) time and/or in-place with O(1) extra space?
 
 <p>基本的思路：</p>
 
-<p>如果数组已经是排好序的了，就是按照 <code class="language-plaintext highlighter-rouge">nums[0] &lt; nums[1] &gt; nums[2] &lt; nums[3]....</code> 那么我们能够把元素划分为两个组里面：
+<p>如果数组已经是排好序的了，就是按照 <code class="highlighter-rouge">nums[0] &lt; nums[1] &gt; nums[2] &lt; nums[3]....</code> 那么我们能够把元素划分为两个组里面：
 奇数组：  奇数的下标组成的数组，1，3，5 之类的
 欧数组： 偶数的下标组成的数组，0，2，4，6之类的</p>
 
@@ -60,12 +60,12 @@ Can you do it in O(n) time and/or in-place with O(1) extra space?
 <p>就是因为这种关系，导致我们不能够从头开始去排列数组中的元素。但是从全局的角度出发，我们能够得到，对于wiggly-sort的队列，它是可以转化为 奇数组的每一个元素不小于欧树组的元素。 下面为证明的过程：</p>
 
 <p>例如在奇数组的一个元素a，a小于偶数组的某一个元素b，也就是：
-<code class="language-plaintext highlighter-rouge">a &lt; b</code>
+<code class="highlighter-rouge">a &lt; b</code>
 c 和 d 为a的相邻的元素，e和f 为b的相邻的元素，根据wiggly-sort的特点，那么我们知道
-<code class="language-plaintext highlighter-rouge">c &lt;a ,d &lt;a  和  b &lt; e  , b &lt; f</code></p>
+<code class="highlighter-rouge">c &lt;a ,d &lt;a  和  b &lt; e  , b &lt; f</code></p>
 
 <p>现在我们交换a和b，那么我们知道:
-<code class="language-plaintext highlighter-rouge">c &lt; b, d &lt; b 和 a &lt; e, a &lt; f</code></p>
+<code class="highlighter-rouge">c &lt; b, d &lt; b 和 a &lt; e, a &lt; f</code></p>
 
 <p>那么我么就会发现，这并不影响wiggly-sort的属性，我们可以进行替换。也就是说我们可以把偶数组的大的元素替换为奇数组里面较小的元素，这样替换的结果就是：奇数组的元素不小于偶数组的元素。</p>
 
@@ -76,10 +76,10 @@ c 和 d 为a的相邻的元素，e和f 为b的相邻的元素，根据wiggly-sor
 <p>放置（Placement）：如果L中的元素全部的大于S中的元素，我们可以直接的放置L的元素在偶数的位置，S的元素在技术中的索引的位置，trick case 就是两个数组中拥有相同元素的时候的处理。</p>
 
 <p>首先，我们需要确认相等元素的数量：不会比S数组元素中的数量m多。还是采用反正法：假设我们拥有了不小于m个的相等的元素，那么在wiggly-sort后，这些元素必须占据所有的奇数位或者偶数位，因为它们是相等的，所以不能够相邻。我们拥有了不小于m个元素的，就不能够保证了wiggly-sort的属性。也就是说相等的元素的最多的数量为：m个 (计算方式为(n+1)/2) 样式如下所示：
-<code class="language-plaintext highlighter-rouge">3 &lt;5 &gt; 3 &lt; 5 &gt;3</code></p>
+<code class="highlighter-rouge">3 &lt;5 &gt; 3 &lt; 5 &gt;3</code></p>
 
 <p>然后，我们将证明：如果我们把相等的元素，如果相等的元素出现在S数组中，我们把它们安排在尽可能小的偶数组中，如果出现在L数组中，我们把它们安排在尽可能大的奇数组中，这样它们就不会相邻。我们假设 k1 和 k2 为S 和 L 中相等的元素，k为k1和k2之和。首先假设n为偶数，我们可以得到m为n/2,放置完成以后，S组中最后的可以放置的位置为：2<em>（k1-1），L 最后可以放置的位置为：（n-1）- 2</em>(k2-1) ,因为L是从最大的位置开始放置的。如果两个位置必须相隔1，这样再能够保证不相邻，那么就是：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2 * (k1 - 1) + 1 &lt; (n - 1) - 2 * (k2 - 1)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2 * (k1 - 1) + 1 &lt; (n - 1) - 2 * (k2 - 1)
 也就是：
 k1 + k2 &lt; [n/2] + 1：
 我们假设n为偶数，所以很容易得到：
@@ -92,7 +92,7 @@ k1 + k2 = k &lt;= n/2 = [n/2] &lt; [n/2] + 1.
 <p>第一种解决方案：排序，时间复杂度是：O(nlogn) 空间复杂度是：O(n)</p>
 
 <p>具体的代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
   int n = nums.length, m = (n + 1) &gt;&gt; 1;
   int[] copy = Arrays.copyOf(nums, n);
   Arrays.sort(copy);
@@ -105,7 +105,7 @@ k1 + k2 = k &lt;= n/2 = [n/2] &lt; [n/2] + 1.
 
 <p>第二种的解决的方案在第一种的基础之上，我们只需要知道分区和中间位置即可，借助了快排的思想演化出来的快速确认中间位置。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void wiggleSort(int[] nums) {
     // 来源于：https://leetcode.com/problems/kth-largest-element-in-an-array/submissions/
     //划定好分区以后
     int median=findKthLargest(nums,(nums.length+1)/2);
@@ -143,7 +143,7 @@ k1 + k2 = k &lt;= n/2 = [n/2] &lt; [n/2] + 1.
 </code></pre></div></div>
 
 <p>为了便于理解，我把一个运行的数组放在了下面：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n为偶数10,odd=1,even=8
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n为偶数10,odd=1,even=8
 输入的数组：
 3,2,1,5,6,4,11,7,0,5
 分区之后的数据：
@@ -167,7 +167,7 @@ n为奇数11，odd=1，even=10
 <p>此题目的关于，一个在于：O(n)的时间内确定findKthLargest的值，一个在于分析出wiggly排序的规则，都比较的困难，其中O(n)的时间内确定findKthLargest的值是基于快排的思想，具体的算法名称是：quickselect</p>
 
 <p>其中的伪代码为：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// pseudocode
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// pseudocode
  function partition(list, left, right, pivotIndex)
      pivotValue := list[pivotIndex]
      swap list[pivotIndex] and list[right]  // Move pivot to end
@@ -197,7 +197,7 @@ n为奇数11，odd=1，even=10
 
 <p>另外说到了快排，还会联想到Arrays.sort()的多路快排，以及普通的快排算法。
 首先是普通的快速排序算法,其伪代码为：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>algorithm quicksort(A, lo, hi) is
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>algorithm quicksort(A, lo, hi) is
     if lo &lt; hi then
         p := partition(A, lo, hi)
         quicksort(A, lo, p - 1)
@@ -217,7 +217,7 @@ algorithm partition(A, lo, hi) is
 
 <p>多路快排的算法实现如下：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/******************************************************************************
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/******************************************************************************
  *  Compilation:  javac QuickDualPivot.java
  *  Execution:    java QuickDualPivot &lt; input.txt
  *  Dependencies: StdOut.java StdIn.java

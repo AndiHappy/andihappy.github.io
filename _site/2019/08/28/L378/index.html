@@ -34,7 +34,7 @@
 
 <p>Note that it is the kth smallest element in the sorted order, not the kth distinct element.
 <!--more--></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
 
 matrix = [
    [ 1,  5,  9],
@@ -56,16 +56,16 @@ You may assume k is always valid, 1 ≤ k ≤ n2.</p>
 
 <p>然后我们就去分析这道题目为什么不能直接的使用二分查找，二分查找有一个中间值和中间值的索引：</p>
 
-<p><code class="language-plaintext highlighter-rouge">from  to  和 mid = from+ （to-from）/2</code></p>
+<p><code class="highlighter-rouge">from  to  和 mid = from+ （to-from）/2</code></p>
 
 <p>对应到这个题目就是：
-<code class="language-plaintext highlighter-rouge">[0][0] 和 [n][n]  mid = [0+(n-0)/2][0+(n-0)/2]</code></p>
+<code class="highlighter-rouge">[0][0] 和 [n][n]  mid = [0+(n-0)/2][0+(n-0)/2]</code></p>
 
 <p>再然后就是判断第K的跳转，是 from 到 mid 还是 mid 到 from，这个就和第K小的判断有关了，需要判断 mid 在数组中是第几小，然后和K进行比较。</p>
 
 <p>具体的代码实现为：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int kthSmallest(int[][] matrix,int k){
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int kthSmallest(int[][] matrix,int k){
     int n = matrix.length;
     int from = matrix[0][0];int to = matrix[n-1][n-1];
 
@@ -92,7 +92,7 @@ You may assume k is always valid, 1 ≤ k ≤ n2.</p>
 
 <p>再然后就是优化一部分的逻辑，或者说归纳统一的逻辑，例如确定mid是第几小，可以归纳为一个方法里面。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int kthSmallest(int[][] matrix, int k) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int kthSmallest(int[][] matrix, int k) {
         int n = matrix.length;
         int lo = matrix[0][0], hi = matrix[n-1][n-1];
         while(lo &lt; hi){

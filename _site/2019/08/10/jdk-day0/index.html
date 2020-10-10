@@ -37,7 +37,7 @@
 JDK8的第一个新特性，接口中可以通过default关键字来定义方法的默认行为。</li>
 </ol>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface Formula {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface Formula {
     double calculate(int a);
     default double sqrt(int a) {
         return Math.sqrt(a);
@@ -56,7 +56,7 @@ formula.sqrt(16);// 4.0
 
 <p>JDK8的第二个特性就是Lambda表达式。为了替换匿名的类，Java8支持了一个更加短的语法糖：lambda表达式。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; names = Arrays.asList("peter", "anna", "mike", "xenia");
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; names = Arrays.asList("peter", "anna", "mike", "xenia");
 
 Collections.sort(names, new Comparator&lt;String&gt;() {
     @Override
@@ -82,7 +82,7 @@ functional interface 函数式接口，当然首先是一个接口，然后就�
 <p>1.函数式接口里允许定义默认方法：
 2.函数式接口里允许定义静态方法：
 3.函数式接口里允许定义java.lang.Object里的public方法，代码类似：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@FunctionalInterface
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@FunctionalInterface
 	interface Converter&lt;F, T&gt; {
 	    T convert(F from);
 	    boolean equals(Object obj);
@@ -90,7 +90,7 @@ functional interface 函数式接口，当然首先是一个接口，然后就�
 	}
 </code></pre></div></div>
 <p>4.函数式接口里允许子接口继承多个父接口，但每个父接口中都只能存在一个抽象方法，且必须的相同的抽象方法。代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface PConverter1&lt;F, T&gt; {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface PConverter1&lt;F, T&gt; {
    T convert(F from);
 }
 
@@ -107,7 +107,7 @@ interface Converter&lt;F, T&gt; extends PConverter1, PConverter2{
 <p>另外，Java 8 enables you to pass references of methods or constructors via the :: keyword. The above example shows how to reference a static method. But we can also reference object methods:
 Java8 支持:: 操作，代表着一种对方法的调用</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//举例1：静态方法的使用
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//举例1：静态方法的使用
 Converter&lt;String, Integer&gt; converter = Integer::valueOf;
 Integer converted = converter.convert("123");
 System.out.println(converted);   // 123
@@ -146,7 +146,7 @@ Person person = personFactory.create("Peter");
 
 <p>接触了Lamdba的使用方式，经常会在 Google Guava 的jar中使用的一些常见的lamdba用法如下：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicate&lt;String&gt; predicate = (s) -&gt; s.length() &gt; 0;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicate&lt;String&gt; predicate = (s) -&gt; s.length() &gt; 0;
 predicate.test("foo");              // true
 predicate.negate().test("foo");     // false
 Predicate&lt;Boolean&gt; nonNull = Objects::nonNull;

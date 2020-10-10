@@ -40,7 +40,7 @@
 </ol>
 
 <p>我们先从基础类说明：AtomicBoolean有三个主要的成员变量：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
 private static final long valueOffset;
 
 static {
@@ -55,7 +55,7 @@ private volatile int value;
 </code></pre></div></div>
 
 <p>主要的方法：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean get() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean get() {
      return value != 0;
 }
 
@@ -73,7 +73,7 @@ compareAndSet方法来设置value的值。</p>
 
 <p>AtomicIntegerArray 的实现的源码，也是操作内存地址，但是因为是数组，所以有了些许的变化：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicIntegerArray：
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicIntegerArray：
 
 private static final int base = unsafe.arrayBaseOffset(int[].class);
  private static final int shift;
@@ -100,7 +100,7 @@ private static final int base = unsafe.arrayBaseOffset(int[].class);
 
 <p>我们看一个具体的实现：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean compareAndSet(int i, int expect, int update) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean compareAndSet(int i, int expect, int update) {
   return compareAndSetRaw(checkedByteOffset(i), expect, update);
  }
 
@@ -109,8 +109,8 @@ private static final int base = unsafe.arrayBaseOffset(int[].class);
  }
 </code></pre></div></div>
 
-<p>checkedByteOffset 就是根据i，确实能够<code class="language-plaintext highlighter-rouge">array[i]</code> 对应的内存地址： <code class="language-plaintext highlighter-rouge">((long) i &lt;&lt; shift) + base</code>
-其中shift 为 <code class="language-plaintext highlighter-rouge">31 - Integer.numberOfLeadingZeros(unsafe.arrayIndexScale(int[].class))</code>
+<p>checkedByteOffset 就是根据i，确实能够<code class="highlighter-rouge">array[i]</code> 对应的内存地址： <code class="highlighter-rouge">((long) i &lt;&lt; shift) + base</code>
+其中shift 为 <code class="highlighter-rouge">31 - Integer.numberOfLeadingZeros(unsafe.arrayIndexScale(int[].class))</code>
 就看计算公式，就让我们想起来数组的基础地址 + i* 每一个元素所占的步长的算法。</p>
 
 <p>这也是其他的数组类原子类的基本操作了。</p>

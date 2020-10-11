@@ -124,14 +124,15 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
         <span class="c1">// possible candidate substring. The pointer on the left</span>
         <span class="c1">// is the start of the final answer. Move the pointer with</span>
         <span class="c1">// smaller ASCII value to the right.</span>
+        <span class="c1">// 两个类似指针的标志位，i和j, i 表示最后字段子串的起始位，j为滑动窗口的位置，curLen为窗口的大小</span>
         <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">,</span> <span class="n">curLen</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
         <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">curLen</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 如果窗口的越过了n则直接的结束</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="o">||</span> <span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
                 <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
+            <span class="c1">// 窗口的开始大小为0，所以扩展的前提是：i和j的下一个字符是一样的，可以直接则增加窗口</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">)</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">))</span> <span class="o">{</span>
-                <span class="c1">// If two strings have currently have the same priority,</span>
-                <span class="c1">// extend the length by 1 to see if it will make a difference</span>
                 <span class="n">curLen</span><span class="o">++;</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="c1">// If two strings have different priority, move the pointer that</span>
@@ -148,6 +149,7 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
                 <span class="c1">// character between index 1 (the first a) and pointer j has higher</span>
                 <span class="c1">// priority than the character pointed to by j, then i will have left</span>
                 <span class="c1">// i long ago, which is clearly a contradiction.</span>
+                <span class="c1">// 如果位置i的字符的字典序，小于j字符的字典序，i直接的递增curLen + 1</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">))</span> <span class="o">{</span>
                     <span class="n">i</span> <span class="o">+=</span> <span class="n">curLen</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
                 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -164,6 +166,8 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
     <span class="o">}</span>
 </code></pre></div></div>
+
+<p>i和j的移动，就是第一版的优化而来的，并不是特别的依赖某种的算法过来的。</p>
 
 
         
@@ -182,6 +186,11 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
                 <a href="/2020/10/09/amotion2/">焦虑情绪的由来</a>
             </li>
             
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2020/10/10/leetcode/">【leetcode】1162. As Far from Land as Possible</a>
+            </li>
             
         </ul>
         

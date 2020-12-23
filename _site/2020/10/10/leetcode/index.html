@@ -77,16 +77,15 @@ grid[i][j] is 0 or 1
 
 <p>首先想到的是深度搜索，或者是广度搜索，但是在一想，代码不知道怎么写，这可怎么办？</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">maxDistance</span><span class="o">(</span><span class="kt">int</span><span class="o">[][]</span> <span class="n">grid</span><span class="o">)</span> <span class="o">{</span>
-        
-    <span class="o">}</span>
-</code></pre></div></div>
-
 <p>所以，必须有一定的底层算法的储备，所以准备：</p>
 <ol>
   <li>找一本算法书籍，针对常规的算法的数据，做一下补充</li>
   <li>找前500道题目背下来，最起码能在3分钟中，完成的默写出来代码。</li>
 </ol>
+
+<p>继续回到这道题目上来：我们需要遍历所有的0元素，找到离1元素最近的值，然后在最近的值中挑选出来最大的那个。</p>
+
+<p>针对这个思想的前提，对一个二维数组，我们要进行遍历。</p>
 
 
         

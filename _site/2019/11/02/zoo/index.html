@@ -32,12 +32,12 @@
 
 <!--more-->
 
-<p>我们使用<code class="highlighter-rouge">ps -ef| grep zoo</code>来过滤出来zookeeper的进程。
+<p>我们使用<code class="language-plaintext highlighter-rouge">ps -ef| grep zoo</code>来过滤出来zookeeper的进程。
 <img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.jpg" alt="进程的展示" /></p>
 
 <p>其中的红圈中的就是进程的启动的JAVA类名和配置文件。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //示例0:单实例ZK的启动过程 2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //示例0:单实例ZK的启动过程 2
     public static void main(String[] args) {
     	  args = new String[1];
     	  args[0] = "conf/zoo.cfg";
@@ -51,7 +51,7 @@
     }
 </code></pre></div></div>
 
-<p>我们的启动类是：<code class="highlighter-rouge">org.apache.zookeeper.server.quorum.QuorumPeerMain</code></p>
+<p>我们的启动类是：<code class="language-plaintext highlighter-rouge">org.apache.zookeeper.server.quorum.QuorumPeerMain</code></p>
 
 <p>无论是单例还是集群。</p>
 

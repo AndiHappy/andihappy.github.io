@@ -41,7 +41,7 @@
 </ol>
 
 <h3 id="reentrantlock-lock-方法">ReentrantLock lock 方法</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ReentrantLock() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public ReentrantLock() {
 	sync = new NonfairSync();
 }
 public void lock() {
@@ -52,7 +52,7 @@ public void lock() {
 <p>符合使用框架的时候，都采用内部类NonfairSync来实现实现的需要实现的接口，这点也符合DOC的说明。</p>
 
 <p>NonfairSync 的实现逻辑如下：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static final class NonfairSync extends Sync {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static final class NonfairSync extends Sync {
   /**
    * so beautiful ！ 整个操作如此的不见烟火气：
    *
@@ -93,7 +93,7 @@ public void lock() {
 <p>然后具体的流程就是CAS后，设置独占线程，Note：这个独占线程为普通的成员变量。</p>
 
 <p>再次就是acquire(1) ,这个方法其实调用的是AQS中的那个经典的方法：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//独占模式下的获取锁
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//独占模式下的获取锁
  public final void acquire(int arg) {
   if (!tryAcquire(arg) &amp;&amp; // tryAcquire 为子类必须实现的方法，提供扩展的逻辑
     acquireQueued(addWaiter(Node.EXCLUSIVE), arg)) // 获取锁失败以后
@@ -102,7 +102,7 @@ public void lock() {
 </code></pre></div></div>
 
 <p>其中的tryAcquire方法，就是在NonfairSync 继承的 Sync 中实习。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
    * 非公平获取锁 ！！！重要的框架！！！
    */
   final boolean nonfairTryAcquire(int acquires) {
@@ -132,7 +132,7 @@ public void lock() {
 <p>然后再去判断是否是独占线程，如果是，则去更新state的状态。</p>
 
 <p>返回以后，则进入AQS的框架中，如果没有抢到锁，则进入等待的队列，这里需要说一下这个等待的队列的加入函数：addWaiter</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 独占性的节点和共享性的节点，加入等待的链表中
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 独占性的节点和共享性的节点，加入等待的链表中
  private Node addWaiter(Node mode) {
   Node node = new Node(Thread.currentThread(), mode);
   // Try the fast path of enq; backup to full enq on failure
@@ -164,7 +164,7 @@ public void lock() {
 
 <p>然后就是更新线程队列的状态（我们现在只讨论比较普通的状况，特殊的等到遇见了在进行说明），以及怎么让线程“停下来”：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final boolean acquireQueued(final Node node, int arg) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final boolean acquireQueued(final Node node, int arg) {
   boolean failed = true;
   try {
    boolean interrupted = false;
@@ -188,11 +188,11 @@ public void lock() {
  }
 </code></pre></div></div>
 
-<p>再去更新等待队列线程节点Node的状态的时候，还是首先的去尝试获取锁，当然这个尝试是有条件的，那就是：<code class="highlighter-rouge">node.predecessor() == head</code> 这个条件就是说明，node的前一个节点就是头结点，在等待队列初始化的时候，我们已经知道头结点只是一个“象征节点”，是没有对应线程的。所以如果满足条件，那么这个就应该是争抢锁的下一个节点。</p>
+<p>再去更新等待队列线程节点Node的状态的时候，还是首先的去尝试获取锁，当然这个尝试是有条件的，那就是：<code class="language-plaintext highlighter-rouge">node.predecessor() == head</code> 这个条件就是说明，node的前一个节点就是头结点，在等待队列初始化的时候，我们已经知道头结点只是一个“象征节点”，是没有对应线程的。所以如果满足条件，那么这个就应该是争抢锁的下一个节点。</p>
 
-<p>如果不满足条件，则会调用：<code class="highlighter-rouge">shouldParkAfterFailedAcquire</code> 这个就是线程对应的链表状态的更新：</p>
+<p>如果不满足条件，则会调用：<code class="language-plaintext highlighter-rouge">shouldParkAfterFailedAcquire</code> 这个就是线程对应的链表状态的更新：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
   int ws = pred.waitStatus;
   if (ws == Node.SIGNAL)
    /*
@@ -226,17 +226,17 @@ public void lock() {
 </code></pre></div></div>
 
 <p>这里注意一下：
-<code class="highlighter-rouge">acquireQueued</code> 是一个无限的for循环结构，所以<code class="highlighter-rouge">shouldParkAfterFailedAcquire</code> 可能会被调用很多次。所以一般的会被调用两次，第一次，因为新建的Node节点，waitStatus 就是默认值0，所以如果下载再有阻塞节点的时候，
-<code class="highlighter-rouge">node.pre == 0</code>
+<code class="language-plaintext highlighter-rouge">acquireQueued</code> 是一个无限的for循环结构，所以<code class="language-plaintext highlighter-rouge">shouldParkAfterFailedAcquire</code> 可能会被调用很多次。所以一般的会被调用两次，第一次，因为新建的Node节点，waitStatus 就是默认值0，所以如果下载再有阻塞节点的时候，
+<code class="language-plaintext highlighter-rouge">node.pre == 0</code>
 都会先把前驱节点设置为：Node.SIGNAL，也就是调用：
-<code class="highlighter-rouge">compareAndSetWaitStatus(pred, ws, Node.SIGNAL)</code>
+<code class="language-plaintext highlighter-rouge">compareAndSetWaitStatus(pred, ws, Node.SIGNAL)</code>
 然后下次acquireQueued的for循环里面，再次判断的时候<br />
- <code class="highlighter-rouge">node.pre 就等于 Node.SIGNAL</code>
+ <code class="language-plaintext highlighter-rouge">node.pre 就等于 Node.SIGNAL</code>
 然后shouldParkAfterFailedAcquire，返回了true。</p>
 
-<p>轮到了函数：<code class="highlighter-rouge">parkAndCheckInterrupt</code> 这个方法很有意思：</p>
+<p>轮到了函数：<code class="language-plaintext highlighter-rouge">parkAndCheckInterrupt</code> 这个方法很有意思：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private final boolean parkAndCheckInterrupt() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private final boolean parkAndCheckInterrupt() {
   LockSupport.park(this);
   return Thread.interrupted();
  }
@@ -259,7 +259,7 @@ public void lock() {
 给与参数中的Thread中的凭证，也就是立刻的唤醒对应的线程。</p>
 
 <p>另外还有一点，unpark可以在 park之前调用，这样就不必担心漏掉“凭证”。具体的测试代码见：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws InterruptedException {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws InterruptedException {
 
   Thread test1 = new Thread(new Runnable() {
    @Override
@@ -286,13 +286,13 @@ public void lock() {
  }
 </code></pre></div></div>
 
-<p>然后回到<code class="highlighter-rouge">parkAndCheckInterrupt</code> 方法，则等待的队列中的线程，算是真正的在等待着了。后面的只有等待别的线程释放锁以后，才能够运行了，我们接着看realease方法。</p>
+<p>然后回到<code class="language-plaintext highlighter-rouge">parkAndCheckInterrupt</code> 方法，则等待的队列中的线程，算是真正的在等待着了。后面的只有等待别的线程释放锁以后，才能够运行了，我们接着看realease方法。</p>
 
 <h3 id="reentrantlock-unlock-方法">ReentrantLock unlock 方法</h3>
 
 <p>unlock 方法和lock的方法，又有很大的不同，因为lock方法一开始调用的时候，也就是一开始执行CAS代码的时候，是可能多个线程同时执行，但是unlock方法，在一开始的时候，只有拥有锁的方法，才去调用。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void unlock() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void unlock() {
   sync.release(1);
  }
 
@@ -317,7 +317,7 @@ public void lock() {
 
 <p>我们还是按照原来的流程，先去关注Sync实现的子类方法tryRelease：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> /**
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> /**
    * 释放的时候，肯定是获得锁的线程进行调用，所以不需要CAS之类的操作，只需要判定状态即可
    */
   protected final boolean tryRelease(int releases) {
@@ -338,7 +338,7 @@ public void lock() {
 
 <p>然后就是 release方法中的 再次争抢锁的过程了，这里面有一个比较重要的看点</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private void unparkSuccessor(Node node) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private void unparkSuccessor(Node node) {
   // 把当Node节点（head节点），设置为了状态0
   int ws = node.waitStatus;
   if (ws &lt; 0)
@@ -360,7 +360,7 @@ public void lock() {
 <p>这个方法有意思的一点就是，是和shouldParkAfterFailedAcquire 相对应的，shouldParkAfterFailedAcquire 把自己的pre Node 设置为Node.SIGNAL 状态，而unparkSuccessor 把Node 设置为原来的0 状态。</p>
 
 <p>然后调用：
- <code class="highlighter-rouge">LockSupport.unpark(s.thread)</code> 
+ <code class="language-plaintext highlighter-rouge">LockSupport.unpark(s.thread)</code> 
 唤醒队列中最先等待的线程，让它去抢锁。</p>
 
 <blockquote>
@@ -369,7 +369,7 @@ public void lock() {
 
 <p>我们在来看一下，公平锁是怎么实现的，公平又是如何体现的：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static final class FairSync extends Sync {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static final class FairSync extends Sync {
   private static final long serialVersionUID = -3000897897090466540L;
 
   final void lock() {
@@ -414,7 +414,7 @@ public void lock() {
 </blockquote>
 
 <p>其中hasQueuedPredecessors代码如下：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean hasQueuedPredecessors() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final boolean hasQueuedPredecessors() {
   Node t = tail; // Read fields in reverse initialization order
   Node h = head;
   Node s;
@@ -428,7 +428,7 @@ public void lock() {
 <p>到了这里公平锁的逻辑就算理清楚了，它是在抢锁的时候，保证公平，如果有等待队列的时候，新进来的线程，首先会进行：!hasQueuedPredecessors，立马回返回false，因为存在等待的线程，并且当前的等待激活的线程不是当前的线程，就会立即的进入等待线程中等待。</p>
 
 <p>但是被唤醒的线程，就会因为当前的等待激活的线程就是当前的线程
-，而去执行<code class="highlighter-rouge">compareAndSetState(0, acquires)</code> 才有可能抢到锁。</p>
+，而去执行<code class="language-plaintext highlighter-rouge">compareAndSetState(0, acquires)</code> 才有可能抢到锁。</p>
 
 
         

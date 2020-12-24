@@ -48,7 +48,7 @@
 </blockquote>
 
 <p>启动的开始：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>processInstance.start();
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>processInstance.start();
 //这里的ProcessInstance的类型是ExecutionEntity，不管是流程定义对应的流程实例，还是活动定义对应的活动实例，都是ExecutionEntity，仔细查看会发现，流程实例的ExecutionEntity和活动实例非常的相似
 
 //流程实例启动
@@ -79,7 +79,7 @@ public void start() {
 </code></pre></div></div>
 <p>AtomicOperation相当于定义了流程流转的动作，所有的流程的动作都在这个接口中定义</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface AtomicOperation {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface AtomicOperation {
   AtomicOperation PROCESS_START = new AtomicOperationProcessStart();
   AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
   AtomicOperation PROCESS_END = new AtomicOperationProcessEnd();
@@ -104,7 +104,7 @@ public void start() {
 <p>就拿流程实例启动来说：AtomicOperationProcessStart来说，首先是抽象类里面的，
 void execute(InterpretableExecution execution);</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public void execute(InterpretableExecution execution) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public void execute(InterpretableExecution execution) {
  //首先是判断监听的逻辑
     ScopeImpl scope = getScope(execution);
     List&lt;ExecutionListener&gt; exectionListeners = scope.getExecutionListeners(getEventName());
@@ -133,7 +133,7 @@ void execute(InterpretableExecution execution);</p>
 </code></pre></div></div>
 <p>然后就是自己实现的eventNotificationsCompleted(execution);</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> @Override
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> @Override
   protected void eventNotificationsCompleted(InterpretableExecution execution) {
   //首先还是事件通知
   	if (Context.getProcessEngineConfiguration() != null &amp;&amp; Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
@@ -160,13 +160,13 @@ void execute(InterpretableExecution execution);</p>
 </code></pre></div></div>
 <p>说明①：流程实例启动后，直接的跳转到：PROCESS_START_INITIAL，即：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
 </code></pre></div></div>
-<p>执行的过程是,首先是：      <code class="highlighter-rouge">org.activiti.engine.impl.pvm.runtime.AbstractEventAtomicOperation.execute(InterpretableExecution)</code></p>
+<p>执行的过程是,首先是：      <code class="language-plaintext highlighter-rouge">org.activiti.engine.impl.pvm.runtime.AbstractEventAtomicOperation.execute(InterpretableExecution)</code></p>
 
 <p>然后才是正式的逻辑：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
   protected void eventNotificationsCompleted(InterpretableExecution execution) {
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
 
@@ -198,11 +198,11 @@ void execute(InterpretableExecution execution);</p>
 </code></pre></div></div>
 <p>然后就到了activity的执行的逻辑：</p>
 
-<p><code class="highlighter-rouge">AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();</code></p>
+<p><code class="language-plaintext highlighter-rouge">AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();</code></p>
 
 <p>具体的执行的逻辑是：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
 
     ActivityBehavior activityBehavior = activity.getActivityBehavior();
@@ -236,7 +236,7 @@ void execute(InterpretableExecution execution);</p>
 </code></pre></div></div>
 <p>activity的行为活动就非常的多了：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehavior extends Serializable {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehavior extends Serializable {
   void execute(ActivityExecution execution) throws Exception;
 }
 </code></pre></div></div>

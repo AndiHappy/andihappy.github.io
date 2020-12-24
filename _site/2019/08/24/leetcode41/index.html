@@ -32,7 +32,7 @@
 
 <!--more-->
 <p>问题的描述为：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an unsorted integer array, find the smallest missing positive integer.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an unsorted integer array, find the smallest missing positive integer.
  Example 1:
  Input: [1,2,0]
  Output: 3
@@ -50,7 +50,7 @@
 这里面的uses constant extra space 和 O(n) 也算是一种提示吧。</p>
 
 <p>具体的代码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int firstMissingPositive_(int[] A) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int firstMissingPositive_(int[] A) {
   int i = 0;
   while (i &lt; A.length) {
    if (A[i] == i + 1 || A[i] &lt;= 0 || A[i] &gt; A.length)

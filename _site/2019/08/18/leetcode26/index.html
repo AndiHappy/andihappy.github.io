@@ -38,7 +38,7 @@
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.
 
 Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
 
@@ -77,12 +77,12 @@ for (int i = 0; i &lt; len; i++) {
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>关键在于 in-place 操作，但是反过来想， in-place 操作也是算法提示的一种。
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>关键在于 in-place 操作，但是反过来想， in-place 操作也是算法提示的一种。
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] nums) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] nums) {
 
 	public int removeDuplicates(int[] nums) {
 		if(nums == null || nums.length &lt;2) return nums.length;
@@ -100,7 +100,7 @@ for (int i = 0; i &lt; len; i++) {
 </code></pre></div></div>
 
 <p>在比较一下标准的简练答案：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] A) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int removeDuplicates(int[] A) {
     if (A.length&lt;=1) return nums.length;
     int j=0;
     for (int i=0; i&lt;A.length; i++)

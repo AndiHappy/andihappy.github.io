@@ -33,7 +33,7 @@
 
 <p>ForkJoinPool，首先上代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//计算 π 的值有一个通过多项式方法，即：π = 4 * (1 - 1/3 + 1/5 - 1/7 + 1/9 - ……)，而且多项式的项数越多，计算出的 π 的值越精确
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//计算 π 的值有一个通过多项式方法，即：π = 4 * (1 - 1/3 + 1/5 - 1/7 + 1/9 - ……)，而且多项式的项数越多，计算出的 π 的值越精确
 	static class PiEstimateTask extends RecursiveTask&lt;Double&gt; {
 		private static final long serialVersionUID = 1L;
 		private final long begin;
@@ -163,7 +163,7 @@ join()：等待该任务的处理线程处理完毕，获得返回值。</p>
 
 <h3 id="stream中应用forkjoinpool">stream中应用ForkJoinPool</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Arrays.asList("a1", "a2", "b1", "c2", "c1")
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Arrays.asList("a1", "a2", "b1", "c2", "c1")
                 .parallelStream()
                 .filter(s -&gt; {
                     System.out.format("filter: %s [%s]\n",

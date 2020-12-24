@@ -36,7 +36,7 @@
 
 <p>描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Write a function to find the longest common prefix string amongst an array of strings.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Write a function to find the longest common prefix string amongst an array of strings.
 
 If there is no common prefix, return an empty string "".
 
@@ -56,12 +56,12 @@ All given inputs are in lowercase letters a-z.
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>遍历寻找即可
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>遍历寻找即可
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public String longestCommonPrefix_copy(String[] strs) {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public String longestCommonPrefix_copy(String[] strs) {
   if(strs == null || strs.length == 0) return "";
   if(strs.length == 1) return strs[0];
   int from = 0;boolean flag = true;
@@ -86,7 +86,7 @@ All given inputs are in lowercase letters a-z.
 
 <p>题目描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
 
 Note:
 
@@ -105,12 +105,12 @@ A solution set is:
 
 <p>思路：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>首先是排序，拍好了续，才能够使用“双指针的方法”，最后注意相等的值的处理
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>首先是排序，拍好了续，才能够使用“双指针的方法”，最后注意相等的值的处理
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/***
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/***
  * 关键在于nums的先排序
  * 然后两头堵的方式，from =0，end = length-1 ， 中间的sum = sumvalue- (from+end)
  * 循环的条件是先确定匹配值i（0 到 length-1），然后去（i+1，i+2，。。。length-1 中寻找from 和 end）

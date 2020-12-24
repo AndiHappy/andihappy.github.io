@@ -33,7 +33,7 @@
 <!--more-->
 
 <p>题目描述：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given n non-negative integers a1, a2, ..., an ,
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given n non-negative integers a1, a2, ..., an ,
 where each represents a point at coordinate (i, ai).
 n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0).
 Find two lines, which together with x-axis forms a container,
@@ -52,7 +52,7 @@ Output: 49
 
 <p>思路清晰，这道题和原来的不同:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
     y
     ^
     |
@@ -70,7 +70,7 @@ Output: 49
 <p>这就是一个“双指针”移动的问题。</p>
 
 <p>代码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static int max(int[] A) {  
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static int max(int[] A) {  
 
     int S = 0, i = 0, j = A.length -1;
     while (i &lt; j) {

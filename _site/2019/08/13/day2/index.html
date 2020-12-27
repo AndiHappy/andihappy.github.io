@@ -33,7 +33,7 @@
 <!--more-->
 <p>第12题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
 
 Symbol       Value
 I             1
@@ -78,12 +78,12 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>阿拉伯数字到古罗马数字的转化，最关键的是确定数字的范围，但是这里有一个小技巧，如果是100，那么M的值为0个，应该怎么在代码中优雅的表述尼？
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>阿拉伯数字到古罗马数字的转化，最关键的是确定数字的范围，但是这里有一个小技巧，如果是100，那么M的值为0个，应该怎么在代码中优雅的表述尼？
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static String intToRoman(int num) {  
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static String intToRoman(int num) {  
 
         //1000-3000
         String M[] = {"", "M", "MM", "MMM"};
@@ -101,7 +101,7 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
 <p>第13题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
 
 Symbol       Value
 I             1
@@ -146,12 +146,12 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>古罗马数字到的阿拉伯数字转化
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>古罗马数字到的阿拉伯数字转化
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int romanToInt(String s) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int romanToInt(String s) {
 
   if(s == null || s.length() == 0) return 0;
 	int len = s.length();

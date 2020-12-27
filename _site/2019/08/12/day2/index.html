@@ -33,7 +33,7 @@
 <!--more-->
 <p>题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
 
 '.' Matches any single character.
 '*' Matches zero or more of the preceding element.
@@ -81,7 +81,7 @@ Output: false
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  首先确定是动态规划的匹配性的问题
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  首先确定是动态规划的匹配性的问题
 
   其次，确定问题的分解dp[i][j] 标识的是if s.substring(0,i) is valid for pattern p.substring(0,j) 这步是最困难的点。
 
@@ -101,7 +101,7 @@ Output: false
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public boolean isMatch(String s, String p) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public boolean isMatch(String s, String p) {
         if(s == null || p == null) {
             return false;
         }

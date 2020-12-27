@@ -36,7 +36,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
 
 (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
 
@@ -57,13 +57,13 @@ Output: -1
 </code></pre></div></div>
 
 <p>思路：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>既然是有一段数据被翻转回到了数据的开头，那我们怎么能够比较巧妙的翻转回去尼？
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>既然是有一段数据被翻转回到了数据的开头，那我们怎么能够比较巧妙的翻转回去尼？
 
 i = (i + k) % n
 </code></pre></div></div>
 
 <p>具体的代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int search(int A[], int n, int target) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int search(int A[], int n, int target) {
   int lo = 0, hi = n - 1;
   //！！！寻找折点的算法也是折半查找！！！
   while (lo &lt; hi) {

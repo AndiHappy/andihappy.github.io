@@ -38,7 +38,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
 
 Example:
 
@@ -53,7 +53,7 @@ Output: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>我们已经实现过了 Merge two Sorted Lists,使用的是while循环，直接的设置一个新的List。但是这个就有点力不从心了，因为这个K值的大小无法确定，而且寻找最小的当前节点也比较的费时。需要采用另外的策略。
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>我们已经实现过了 Merge two Sorted Lists,使用的是while循环，直接的设置一个新的List。但是这个就有点力不从心了，因为这个K值的大小无法确定，而且寻找最小的当前节点也比较的费时。需要采用另外的策略。
 
 利用已经有的Merge two Sorted Lists，直接的采用分治的策略，先两两合并，然后在同一的合并在一起。
 
@@ -62,7 +62,7 @@ Output: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 public static ListNode mergeKLists_best(ListNode[] lists){
     return partion(lists,0,lists.length-1);
 }
@@ -99,7 +99,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
 <p>其中的mergeTwoLists，还可以再次的使用递归的算法合并：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//This function is from Merge Two Sorted Lists.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//This function is from Merge Two Sorted Lists.
 public static ListNode merge(ListNode l1,ListNode l2){
     if(l1==null) return l2;
     if(l2==null) return l1;

@@ -119,7 +119,7 @@ f下标开始是1：tree[1] = f[1],
 <p>Note：为了简洁起见，我们将使用“最后一位”来指代相应整数二进制表达的时候，最后一个1. 例如100 的二进制表述为：110 0100，相对应的最后一位为：110 0<strong>1</strong>00</p>
 
 <p>BIT的算法要求数字的最后一位，所以我们需要一种更加高效的方法找到最后一位。例如，n为一个int数字，我们可以使用a1b来表示它的二进制，其中a标识二进制中最后一位1前面的数字，b标识二进制中最后一位1后面的0。 所以int数字n可以表述为：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 n = a1b = a0b+1
 
 //负数的在计算机中，使用补码进行表示 `表示反码的操作
@@ -130,7 +130,7 @@ n = a1b = a0b+1
 </code></pre></div></div>
 
 <p>根据我们的推到，就可以使用JAVA中的&amp;运算取出最后一位了，如下所示：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>       a1b       // 这个就是n
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>       a1b       // 这个就是n
 &amp;     a`1b       // 这个就是n的补码表示：反码+1，也就是-n
 ——————–—————–
 = (0…0)1(0…0)
@@ -151,7 +151,7 @@ n = a1b = a0b+1
 
 <p>使用JAVA代码表述为：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int read(int idx){
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int read(int idx){
     int sum = 0;
     while (idx &gt; 0){
         sum += tree[idx];
@@ -179,7 +179,7 @@ n = a1b = a0b+1
 </ol>
 
 <p>对应的代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void update(int idx, int val){
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void update(int idx, int val){
     while (idx &lt;= MaxIdx){
         tree[idx] += val;
         idx += (idx &amp; -idx);
@@ -215,7 +215,7 @@ sum[j] = tree[j]+tree[k]+tree[p]+tree[n]…+tree[0]</p>
 读取的函数将idx的最后一位一一删除。
 经过几个步骤，活动索引idx变为a0b（提醒一下，最初idx等于y = a0b），与z相同。在这一点上，我们停止了两条路径相遇，一条路径来自x，另一条路径来自y。现在，我们可以编写类似于此讨论的算法。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int readSingle(int idx) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int readSingle(int idx) {
 	int sum = tree[idx]; // this sum will be decreased
 	if (idx &gt; 0) { // the special case
 		int z = idx - (idx &amp; -idx);

@@ -56,7 +56,7 @@ BlockingQueue有大小限制,若不带大小参数,所生成的BlockingQueue的�
 <h3 id="arrayblockingqueue-主要实现的逻辑">ArrayBlockingQueue<E> 主要实现的逻辑</E></h3>
 
 <p>我们还可以先回看一下ArrayQueue的实现：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 成员变量
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 成员变量
 
 private int capacity;
 private T[] queue;
@@ -114,7 +114,7 @@ public T remove(int i) {
 
 <p>然后我们再看BlockingQueue的方法的实现：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> // ArrayBlockingQueue 的成员变量：
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> // ArrayBlockingQueue 的成员变量：
 
  /** The queued items */
  final Object[] items;
@@ -150,7 +150,7 @@ public T remove(int i) {
 
 <p>具体的方法的实现：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public boolean add(E e) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public boolean add(E e) {
   return super.add(e);
  }
 
@@ -240,7 +240,7 @@ private E dequeue() {
 
 <p>LinkedBlockingQueue 的实现的源码，对比ArrayBlockingQueue，实现的框架上面，基本相同。当时具体的数据处理是不一样的。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public boolean add(E e) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public boolean add(E e) {
   addLast(e);
   return true;
  }
@@ -284,26 +284,26 @@ private E dequeue() {
 
 <p>这里面中的信号，使用到了Condition，Condition的建立是：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lock = new ReentrantLock(fair);
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lock = new ReentrantLock(fair);
   notEmpty = lock.newCondition();
   notFull = lock.newCondition();
 </code></pre></div></div>
 <p>ReentrantLock 的 newCondition的方法是</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ReentrantLock.newCondition() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ReentrantLock.newCondition() {
   return sync.newCondition();
  }
 </code></pre></div></div>
 <p>还是原来的：Sync 实现：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final ConditionObject newCondition() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final ConditionObject newCondition() {
    return new ConditionObject();
   }
 返回的是AQS的一个内部类ConditionObject
 </code></pre></div></div>
 
 <p>ConditionObject 为AQS专门实现的一个类，具体我们只看两个关键的方法，在BlockingQueue中，使用的比较的多。</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void await() throws InterruptedException {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void await() throws InterruptedException {
    if (Thread.interrupted())
     throw new InterruptedException();
    Node node = addConditionWaiter();
@@ -342,7 +342,7 @@ private E dequeue() {
   }
 </code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void signal() {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final void signal() {
    if (!isHeldExclusively())
     throw new IllegalMonitorStateException();
    Node first = firstWaiter;

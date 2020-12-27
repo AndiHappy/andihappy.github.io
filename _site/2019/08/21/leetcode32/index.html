@@ -33,7 +33,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
 
 Example 1:
 
@@ -48,7 +48,7 @@ Explanation: The longest valid parentheses substring is "()()"
 </code></pre></div></div>
 
 <p>思路：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
  * 1. 首先理解题意是关键的步骤：挑选可以使用的括号规则，如下的规则
  * 
  * ()(() 计算值为2
@@ -69,7 +69,7 @@ Explanation: The longest valid parentheses substring is "()()"
 </code></pre></div></div>
 
 <p>具体的代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static int longestValidParentheses_copy(String s) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static int longestValidParentheses_copy(String s) {
   int n = s.length(), longest = 0;
   //记录遍历过程中s的下标的值
   Stack&lt;Integer&gt; st = new Stack&lt;Integer&gt;();
@@ -102,7 +102,7 @@ Explanation: The longest valid parentheses substring is "()()"
 
 <p>这种方案，可以比较清晰的看到，解题的思路，但是可能清晰的看到优化的空间，因为后面遍历stack的过程，可以融合在第一次遍历s的过程中。就如思路中所描述的那样。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int longestValidParentheses(String s) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int longestValidParentheses(String s) {
         Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();
         int max=0;
         // 匹配开始的节点

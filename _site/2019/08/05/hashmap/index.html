@@ -67,10 +67,10 @@
  *  旋转节点：为 p.right
  *  方法的输入的参数为 旋转子树的根节点，可以理解为图中的node节点
  * */</span>
-<span class="kd">private</span> <span class="kt">void</span> <span class="nf">rotateLeft</span><span class="o">(</span><span class="nc">Node</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">rotateLeft</span><span class="o">(</span><span class="n">Node</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// p的右节点即是旋转上升的节点，然后旋转上升后，该节点的左节点为P，原来的左节点，这是为p的右节点</span>
-    <span class="nc">Node</span> <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">right</span><span class="o">;</span>
+    <span class="n">Node</span> <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">right</span><span class="o">;</span>
     <span class="n">p</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="na">left</span><span class="o">;</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">left</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
       <span class="n">r</span><span class="o">.</span><span class="na">left</span><span class="o">.</span><span class="na">parent</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
@@ -109,10 +109,10 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** From CLR
 	 * 该方法的参数，并不是被旋转的节点，而是调整子树的根节点，可以理解为图中的node节点
 	 * */</span>
-	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">rotateRight</span><span class="o">(</span><span class="nc">Node</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">rotateRight</span><span class="o">(</span><span class="n">Node</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// p的左节点设置为 原来左节点的右子树</span>
-			<span class="nc">Node</span> <span class="n">l</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">left</span><span class="o">;</span>
+			<span class="n">Node</span> <span class="n">l</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">left</span><span class="o">;</span>
 			<span class="n">p</span><span class="o">.</span><span class="na">left</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="na">right</span><span class="o">;</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">l</span><span class="o">.</span><span class="na">right</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
 				<span class="n">l</span><span class="o">.</span><span class="na">right</span><span class="o">.</span><span class="na">parent</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
@@ -146,7 +146,7 @@
 <img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/tt9.jpg" alt="图9" />
 具体的代码如下：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int put(K key) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int put(K key) {
 		Node t = root;
 		if (t == null) {
 			root = new Node(key, null);

@@ -36,7 +36,7 @@
 
 <p>描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
 
 Example:
 
@@ -47,12 +47,12 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，使用绝对值表示离目标值的远和近
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，使用绝对值表示离目标值的远和近
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int threeSumClosest_copy(int[] num,int target) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int threeSumClosest_copy(int[] num,int target) {
 	int result = num[0]+num[1]+num[num.length-1];
 	Arrays.parallelSort(num);
 	int small = num[0]+num[1]+num[2];
@@ -82,7 +82,7 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
 
 <p>题目描述：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing digits from 2-9 inclusive,
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing digits from 2-9 inclusive,
 return all possible letter combinations
 that the number could represent.
 
@@ -103,12 +103,12 @@ Although the above answer is in lexicographical order, your answer could be in a
 
 <p>思路：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>集合和排序的变种
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>集合和排序的变种
 </code></pre></div></div>
 
 <p>代码：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;String&gt; letterCombinations(String digits) {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;String&gt; letterCombinations(String digits) {
 	LinkedList&lt;String&gt; ans = new LinkedList&lt;String&gt;();
 	if(digits.isEmpty()) return ans;
 	String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};

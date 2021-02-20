@@ -30,7 +30,7 @@
         <h2> 【leetcode】1163. Last Substring in Lexicographical Order </h2>
         <p>题目的描述：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string s, return the last substring of s in lexicographical order.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string s, return the last substring of s in lexicographical order.
 
  
 
@@ -58,12 +58,12 @@ s contains only lowercase English letters.
 
 <p>如果一个字符串s,可以给出来这个字符串s包含的所有的子串，代码如下：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
 	<span class="o">}</span>
 
-	<span class="kd">private</span> <span class="kd">static</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">allSubString</span><span class="o">(</span><span class="n">String</span> <span class="n">string</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">resultList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">allSubString</span><span class="o">(</span><span class="nc">String</span> <span class="n">string</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">resultList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;();</span>
 		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">string</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">string</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
 				<span class="n">resultList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">string</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
@@ -89,14 +89,14 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
 <p>然后，就是各种的分析，其中首先找到最迟的那个字符，标志着字典序的确认进入了一大步，然后我们就可以直接的从选中的那个字符开始到字符转结束，就是那个”最后的字符串”了。具体的代码为：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
 		
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">lastSubstring</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">lastSubstring</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
 	<span class="o">}</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">String</span> <span class="n">mx</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">mx</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
 		<span class="kt">char</span> <span class="n">cur</span> <span class="o">=</span> <span class="sc">'a'</span><span class="o">;</span>
 		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="n">cur</span> <span class="o">&amp;&amp;</span> <span class="n">mx</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// the first letter of substring matters,</span>
@@ -114,12 +114,12 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
 <p>仔细分析，这个算法，因为有一个一个substring的操作，所以这个时间的复杂度应该为O(n2)，最坏的情况，就是：ababab…….</p>
 
 <p>这道题目的关键在于i的移动，我们每次比较的时候，动用了
-<code class="highlighter-rouge">mx.compareTo(str.substring(i)) &lt;= 0</code>
+<code class="language-plaintext highlighter-rouge">mx.compareTo(str.substring(i)) &lt;= 0</code>
 而且我们这样的比较导致了一个O(n),能够按照坐标，上一次开始，到这次的比较的点，进行比较，这样就不需要O(n)，分析到这里，就和一个机制很像了：滑动窗口</p>
 
 <p>具体的代码：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
         <span class="c1">// We have two pointers each pointing at the start of a</span>
         <span class="c1">// possible candidate substring. The pointer on the left</span>
@@ -164,7 +164,7 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
                 <span class="n">curLen</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
-        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
     <span class="o">}</span>
 </code></pre></div></div>
 

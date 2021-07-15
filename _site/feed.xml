@@ -5,9 +5,25 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 15 Jul 2021 20:49:21 +0800</pubDate>
-    <lastBuildDate>Thu, 15 Jul 2021 20:49:21 +0800</lastBuildDate>
+    <pubDate>Thu, 15 Jul 2021 20:53:50 +0800</pubDate>
+    <lastBuildDate>Thu, 15 Jul 2021 20:53:50 +0800</lastBuildDate>
     <generator>Jekyll v4.1.1</generator>
+    
+      <item>
+        <title>打卡贴【2021年07月15日】</title>
+        <description>&lt;blockquote&gt;
+
+  &lt;p&gt;20210715，数据库知识,测试一种新的学习算法的方法&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        <pubDate>Wed, 14 Jul 2021 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2021/07/14/01/</link>
+        <guid isPermaLink="true">http://localhost:4000/2021/07/14/01/</guid>
+        
+        
+        <category>打卡</category>
+        
+      </item>
     
       <item>
         <title>打卡贴【2021年07月12日】</title>
@@ -401,35 +417,6 @@ tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]&lt;/p&gt;
         
         
         <category>算法</category>
-        
-      </item>
-    
-      <item>
-        <title>假期的开始</title>
-        <description>&lt;p&gt;端午节开始了，这个假期不知道怎么过啊
-不知道是不是和以前一样，床上一趟就是一天，手机一看就是一晚，零食一吃就是几袋，假期过后，全是懊恼的心情！&lt;/p&gt;
-
-&lt;p&gt;节制节制！&lt;/p&gt;
-
-&lt;p&gt;以事后之绘破临事之痴迷&lt;/p&gt;
-
-&lt;p&gt;2020年6月25日早11点记录&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;哈哈，自己也玩了，也睡了，就是没有学习。
-只想了以后怎么办？也是一种比较讽刺的事情，我们的大脑是不是就是这么安排的。
-首先是疯玩，然后进入贤者的时间，自我的反省，然后在进行下一次循环&lt;/p&gt;
-
-&lt;p&gt;2020年6月27日22点记录&lt;/p&gt;
-
-</description>
-        <pubDate>Thu, 25 Jun 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/06/25/vocation/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/06/25/vocation/</guid>
-        
-        
-        <category>心情</category>
         
       </item>
     

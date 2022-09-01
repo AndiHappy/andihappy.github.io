@@ -37,17 +37,6 @@ collections:
 # ---------------- #
 # support provider: disqus, gitment, gitalk
 comments_provider: gitalk
-# https://disqus.com
-# disqus:
-    # username: AndiHappy 
-# https://imsun.net/posts/gitment-introduction/
-# gitment:
-#     owner: AndiHappy 
-#     repo: andihappy.github.io
-#     oauth:
-#         client_id: e261fd11c0ff17251934
-#         client_secret: d6d09672a7172a9b422ec63898d542d00d441bd1
-# https://github.com/gitalk/gitalk#install
 gitalk:
     owner: AndiHappy 
     repo: andihappy.github.io

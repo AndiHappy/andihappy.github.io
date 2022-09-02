@@ -5,7 +5,7 @@
         <meta name="keywords" content="LeetCode" />
         <meta name="description" content="Regular Expression Matching" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> 20200525算法-L10-Regular Expression Matching  </title>
+        <title> 最后一遍-L10-Regular Expression Matching  </title>
         <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
         <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
         <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
@@ -26,7 +26,7 @@
 </div>
 
     <div class="main">
-        <h2> 20200525算法-L10-Regular Expression Matching </h2>
+        <h2> 最后一遍-L10-Regular Expression Matching </h2>
         <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="cm">/**
 
@@ -79,18 +79,80 @@ mmm
 
  * */</span>
 </code></pre></div></div>
+<p>参数限制：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Constraints:
 
-<p>使用什么方式解决问题?</p>
+1 &lt;= s.length &lt;= 20
+1 &lt;= p.length &lt;= 30
+s contains only lowercase English letters.
+p contains only lowercase English letters, '.', and '*'.
+It is guaranteed for each appearance of the character '*', there will be a previous valid character to match.
+</code></pre></div></div>
 
-<p>使用DP</p>
+<h1 id="第一种方法">第一种方法</h1>
 
-<p>dp[i][j] 分别代表什么</p>
+<p>先看官方的文档中的解法：首先就是递归处理，而且还介绍了一种方法，P中包含了两种字符，一个. 比较好处理，就是任意匹配就完活了，一个有点困难，特别是已经有了一个的情况下，所以从官方的solution中，我们学到了一个方法，我命名为：“假想降级”，如果题目中只有一个条件：</p>
 
-<p>状态转移方程，是什么样子的？为什么这样？</p>
+<blockquote>
+  <p>If there were no Kleene stars (the * wildcard character for regular expressions), the problem would be easier - we simply check from left to right if each character of the text matches the pattern.</p>
+</blockquote>
 
-<p>p[j] 为. 或者 s[i]==p[j] 这种情况比较好确定状态方程</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isMath_noKleeneStars</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="k">return</span> <span class="n">s</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">isMath</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 迭代的匹配，s和p的匹配结果，取决于s和p的子串的匹配结果</span>
+            <span class="k">return</span> <span class="n">isMath</span> <span class="o">&amp;&amp;</span> <span class="n">isMatch_resursive</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">p</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">isMath</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
 
-<p>p[j] 为*的时候尼？</p>
+<p>那么我们再去考虑，有*的情况. 然后我们就能够知道，我们需要修改上面递归的那一块的代码了. 递归的时候，考虑*的情况，怎么考虑尼？</p>
+
+<p>这个时候，考虑具体的迭代逻辑，不考虑实际的题目意思，加上上面的迭代的关键点，考虑上面的代码，遇到*号的时候，这个时候需要考虑前一个元素的匹配结果，所以我们需要判定p.length() &gt; 1 的情况</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isMatch</span><span class="o">(</span><span class="nc">String</span> <span class="n">text</span><span class="o">,</span> <span class="nc">String</span> <span class="n">pattern</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">pattern</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
+        <span class="c1">// 第一个字符匹配的情况，这里面并没有把*号特殊的标出来，因为：It is guaranteed for each appearance of the character '*', there will be a previous valid character to match.</span>
+        <span class="kt">boolean</span> <span class="n">first_match</span> <span class="o">=</span> <span class="o">(!</span><span class="n">text</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
+                               <span class="o">(</span><span class="n">pattern</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">text</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="n">pattern</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">));</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">pattern</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span><span class="o">){</span>
+            <span class="c1">// isMatch(text, pattern.substring(2)) 代表*连带的前面的字符也给吃掉了</span>
+            <span class="c1">// (first_match &amp;&amp; isMatch(text.substring(1), pattern)) 代表*匹配了多个字符</span>
+            <span class="k">return</span> <span class="o">(</span><span class="n">isMatch</span><span class="o">(</span><span class="n">text</span><span class="o">,</span> <span class="n">pattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">2</span><span class="o">))</span> <span class="o">||</span>
+                    <span class="o">(</span><span class="n">first_match</span> <span class="o">&amp;&amp;</span> <span class="n">isMatch</span><span class="o">(</span><span class="n">text</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">pattern</span><span class="o">)));</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">first_match</span> <span class="o">&amp;&amp;</span> <span class="n">isMatch</span><span class="o">(</span><span class="n">text</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">pattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>上面是使用了递归的思想，虽然在递归迭代的时候，*的匹配规则：</p>
+<blockquote>
+  <p>‘*’ Matches zero or more of the preceding element.</p>
+</blockquote>
+
+<p>转化为代码的时候:</p>
+<blockquote>
+  <p>(isMatch(text, pattern.substring(2)) <br />
+(first_match &amp;&amp; isMatch(text.substring(1), pattern)))</p>
+</blockquote>
+
+<p>有点难理解，但是还是解决了问题。</p>
+
+<h1 id="第二种方法">第二种方法</h1>
+
+<p>从前一种方法中，我们了解到，这个问题存在：optimal substructure</p>
+
+<p><strong>As the problem has an optimal substructure, it is natural to cache intermediate results.</strong></p>
+
+<p>dp[i][j] 代表： : S字符串[0..i] 和 P字符串[0….j] 匹配</p>
+
+<p>We can describe our answer in terms of answers to questions involving smaller strings.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Induction rule is very similar to edit distance, where we also consider from the end. And it is based on what character in the pattern we meet.
 // 1. if p.charAt(j) == s.charAt(i), M[i][j] = M[i - 1][j - 1]
@@ -184,7 +246,7 @@ mmm
 
         
         <div class="post_footer">
-          <p>Published on May 25, 2020 in categories 
+          <p>Published on Sep 01, 2022 in categories 
           
           <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
           
@@ -195,14 +257,9 @@ mmm
             
             <li>
                 <span>上一篇</span>
-                <a href="/2020/05/25/destory-plan/">2020年05月25日的懊悔</a>
+                <a href="/2022/06/18/wiki/">2022年6月19日，父亲节</a>
             </li>
             
-            
-            <li>
-                <span>下一篇</span>
-                <a href="/2020/05/25/L11/">L11-Container With Most Water</a>
-            </li>
             
         </ul>
         
@@ -215,7 +272,7 @@ mmm
         <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
         <script>
         var gitalk = new Gitalk({
-            id: '/2020/05/25/L10/',
+            id: '/2022/09/01/L10/',
             clientID: 'e261fd11c0ff17251934',
             clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
             repo: 'andihappy.github.io',

@@ -97,7 +97,8 @@ It is guaranteed for each appearance of the character '*', there will be a previ
   <p>If there were no Kleene stars (the * wildcard character for regular expressions), the problem would be easier - we simply check from left to right if each character of the text matches the pattern.</p>
 </blockquote>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isMath_noKleeneStars</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isMath_noKleeneStars</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="k">return</span> <span class="n">s</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">isMath</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
@@ -106,6 +107,7 @@ It is guaranteed for each appearance of the character '*', there will be a previ
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">isMath</span><span class="o">;</span>
     <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>那么我们再去考虑，有*的情况. 然后我们就能够知道，我们需要修改上面递归的那一块的代码了. 递归的时候，考虑*的情况，怎么考虑尼？</p>
@@ -150,98 +152,164 @@ It is guaranteed for each appearance of the character '*', there will be a previ
 
 <p><strong>As the problem has an optimal substructure, it is natural to cache intermediate results.</strong></p>
 
-<p>dp[i][j] 代表： : S字符串[0..i] 和 P字符串[0….j] 匹配</p>
+<p>dp[i][j] 代表： : S字符串[0..i] 和 P字符串[0….j] 是否匹配</p>
 
 <p>We can describe our answer in terms of answers to questions involving smaller strings.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Induction rule is very similar to edit distance, where we also consider from the end. And it is based on what character in the pattern we meet.
-// 1. if p.charAt(j) == s.charAt(i), M[i][j] = M[i - 1][j - 1]
-//    ######a(i)
-//    ####a(j)
-// 2. if p.charAt(j) == '.', M[i][j] = M[i - 1][j - 1]
-// 	  #######a(i)
-//    ####.(j)
-// 3. if p.charAt(j) == '*':
-//    1. if p.charAt(j - 1) != '.' &amp;&amp; p.charAt(j - 1) != s.charAt(i), then b* is counted as empty. M[i][j] = M[i][j - 2]
-//       #####a(i)
-//       ####b*(j)
-//    2.if p.charAt(j - 1) == '.' || p.charAt(j - 1) == s.charAt(i):
-//       ######a(i)
-//       ####.*(j)
-//
-// 	  	 #####a(i)
-//    	 ###a*(j)
-//      2.1 if p.charAt(j - 1) is counted as empty, then M[i][j] = M[i][j - 2]
-//      2.2 if counted as one, then M[i][j] = M[i - 1][j - 2]
-//      2.3 if counted as multiple, then M[i][j] = M[i - 1][j]
-            
-// recap:
-// M[i][j] = M[i - 1][j - 1]
-// M[i][j] = M[i - 1][j - 1]
-// M[i][j] = M[i][j - 2]
-// M[i][j] = M[i][j - 2]
-// M[i][j] = M[i - 1][j - 2]
-// M[i][j] = M[i - 1][j]
-// Observation: from above, we can see to get M[i][j], we need to know previous elements in M, i.e. we need to compute them first. 
-// which determines i goes from 1 to m - 1, j goes from 1 to n + 1
+<p>具体的状态转义方程的推导方式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //    ######a(i)
+    //    ####a(j)
+    // 1. if p.charAt(j) == s.charAt(i), M[i][j] = M[i - 1][j - 1]
+    //    #######a(i)
+    //    ####.(j)
+    // 2. if p.charAt(j) == '.', M[i][j] = M[i - 1][j - 1]
+
+    // 3. if p.charAt(j) == '*':
+    //       #####a(i)
+    //       ####b*(j)
+    //    1. if p.charAt(j - 1) != '.' &amp;&amp; p.charAt(j - 1) != s.charAt(i), then b* is counted as empty. M[i][j] = M[i][j - 2]
+
+    //    2.if p.charAt(j - 1) == '.' || p.charAt(j - 1) == s.charAt(i):    
+    //       ######a(i)
+    //       ####.*(j)
+    //
+    //       #####a(i)
+    //       ###a*(j)
+    //      2.1 if p.charAt(j - 1) is counted as empty, then M[i][j] = M[i][j - 2]
+    //      2.2 if counted as one, then M[i][j] = M[i - 1][j - 2]
+    //      2.3 if counted as multiple, then M[i][j] = M[i - 1][j]
+                
+
+    // Observation: from above, we can see to get M[i][j], we need to know previous elements in M, i.e. we need to compute them first. 
+    // which determines i goes from 1 to m - 1, j goes from 1 to n + 1
+    //  我们在推导M[i][j], 依赖的都是M[i-1][j-1]之类的前面的元素，所以我们首先要从小的元素开始计算，i的循环也就是从1到m+1，j的循环就是从1到n+1了
 </code></pre></div></div>
 
 <p>代码：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">L10</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="no">L10</span> <span class="n">test</span> <span class="o">=</span> <span class="k">new</span> <span class="no">L10</span><span class="o">();</span>
-        <span class="kt">boolean</span> <span class="n">result</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="na">isMatch</span><span class="o">(</span><span class="s">"aa"</span><span class="o">,</span><span class="s">"a"</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-
-        <span class="n">result</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="na">isMatch</span><span class="o">(</span><span class="s">"mississippi"</span><span class="o">,</span><span class="s">"mis*is*p*."</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-
-
-    <span class="o">}</span>
-
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isMatch</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">p</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-
+        <span class="cm">/**
+         * dp is a N+1 x M+1 matrix; N is the length of s and M is the length of p
+         * dp[i][j] represents if first i characters of s match first j characters of p
+         * */</span>
         <span class="kt">boolean</span><span class="o">[][]</span> <span class="n">dp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()+</span><span class="mi">1</span><span class="o">][</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()+</span><span class="mi">1</span><span class="o">];</span>
-        <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">0</span><span class="o">]=</span><span class="kc">true</span><span class="o">;</span>
-        <span class="c1">// init dp dp[i][0] = false</span>
-        <span class="c1">// dp[0][j] meet condition j=*</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
-                <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="cm">/**
+         * base case:
+         * empty string s matches empty string p -&gt; dp[0][0] = true
+         * non-empty string s never match empty string p -&gt; dp[i][0] = false
+         */</span>
+        <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dp</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// j is index of p ,not the dp[0] index</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span><span class="mi">1</span> <span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">();</span><span class="n">j</span><span class="o">++){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]){</span>
+                <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="o">]=</span><span class="kc">true</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
 
-        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="mi">1</span> <span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span> <span class="n">dp</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
-            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span> <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span> <span class="o">;</span> <span class="n">j</span><span class="o">++){</span>
-                <span class="c1">// first situaition: char s[i] = p[j]|'.'</span>
-                <span class="k">if</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">){</span>
-                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]=</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
-                <span class="o">}</span>
-                <span class="c1">// second situaition</span>
-                <span class="k">if</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span><span class="o">){</span>
-                    <span class="c1">//here are two sub conditions:</span>
-<span class="c1">//                   1. p.charAt(j-1) != s.charAt(i)</span>
-                    <span class="k">if</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">!=</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">'.'</span><span class="o">){</span>
-                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]=</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">];</span>
-                    <span class="o">}</span><span class="k">else</span><span class="o">{</span>
-                        <span class="c1">//if p.charAt(j-1) == s.charAt(i) or p.charAt(j-1) == '.':</span>
-                        <span class="c1">//     dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a</span>
-                        <span class="c1">// or dp[i][j] = dp[i-1][j-2]   // in this case, a* counts as single a</span>
-                        <span class="c1">// or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty</span>
-                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">]||</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">]||</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">];</span>
+        <span class="cm">/**
+         * dynamic programming process
+         * skip the first column because already filled as base case
+         */</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dp</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">length</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">// If p's latest character is '.', dp[i][j] is equivalent to dp[i-1][j-1] because the newest characters are guaranteed to match</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">])</span> <span class="o">{</span>
+                        <span class="cm">/**
+                         * if p's newest chracter is '*' and dp[i-1][j] is true (this substring in p has been matching)
+                         * dp[i][j] is true when the newst character in s matches the one representeed by '*': s.charAt(i-1) == p.charAt(j-2)
+                         * dp[i][j] is true when the '*' represents '.': p.charAt(j-2) == '.'
+                         * dp[i][j] is true when dp[i][j-2] is true because 0 occurrence of the character represented by '*'
+                         **/</span>
+                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span> <span class="o">||</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">];</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="cm">/**
+                         * if p's newest chracter is '*' and dp[i-1][j] is false (this substring in p hasn't matched)
+                         * check if this new one gives a match: if dp[i][j-2] is true, dp[i][j] is true because of 0 occurrence of the '*' character
+                         **/</span>
+                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">];</span>
                     <span class="o">}</span>
-                                   <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="cm">/**
+                     * if jth character in p is just a normal letter, check if this matches with the ith character in s
+                     * If they match, dp[i][j] is true only if dp[i-1][j-1] is true (same idea as palindrome)
+                     */</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+                <span class="o">}</span>
             <span class="o">}</span>
         <span class="o">}</span>
+
         <span class="k">return</span> <span class="n">dp</span><span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()][</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()];</span>
     <span class="o">}</span>
-
 <span class="o">}</span>
+        
 
+<span class="cm">/**
+ * Time: O(MN)
+ * Space: O(MN)
+ * N is the length of string s, M is the length of string p
+ *
+ * Intuition: (DP)
+ * f(i,j) = if the length i prefix of s matches the length j prefix of p
+ *
+ * Base:
+ * f(0,0) = true; empty s matches empty p
+ * f(i,0) = false, where i &gt; 0; non-empty s never matches empty p
+ * f(0,1) = false; empty s never matches length 1 p
+ *
+ * Result: f(length of s, length of p)
+ *
+ * Tansition:
+ * f(i,j) = f(i-1,j-1) &amp;&amp; ith character in s == jth character in p; exact character match
+ * OR
+ * f(i,j) = f(i-1,j-1) &amp;&amp; jth character in p is '.'; '.' is a universial match
+ * OR
+ * if jth character in p is '*':
+ *     f(i,j) = f(i-1,j) &amp;&amp; (ith character in s == the character represented by * || * represents . || f(i,j-2))
+ *         {if p already matches with s before the newest character in s,
+ *         then the newest character in s just needs to equal to the character represented by *
+ *         OR s matches p with 0 occurrence of the character represented by *, which is f(i,j-2)}
+ *     f(i,j) = !f(i-1,j) &amp;&amp; f(i,j-2)
+ *          {if p didn't match with s before the newest character in s,
+ *          then check if the newest character in s makes it a match: f(i,j-2) -&gt; 0 occurrence of the character represented by *}
+ *     f(i,j) = true if i == 0 &amp;&amp; (j == 2 || f(i,j-2))
+ *          {if s is empty, true, if the last character is '*' on the 2nd index or if f(i,j-2) because of 0 occurrence of character represented by *}
+ *
+ *
+ * s = 'aaa'
+ * p = 'ab*a*c*a'
+ *
+ * Base Case:
+ *   - a b * a * c * a
+ * - T F
+ * a F
+ * a F
+ * a F
+ *
+ * Keep Going (non-empty p matches empty s olny when using '*' appropriately):
+ *   - a b * a * c * a
+ * - T F F F F F F F F
+ * a F
+ * a F
+ * a F
+ *
+ * Keep Going (0 occurrence of character represented by * would give it true):
+ *   - a b * a * c * a
+ * - T F F F F F F F F
+ * a F T F T F T F T F
+ * a F F F F T T F F T
+ * a F F F F F T F T T -&gt; result
+ *
+ * */</span>
 </code></pre></div></div>
 
         

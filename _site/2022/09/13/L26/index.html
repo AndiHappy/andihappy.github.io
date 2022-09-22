@@ -2,10 +2,10 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-        <meta name="keywords" content="LeetCode" />
+        <meta name="keywords" content="" />
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> 27. Remove Element  </title>
+        <title> 最后一遍-L26-Remove Duplicates from Sorted Array  </title>
         <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
         <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
         <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
@@ -26,23 +26,26 @@
 </div>
 
     <div class="main">
-        <h2> 27. Remove Element </h2>
-        <p>Given an integer array nums sorted in non-decreasing order, 
-remove the duplicates in-place such that each unique element appears only once. 
-The relative order of the elements should be kept the same.</p>
+        <h2> 最后一遍-L26-Remove Duplicates from Sorted Array </h2>
+        <p>Given an integer array nums sorted in non-decreasing order,    <br />
+remove the duplicates in-place such that each unique element appears only once.</p>
 
-<p>Since it is impossible to change the length of the array in some languages, 
-you must instead have the result be placed in the first part of the array nums. 
-More formally, if there are k elements after removing the duplicates, 
+<p>The relative order of the elements should be kept the same.</p>
+
+<p>Since it is impossible to change the length of the array in some languages,   <br />
+you must instead have the result be placed in the first part of the array nums.     <br />
+More formally, if there are k elements after removing the duplicates,      <br />
 then the first k elements of nums should hold the final result.</p>
 
-<p>It does not matter what you leave beyond the first k elements.
-Return k after placing the final result in the first k slots of nums.
-Do not allocate extra space for another array. 
+<p>It does not matter what you leave beyond the first k elements. <br />
+Return k after placing the final result in the first k slots of nums. <br />
+Do not allocate extra space for another array.     <br />
 You must do this by modifying the input array in-place with O(1) extra memory.</p>
 
-<p>Custom Judge:
-The judge will test your solution with the following code:</p>
+<p>Custom Judge:</p>
+
+<p>The judge will test your solution with the following code:</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int[] nums = [...]; // Input array
 int[] expectedNums = [...]; // The expected answer with correct length
 
@@ -57,6 +60,7 @@ for (int i = 0; i &lt; k; i++) {
 <p>If all assertions pass, then your solution will be accepted.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example 1:
+
 Input: nums = [1,1,2]
 Output: 2, nums = [1,2,_]
 Explanation: Your function should return k = 2, with the first two elements of nums being 1 and 2 respectively.
@@ -70,33 +74,37 @@ It does not matter what you leave beyond the returned k (hence they are undersco
 </code></pre></div></div>
 
 <p>Constraints:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* 1 &lt;= nums.length &lt;= 3 * 104
-* -100 &lt;= nums[i] &lt;= 100
-* nums is sorted in non-decreasing order.
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 &lt;= nums.length &lt;= 3 * 104
+-100 &lt;= nums[i] &lt;= 100
+nums is sorted in non-decreasing order.
 </code></pre></div></div>
+<p>根据题目中描述的进行编码</p>
 
-<p>代码和题目26类似</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
-   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">removeElement</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums</span><span class="o">,</span> <span class="kt">int</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">nums</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">nums</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">removeDuplicates</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">nums</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">nums</span><span class="o">.</span><span class="na">length</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">nums</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
         <span class="c1">// nums is sorted in ascending order.</span>
-        <span class="kt">int</span> <span class="n">from</span> <span class="o">=</span><span class="mi">0</span><span class="o">,</span> <span class="n">nonRemoveElementIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">from</span> <span class="o">=</span><span class="mi">1</span><span class="o">,</span>  <span class="n">duplicateIndex</span><span class="o">=</span> <span class="n">from</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span>
         <span class="k">while</span><span class="o">(</span><span class="n">from</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="o">.</span><span class="na">length</span><span class="o">){</span>
-            <span class="k">if</span><span class="o">(</span><span class="n">nums</span><span class="o">[</span><span class="n">from</span><span class="o">]</span> <span class="o">!=</span> <span class="n">val</span><span class="o">){</span>
-                <span class="n">nums</span><span class="o">[</span><span class="n">nonRemoveElementIndex</span><span class="o">]=</span><span class="n">nums</span><span class="o">[</span><span class="n">from</span><span class="o">];</span>
-                <span class="n">nonRemoveElementIndex</span><span class="o">++;</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">nums</span><span class="o">[</span><span class="n">from</span><span class="o">]</span> <span class="o">!=</span> <span class="n">nums</span><span class="o">[</span><span class="n">duplicateIndex</span><span class="o">]){</span>
+                <span class="n">duplicateIndex</span><span class="o">++;</span>
+                <span class="n">nums</span><span class="o">[</span><span class="n">duplicateIndex</span><span class="o">]=</span><span class="n">nums</span><span class="o">[</span><span class="n">from</span><span class="o">];</span>
             <span class="o">}</span>
-            <span class="n">from</span><span class="o">++;</span>
+             <span class="n">from</span><span class="o">++;</span>
         <span class="o">}</span>
-        <span class="k">return</span> <span class="n">nonRemoveElementIndex</span><span class="o">;</span>
+
+        <span class="k">return</span> <span class="n">duplicateIndex</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
+
 </code></pre></div></div>
 
         
         <div class="post_footer">
-          <p>Published on Feb 12, 2022 in categories 
+          <p>Published on Sep 13, 2022 in categories 
           
           <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
           
@@ -107,13 +115,13 @@ It does not matter what you leave beyond the returned k (hence they are undersco
             
             <li>
                 <span>上一篇</span>
-                <a href="/2022/02/11/L26/">26. Remove Duplicates from Sorted Array</a>
+                <a href="/2022/09/07/L25/">最后一遍-L25-Reverse Nodes in k-Group</a>
             </li>
             
             
             <li>
                 <span>下一篇</span>
-                <a href="/2022/02/13/L28/">28. Implement strStr()</a>
+                <a href="/2022/09/13/L27/">最后一遍-L27-Remove Element</a>
             </li>
             
         </ul>
@@ -127,7 +135,7 @@ It does not matter what you leave beyond the returned k (hence they are undersco
         <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
         <script>
         var gitalk = new Gitalk({
-            id: '/2022/02/12/L27/',
+            id: '/2022/09/13/L26/',
             clientID: 'e261fd11c0ff17251934',
             clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
             repo: 'andihappy.github.io',

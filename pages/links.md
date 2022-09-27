@@ -1,11 +1,11 @@
 ---
 layout: page
-title: 友情链接
-description: 朋友们的博客和主页
-keywords: 友情链接
+title: 爱我所爱
+description: 找到自己追求一生的事情，是你的幸运
+keywords: 立长志
 permalink: /links/
 ---
 
 <ul>
-<li><a href="http://mazhuang.org/">码志</a></li>
+<li><a href="https://www.geeksforgeeks.org//">geeksforgeeks</a></li>
 </ul>

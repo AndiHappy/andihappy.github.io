@@ -8,7 +8,7 @@ body {
 div.main {
   margin: auto;
   padding: 2% 5% 5% 5%;
-  width: 700px;
+  width: 800px;
   line-height: 150%;
   border: 1px solid LightGrey;
 }
@@ -51,13 +51,14 @@ pre {
 
 code {
   font-family: Inconsolata, Consolas, "DEJA VU SANS MONO", "DROID SANS MONO", Proggy, monospace;
-  font-size: 0.75em;
+  font-size: 0.9em;
   border: solid 1px #ddd;
   border-radius: 3px;
   background-color: #f8f8ff;
   margin: 0 2px;
   padding: 0px 5px;
   word-wrap: break-word;
+  line-height:1.5;
   word-break: break-all;
 }
 
@@ -102,7 +103,7 @@ div.nav {
   border-right: 1px solid #d4d4d4;
   margin: auto;
   padding: 0 5% 0 5%;
-  width: 700px;
+  width: 800px;
   height: 1.5em;
   line-height: 150%;
   font-size: 1em;

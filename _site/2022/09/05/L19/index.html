@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 最后一遍-L19. Remove Nth Node From End of List  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> 最后一遍-L19. Remove Nth Node From End of List </h2>
+        <p>Given the head of a linked list,</p>
+
+<p>remove the nth node from the end of the list</p>
+
+<p>and return its head.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example 1:
+
+Input: head = [1,2,3,4,5], n = 2
+Output: [1,2,3,5]
+
+Example 2:
+Input: head = [1], n = 1
+Output: []
+
+Example 3:
+Input: head = [1,2], n = 1
+Output: [1]
+
+
+Constraints:
+* The number of nodes in the list is sz.
+* 1 &lt;= sz &lt;= 30
+* 0 &lt;= Node.val &lt;= 100
+* 1 &lt;= n &lt;= sz
+
+
+Follow up: Could you do this in one pass?
+
+</code></pre></div></div>
+
+<p>NOTE:链表的经典的问题</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+        <span class="cm">/**
+         * 1--&gt;2--&gt;3--&gt;4--&gt;5, 2
+         * 
+         * The number of nodes in the list is sz.
+         * 1 &lt;= sz &lt;= 30
+         * 0 &lt;= Node.val &lt;= 100
+         * 1 &lt;= n &lt;= sz
+         * n 小于head的长度
+         * */</span>
+        <span class="kd">public</span> <span class="kd">static</span> <span class="nc">ListNode</span> <span class="nf">removeNthFromEnd</span><span class="o">(</span><span class="nc">ListNode</span> <span class="n">head</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">n</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">head</span><span class="o">;</span>
+
+                <span class="nc">ListNode</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+                <span class="nc">ListNode</span> <span class="n">pre</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+                <span class="k">while</span><span class="o">(</span><span class="n">n</span> <span class="o">&gt;</span><span class="mi">0</span><span class="o">){</span>
+                        <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                        <span class="n">n</span><span class="o">--;</span>
+                <span class="o">}</span>
+
+<span class="c1">// 注意边界的情况</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">==</span><span class="kc">null</span><span class="o">)</span><span class="k">return</span> <span class="n">head</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                <span class="k">while</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+                        <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                        <span class="n">pre</span><span class="o">=</span><span class="n">pre</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span><span class="o">(</span><span class="n">pre</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+                        <span class="n">pre</span><span class="o">.</span><span class="na">next</span><span class="o">=</span><span class="n">pre</span><span class="o">.</span><span class="na">next</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="n">head</span><span class="o">;</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+
+        
+        <div class="post_footer">
+          <p>Published on Sep 05, 2022 in categories 
+          
+          <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            <li>
+                <span>上一篇</span>
+                <a href="/2022/09/02/L18/">最后一遍-L18-4Sum</a>
+            </li>
+            
+            
+            <li>
+                <span>下一篇</span>
+                <a href="/2022/09/05/L20/">最后一遍-L20-Valid Parentheses</a>
+            </li>
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/2022/09/05/L19/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

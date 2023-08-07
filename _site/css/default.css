@@ -8,7 +8,7 @@ body {
 div.main {
   margin: auto;
   padding: 2% 5% 5% 5%;
-  width: 800px;
+  width: 85%;
   line-height: 150%;
   border: 1px solid LightGrey;
 }
@@ -45,7 +45,7 @@ pre {
   background-color: #f8f8ff;
   padding: 6px 10px;
   font-size: 1em;
-  line-height: 100%;
+  line-height: 120%;
   overflow: auto;
 }
 
@@ -103,7 +103,7 @@ div.nav {
   border-right: 1px solid #d4d4d4;
   margin: auto;
   padding: 0 5% 0 5%;
-  width: 800px;
+  width: 85%;
   height: 1.5em;
   line-height: 150%;
   font-size: 1em;

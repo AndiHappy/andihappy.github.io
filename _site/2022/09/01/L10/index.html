@@ -5,7 +5,7 @@
         <meta name="keywords" content="LeetCode" />
         <meta name="description" content="Regular Expression Matching" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> 最后一遍-L10-Regular Expression Matching  </title>
+        <title> L10-Regular Expression Matching  </title>
         <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
         <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
         <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
@@ -26,7 +26,7 @@
 </div>
 
     <div class="main">
-        <h2> 最后一遍-L10-Regular Expression Matching </h2>
+        <h2> L10-Regular Expression Matching </h2>
         <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="cm">/**
 
@@ -312,6 +312,129 @@ It is guaranteed for each appearance of the character '*', there will be a previ
  * */</span>
 </code></pre></div></div>
 
+<p>从上面来看，这种理解的成本还是比较大，不如go的清晰</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">isMatch</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">,</span> <span class="n">p</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="n">sLen</span><span class="p">,</span> <span class="n">pLen</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+	<span class="k">var</span> <span class="n">dp</span> <span class="p">[][]</span><span class="kt">bool</span>
+	<span class="k">var</span> <span class="n">t</span> <span class="p">[]</span><span class="kt">bool</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">sLen</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">t</span> <span class="o">=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">bool</span><span class="p">,</span> <span class="n">pLen</span><span class="o">+</span><span class="m">1</span><span class="p">)</span>
+		<span class="n">dp</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c">// dp[i][j] holds a flag that whether s[0:i] mathes to p[0:j].</span>
+	<span class="c">// (Note that we take the 0th index as "empty" string case)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">sLen</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">pLen</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+				<span class="c">// in case both s and p are empty</span>
+				<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="no">true</span>
+				<span class="k">continue</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+				<span class="c">// in case only s is empty.</span>
+				<span class="c">// To match an empty string, p should be like a*, a*b*, a*.*a*, ....</span>
+				<span class="c">// (* should appear in all odd indexes of p)</span>
+				<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'*'</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="m">2</span><span class="p">]</span>
+				<span class="k">continue</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+				<span class="c">// in case only p is mepty.</span>
+				<span class="c">// No string s cannot match to empty regular expression</span>
+				<span class="c">// unless s itself is empty too (which is already handled)</span>
+				<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="no">false</span>
+				<span class="k">continue</span>
+			<span class="p">}</span>
+
+			<span class="c">// in case both s and p are non-empty</span>
+			<span class="c">// consider what should be sufficed to be able to say s[i-1] matches to p[j-1]</span>
+			<span class="c">// (= dp[i][j] is true).</span>
+			<span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">'*'</span> <span class="p">{</span>
+				<span class="c">// if p[j-1] is not '*', then</span>
+				<span class="c">// 1) p[j-1] and s[j-1] should match (same character or p[j-1] == '.')</span>
+				<span class="c">// 2) p[0:j-1] should match to s[0:i-1]</span>
+				<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'.'</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="m">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="c">// if p[j-1] is '*', we need to consider two scenarios</span>
+				<span class="c">// case1) consume the '*'</span>
+				<span class="c">// to consume * and have s[:i] match to p[:j],</span>
+				<span class="c">// p[j-2] should equal to s[i-1] (or p[j-2] can be '.' to be equal to any s[i-1])</span>
+				<span class="c">// AND s[:i-1] should match to p[:j] as well.</span>
+				<span class="c">//                 ↓ i-1</span>
+				<span class="c">// s: [ ] [ ] [a] [a]</span>
+				<span class="c">// p: [ ] [a] [*] [ ]</span>
+				<span class="c">//             ↑ j-1</span>
+				<span class="c">//</span>
+				<span class="c">//                 ↓ i-1</span>
+				<span class="c">// s: [ ] [ ] [b] [a]</span>
+				<span class="c">// p: [ ] [.] [*] [ ]</span>
+				<span class="c">//             ↑ j-1</span>
+				<span class="c">// in other words, because '*' is used with its previous character,</span>
+				<span class="c">// for s[i-1] to be included as "a*" or ".*" in p,</span>
+				<span class="c">// s[i-2] should also be included in "a*" or ".*".</span>
+				<span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">2</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'.'</span> <span class="o">||</span> <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="p">{</span>
+					<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="m">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+				<span class="p">}</span>
+				<span class="c">// case2) skip the '*'</span>
+				<span class="c">//                 ↓ i-1</span>
+				<span class="c">// s: [ ] [ ] [b] [a]</span>
+				<span class="c">// p: [a] [b] [*] [ ]</span>
+				<span class="c">//     ↑ j-3   ↑ j-1</span>
+				<span class="c">// even if we can't fulfill the condition above, if s[:i-1] matches to p[j-3],</span>
+				<span class="c">// we can say s[:i-1] also matches to p[j-1]</span>
+				<span class="c">// because '*' can mean "zero" appearance of the previous character.</span>
+				<span class="c">// in other words, we can just skip "b*", not using it.</span>
+				<span class="k">if</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="m">2</span><span class="p">]</span> <span class="o">==</span> <span class="no">true</span> <span class="p">{</span>
+					<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="no">true</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="n">sLen</span><span class="p">][</span><span class="n">pLen</span><span class="p">]</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>使用JAVA从新写一篇逻辑：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">//动态规划，从go中剥离出来的算法，另类的理解</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isMatch</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span><span class="nc">String</span> <span class="n">p</span> <span class="o">){</span>
+        <span class="kt">boolean</span><span class="o">[][]</span> <span class="n">dp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()+</span><span class="mi">1</span><span class="o">][</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()+</span><span class="mi">1</span><span class="o">];</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">dp</span><span class="o">.</span><span class="na">length</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">dp</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">//in case both s and p are empty</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]=</span><span class="kc">true</span><span class="o">;</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span>
+                    <span class="c1">//in this case only s is empty.</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)==</span><span class="s">"*"</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">];</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">j</span> <span class="o">==</span><span class="mi">0</span><span class="o">){</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">'*'</span><span class="o">){</span>
+                    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)==</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
+                <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+                    <span class="c1">//case 1 consumer the *, in other words, '*' is used with its previous character,</span>
+                    <span class="c1">// * as "a*" or ".*" in p</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'.'</span> <span class="o">||</span> <span class="n">p</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">)</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">)){</span>
+                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]=</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">];</span>
+                    <span class="o">}</span>
+
+                    <span class="c1">//case 2 skip the *, in other words, we can just skip "b*", not using it.</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">-</span><span class="mi">2</span><span class="o">]){</span>
+                        <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]=</span><span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">dp</span><span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()][</span><span class="n">p</span><span class="o">.</span><span class="na">length</span><span class="o">()];</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>从理解成本上，来说，最后这种方式，理解起来更加的顺滑</p>
 
         
         <div class="post_footer">

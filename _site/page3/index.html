@@ -27,787 +27,165 @@
 
     <div class="main">
         <h1>  飞翔的面包  </h1>
-        
-<div class="post-preview">
-    <a href="/2020/06/29/backtracking/">
-        <h2 class="post-title">
-            Blacktracking
-        </h2>
-        
-        <div class="post-content-preview">
-            <p><a href="https://en.wikipedia.org/wiki/Backtracking">BlackTracking wiki地址</a></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            [BlackTracking wiki地址](https://en.wikipedia.org/wiki/Backtracking)
-
-最经典的回溯算法是八皇后的问题
-
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on June 29, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/25/vocation/">
-        <h2 class="post-title">
-            假期的开始
-        </h2>
-        
-        <div class="post-content-preview">
-            <p>端午节开始了，这个假期不知道怎么过啊
-不知道是不是和以前一样，床上一趟就是一天，手机一看就是一晚，零食一吃就是几袋，假期过后，全是懊恼的心情！</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            端午节开始了，这个假期不知道怎么过啊
-不知道是不是和以前一样，床上一趟就是一天，手机一看就是一晚，零食一吃就是几袋，假期过后，全是懊恼的心情！
-
-节制节制！
-
-以事后之绘破临事之痴迷
-
-2020年6月25日早11点记录
-
----
-
-哈哈，自己也玩了，也睡了，就是没有学习。
-只想了以后怎么办？也是一种比较讽刺的事情，我们的大脑是不是就是这么安排的。
-首先是疯玩，然后进入贤者的时间，自我的反省，...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on June 25, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/21/plan3/">
-        <h2 class="post-title">
-            2020年06月21日 突然的感触
-        </h2>
-        
-        <div class="post-content-preview">
-            <p>这个纯粹是看到了一个帖子有感写下来的。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            这个纯粹是看到了一个帖子有感写下来的。
-
-帖子的地址：https://www.v2ex.com/t/682557#reply369
-
-大致的意思就是我们怎么样才能够，活的有目标，你的最终的目标是什么，如果想要你干一件
-你以为的最牛B的事情，应该是什么？
-来吧, 直面内心吧, 讲讲自己的小目标
-
-
-看到了这个帖子，想到自己三番五次的计划，然后放弃的悲惨的自我计划！
-
-刚刚溜达的时候，就在想自己...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on June 21, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/01/sorts/">
-        <h2 class="post-title">
-            Arrays的sort方法
-        </h2>
-        
-        <div class="post-content-preview">
-            <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
-     * Sorts the specified array into ascending numerical order.
-     * 将指定的数组按照升序排列
-     * 
-     * &lt;p&gt;Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
-     * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
-     * faster than traditional (one-pivot) Quicksort implementations.
-     * 
-     * 实现的算法称为：双轴快速排序，性能是O(nlog(n))，比传统的单抽快排算法要快,
-     * 另外还在使其他快排算法降级的数据集合上面，表现比较好。
-     * 
-     * that cause other quicksorts to degrade to quadratic performance
-     * 这个that是修饰 many data sets。因为快排在有些数据上面，表现的比较差
-     * 
-     * @param a the array to be sorted
-     */</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">DualPivotQuicksort</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-    <span class="o">}</span>
-</code></pre></div></div>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            ~~~java
-/**
-     * Sorts the specified array into ascending numerical order.
-     * 将指定的数组按照升序排列
-     * 
-     * Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
-     * by Vladim...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on June 1, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/05/31/plan2/">
-        <h2 class="post-title">
-            2020年05月31日
-        </h2>
-        
-        <div class="post-content-preview">
-            <ol>
-  <li>只是开始总结，划定条线，确定周总结计划</li>
-  <li>不在渴望VPN，不用管了。</li>
-  <li>戒除看网络小说的习惯，可以看一些历史方面，活着金融方面的书籍。
-历史方面的书籍，就以资治通鉴为主吧，毕竟其他的史料太难找了</li>
-  <li>恢复自己的状态，总结。</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            0. 只是开始总结，划定条线，确定周总结计划
-1. 不在渴望VPN，不用管了。
-2. 戒除看网络小说的习惯，可以看一些历史方面，活着金融方面的书籍。
-   历史方面的书籍，就以资治通鉴为主吧，毕竟其他的史料太难找了
-3. 恢复自己的状态，总结。
-
-
-
-
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on May 31, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/05/25/destory-plan/">
-        <h2 class="post-title">
-            2020年05月25日的懊悔
-        </h2>
-        
-        <div class="post-content-preview">
-            <ol>
-  <li>gost配置，Best:配置一个能够长期使用的VPN环境。</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            1. gost配置，Best:配置一个能够长期使用的VPN环境。
-
-VPN配置完成以后，大约半小时以后被封禁，不在折腾VPN，后续如果有需要买现成
-的服务！
-
-2. LeetCode，前10道题目. BEST: 必须完成项。
-
-大致的看了一遍，还是有很多的“疙瘩”，不值怎么样才能够彻底的理解，已经决定了每一道题做一个页面
-找起来比较的容易，并且更加的详细说明“疙瘩”的地方！
-
-3. 算法4，...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on May 25, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/05/24/summary-plan/">
-        <h2 class="post-title">
-            2020年05月24日的计划
-        </h2>
-        
-        <div class="post-content-preview">
-            <ol>
-  <li>gost配置，Best:配置一个能够长期使用的VPN环境。</li>
-  <li>LeetCode，前10道题目. BEST: 必须完成项。</li>
-  <li>算法4，下载PDF文件。</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            1. gost配置，Best:配置一个能够长期使用的VPN环境。
-2. LeetCode，前10道题目. BEST: 必须完成项。
-3. 算法4，下载PDF文件。
-
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on May 24, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/05/20/hello-world-again/">
-        <h2 class="post-title">
-            我们能够再次出发了，为了2020的第二个小目标
-        </h2>
-        
-        <div class="post-content-preview">
-            <p>迎接2020年第二个小目标。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            迎接2020年第二个小目标。
-
-所有的无奈，都是对自己无能的一种气愤。
-说的时候，非常的容易，但是做的时候，总想着去玩，去乐呵乐呵。明知道这样是不对的，还是控制不住自己的冲动。
-
-有时候，事情的来源，已经不可靠，但是事情的去处确实清晰明确无误的：不了了之！
-再再次出发，是为了自己能够更加的掌控住自己，掌控住自己想做某些事情的自由，而不是不由自主的去做某些事情！
-
-愿上天鉴证，愿下土为证，我不...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on May 20, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/11/03/zoo2/">
-        <h2 class="post-title">
-            zookeeper的DataTree的落盘
-        </h2>
-        
-        <h3 class="post-subtitle">
-            zookeeper源码的分析：zookeeper数据是如何持久化，启动的时候又是如何加载的
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。
-
-
-
-我们使用```ps -ef| grep zoo```来过滤出来zookeeper的进程。
-![进程的展示](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.j...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 3, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/11/02/zoo/">
-        <h2 class="post-title">
-            zookeeper单实例的启动
-        </h2>
-        
-        <h3 class="post-subtitle">
-            作为经典的分布式架构，分析zookeeper，学习其中的设计和架构
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            我们的征途是星图大海！首先就是zookeeper的单实例的启动。首先我们确定进程zookeeper的启动类呢？到进程的名称中查找。
-
-
-
-我们使用```ps -ef| grep zoo```来过滤出来zookeeper的进程。
-![进程的展示](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/zk/zk1.j...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 2, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/11/01/zooCode1/">
-        <h2 class="post-title">
-            zookeeper代码片段学习
-        </h2>
-        
-        <h3 class="post-subtitle">
-            zookeeper的配置文件的加载
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            一般的开源工程，都会有一个配置型文件，这个文件是如何加载的？
-
-
-~~~
-
-~~~
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 1, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/11/01/BinaryIndexedTrees/">
-        <h2 class="post-title">
-            Binary Indexed Trees 的介绍和学习
-        </h2>
-        
-        <h3 class="post-subtitle">
-            A Fenwick tree or binary indexed tree is a data structure that can efficiently update elements and calculate prefix sums in a table of numbers.
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>binary indexed tree  一般翻译为树状数组，非常的好奇树状的数组是一个什么样式的？
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            binary indexed tree  一般翻译为树状数组，非常的好奇树状的数组是一个什么样式的？
-
-
-#### 介绍
-
-我们常常使用一些数据结构使我们的算法更加的快，binary index tree 就是这样的一个数据结构。发明人为：Peter M. Fenwick 。该数据结构最早主要用于数据的压缩，在算法中，它通常用于**存储频率和操纵累积频率表**。 我们将通过实例来说明该数据结...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 1, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/29/L324/">
-        <h2 class="post-title">
-            快速排序和相关联的问题总结
-        </h2>
-        
-        <h3 class="post-subtitle">
-            L324 Wiggle Sort II
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>主要是借助这道题目来总结一下快速排序相关联的内容。
-<!--more-->
-题目的描述为：Given an unsorted array nums, reorder it such that nums[0] &lt; nums[1] &gt; nums[2] &lt; nums[3]….</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            主要是借助这道题目来总结一下快速排序相关联的内容。
-
-题目的描述为：Given an unsorted array nums, reorder it such that nums[0]  nums[2] 
-
-基本的思路：
-
-如果数组已经是排好序的了，就是按照 ```nums[0]  nums[2]  3 3```
-
-然后，我们将证明：如果我们把相等的元素，如果相等的元素出现在S数组中，我们把...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 29, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/28/L384/">
-        <h2 class="post-title">
-            打乱数组，洗牌算法
-        </h2>
-        
-        <h3 class="post-subtitle">
-            L384. Shuffle an Array
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>题目描述：Shuffle a set of numbers without duplicates.
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            题目描述：Shuffle a set of numbers without duplicates.
-
-
-~~~
-Example:
-
-// Init an array with set 1, 2, and 3.
-int[] nums = {1,2,3};
-Solution solution = new Solution(nums);
-
-// Shuffle the array [1,2,3] ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 28, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/28/L378/">
-        <h2 class="post-title">
-            L378 有序矩阵中第K小的元素
-        </h2>
-        
-        <h3 class="post-subtitle">
-            Kth Smallest Element in a Sorted Matrix
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>题目描述：</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            题目描述：
-
-Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
-
-Note that it is the kth smallest element in the sorted or...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 28, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/">
-        <h2 class="post-title">
-            对Leetcode问题的思索
-        </h2>
-        
-        <h3 class="post-subtitle">
-            首先去做什么，然后再去做什么，采取什么方案，必须有一个系统的解决办法！
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>突然想起来LeetCode的每一道题，最终要的是对思维能力的锻炼，解决方案的提取，不能一味的去刷题，那样太没有趣味和底下了。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            突然想起来LeetCode的每一道题，最终要的是对思维能力的锻炼，解决方案的提取，不能一味的去刷题，那样太没有趣味和底下了。
-
-问题的描述为：
-Given a list of daily temperatures T, return a list such that, for each day in the input, 
- tells you how many days you would...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 27, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/26/leetcode49/">
-        <h2 class="post-title">
-            Leetcode:49. Group Anagrams
-        </h2>
-        
-        <h3 class="post-subtitle">
-            最先想到的思路，可能就是最难实现的思路，分析出难点在什么地方，然后再次思索，可能会更加的容易找出解决的方案
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>问题的描述为：
-Given an array of strings, group anagrams together.
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            问题的描述为：
-Given an array of strings, group anagrams together.
-
-
-~~~
-Example:
-
-Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
-Output:
-[
-  ["ate","eat","tea"],
-  ["nat","tan"],
-  ["bat"]
-]
-~~~
-
-Not...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 26, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/25/leetcode48/">
-        <h2 class="post-title">
-            Leetcode:48. Rotate Image
-        </h2>
-        
-        <h3 class="post-subtitle">
-            解决问题的一种技巧：加倍或者先到彼再由此
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>问题的描述为：
-You are given an n x n 2D matrix representing an image.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            问题的描述为：
-You are given an n x n 2D matrix representing an image.
-
-Rotate the image by 90 degrees (clockwise).
-
-Note:
-
-You have to rotate the image in-place, which means you have to modify the input ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 25, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/24/leetcode42/">
-        <h2 class="post-title">
-            Leetcode:42  container water
-        </h2>
-        
-        <h3 class="post-subtitle">
-            解决问题的一种技巧：使用数组的下标
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>问题的描述为：
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            问题的描述为：
-Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
-
-
-
-~~~
-
-The above elevation map is rep...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 24, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/24/leetcode41/">
-        <h2 class="post-title">
-            Leetcode:41  firstMissingPositive
-        </h2>
-        
-        <h3 class="post-subtitle">
-            解决问题的一种技巧：使用数组的下标
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>数组的下标是一种天然的资源，有序，有界。在某些特殊的问题下，可以做为一种辅助信息。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            数组的下标是一种天然的资源，有序，有界。在某些特殊的问题下，可以做为一种辅助信息。
-
-
-问题的描述为：
-~~~
-Given an unsorted integer array, find the smallest missing positive integer.
- Example 1:
- Input: [1,2,0]
- Output: 3
- Example 2:
- Input: [3,4,...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 24, 2019
-    </p>
-</div>
-<hr>
-
-
-
-<div class="postlist">
+        <div class="postlist">
     
     <div class="overview">
         <div class="date"> Jun 29, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/06/29/backtracking/">Blacktracking</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/06/29/backtracking/" style="padding: 20px;">Blacktracking</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Jun 25, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/06/25/vocation/">假期的开始</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/06/25/vocation/" style="padding: 20px;">假期的开始</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Jun 21, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/06/21/plan3/">2020年06月21日 突然的感触</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/06/21/plan3/" style="padding: 20px;">2020年06月21日 突然的感触</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Jun 01, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/06/01/sorts/">Arrays的sort方法</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/06/01/sorts/" style="padding: 20px;">Arrays的sort方法</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> May 31, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/05/31/plan2/">2020年05月31日</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/05/31/plan2/" style="padding: 20px;">2020年05月31日</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> May 25, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/05/25/destory-plan/">2020年05月25日的懊悔</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/05/25/destory-plan/" style="padding: 20px;">2020年05月25日的懊悔</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> May 24, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/05/24/summary-plan/">2020年05月24日的计划</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/05/24/summary-plan/" style="padding: 20px;">2020年05月24日的计划</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> May 20, 2020 </div>
-        <div class="detail"><a href="http://localhost:4000/2020/05/20/hello-world-again/">我们能够再次出发了，为了2020的第二个小目标</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2020/05/20/hello-world-again/" style="padding: 20px;">我们能够再次出发了，为了2020的第二个小目标</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Nov 03, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/11/03/zoo2/">zookeeper的DataTree的落盘</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/11/03/zoo2/" style="padding: 20px;">zookeeper的DataTree的落盘</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Nov 02, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/11/02/zoo/">zookeeper单实例的启动</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/11/02/zoo/" style="padding: 20px;">zookeeper单实例的启动</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Nov 01, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/11/01/zooCode1/">zookeeper代码片段学习</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/11/01/zooCode1/" style="padding: 20px;">zookeeper代码片段学习</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Nov 01, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/11/01/BinaryIndexedTrees/">Binary Indexed Trees 的介绍和学习</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/11/01/BinaryIndexedTrees/" style="padding: 20px;">Binary Indexed Trees 的介绍和学习</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 29, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/29/L324/">快速排序和相关联的问题总结</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/29/L324/" style="padding: 20px;">快速排序和相关联的问题总结</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 28, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/28/L384/">打乱数组，洗牌算法</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/28/L384/" style="padding: 20px;">打乱数组，洗牌算法</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 28, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/28/L378/">L378 有序矩阵中第K小的元素</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/28/L378/" style="padding: 20px;">L378 有序矩阵中第K小的元素</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 27, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/">对Leetcode问题的思索</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/27/%E6%80%9D%E7%B4%A2%E9%97%AE%E9%A2%98/" style="padding: 20px;">对Leetcode问题的思索</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 26, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/26/leetcode49/">Leetcode:49. Group Anagrams</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/26/leetcode49/" style="padding: 20px;">Leetcode:49. Group Anagrams</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 25, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/25/leetcode48/">Leetcode:48. Rotate Image</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/25/leetcode48/" style="padding: 20px;">Leetcode:48. Rotate Image</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 24, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/24/leetcode42/">Leetcode:42  container water</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/24/leetcode42/" style="padding: 20px;">Leetcode:42  container water</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 24, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/24/leetcode41/">Leetcode:41  firstMissingPositive</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/24/leetcode41/" style="padding: 20px;">Leetcode:41  firstMissingPositive</a>
+            <p/>
         </div>
     </div>
     

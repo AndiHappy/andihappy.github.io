@@ -27,782 +27,165 @@
 
     <div class="main">
         <h1>  飞翔的面包  </h1>
-        
-<div class="post-preview">
-    <a href="/2019/08/06/hashmap/">
-        <h2 class="post-title">
-            沉下心来分析HashMap的源码（五）红黑树的删除
-        </h2>
-        
-        <h3 class="post-subtitle">
-            红黑树删除操作，尽可能的详细
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>红黑树的删除逻辑和HashMap中的删除逻辑，是有不同的，因为在HashMap中需要维护next的属性，以便于在tree转为linkedlist的时候，比较的方便。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            红黑树的删除逻辑和HashMap中的删除逻辑，是有不同的，因为在HashMap中需要维护next的属性，以便于在tree转为linkedlist的时候，比较的方便。
-
-所以我们先从普通的红黑树的删除逻辑说起。
-
-
-
-### 红黑树的删除操作
-
-删除操作首先需要做的也是BST（二叉搜索树）的删除操作，删除操作会删除对应的节点，如果是叶子节点就直接删除，如果是非叶子节点，会用对应的中序遍历的后继...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 6, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/05/hashmap/">
-        <h2 class="post-title">
-            沉下心来分析HashMap的源码（四）红黑树的插入
-        </h2>
-        
-        <h3 class="post-subtitle">
-            红黑树插入操作，尽可能的详细
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>理解了2-3树和红黑树的对应的关系，再去梳理红黑树的插入和删除操作，就会更加的容易理解和记忆一点。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            理解了2-3树和红黑树的对应的关系，再去梳理红黑树的插入和删除操作，就会更加的容易理解和记忆一点。
-
-
-
-### 红黑树的插入操作
-
-#### 情况1
-
-当为Null树的时候，插入第一个节点：
-
->节点设置为根节点，设置为黑色，如下图所示：
-
-![图1](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 5, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/04/hashmap0/">
-        <h2 class="post-title">
-            沉下心来分析HashMap的源码（三）学习红黑树
-        </h2>
-        
-        <h3 class="post-subtitle">
-            红黑树相关的操作，尽可能的详细
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-              HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：
-
-1. 每个节点或者是红色，或者是黑色
-2. 根节点是黑色
-3. 每一个叶子节点(最后的空节点)是黑色的
-4. 如果一个节点是红色的，那么它的孩子节点都是黑色的
-5. 从任意一个节点到叶子节点，经过的黑色节点是一样的
-
-完全的不清楚为什么这么定义，以及这么定义的原因是什么。
-
-
-
-### 先导
-
-先说红黑树的由来...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 4, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/03/hashmap/">
-        <h2 class="post-title">
-            沉下心来分析HashMap的源码（二）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            分析HashMap的源码，PUT和REMOVE操作
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>HashMap的源码在JDK 1.8 的Put和Remove操作。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            HashMap的源码在JDK 1.8 的Put和Remove操作。
-
-
-
-~~~java
-
-/**
-   * Implements Map.put and related methods.
-   * put逻辑：
-   * 	1. 检查hashmap中的table是否需要扩容
-   * 	2.1 确定放入的值的位置：(n - 1) & hash，hash的计算方式：(h = key.hash...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 3, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/02/hashmap/">
-        <h2 class="post-title">
-            沉下心来分析HashMap的源码
-        </h2>
-        
-        <h3 class="post-subtitle">
-            分析HashMap的源码，尽自己可能的详细
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
-所以这次尽可能详细的注释源码，也为这块做一个总结。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            HashMap的源码在JDK 1.7 的时候，还算是可以看的比较的明白，1.8后引入了红黑树，就变得看的费劲了。
-所以这次尽可能详细的注释源码，也为这块做一个总结。
-
-
-
-### 粗略的印象
-
-首先是最初的图：
-
-![Map原来的数据结构](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/hashm...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 2, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/07/01/readingbook/">
-        <h2 class="post-title">
-            怎么读书
-        </h2>
-        
-        <div class="post-content-preview">
-            <p>It’s not about how many books you read, it’s about how much you retain from what you read. <br />
-<!--more-->
-Most people I talk to don’t have a reading strategy. They just pick up something and start reading. I used to be like that. But now, that’s unthinkable to me. Sure, you might read a novel for entertainment.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            It’s not about how many books you read, it’s about how much you retain from what you read.   
-
-Most people I talk to don’t have a reading strategy. They just pick up something and start reading. I ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on July 1, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/04/15/remotework/">
-        <h2 class="post-title">
-            远程工作language的选择
-        </h2>
-        
-        <div class="post-content-preview">
-            <p><a href="https://blog.usejournal.com/what-technologies-to-learn-to-land-a-remote-job-in-2018-7dff03e17982">文章地址</a></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            [文章地址](https://blog.usejournal.com/what-technologies-to-learn-to-land-a-remote-job-in-2018-7dff03e17982)
-
-What technologies to learn to land a remote job in 2018
-
-
-
-At this point in my career, I’m ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on April 15, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/04/09/whymongoDBSuccess/">
-        <h2 class="post-title">
-            为什么RethinkDB失败了？
-        </h2>
-        
-        <div class="post-content-preview">
-            <p><a href="http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html">文章地址</a></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            [文章地址](http://www.defmacro.org/2017/01/18/why-rethinkdb-failed.html)
-
-In hindsight, two things went wrong – we picked a terrible market and optimized the product for the wrong metrics of goodness.E...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by 飞翔的面包 on April 9, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/03/01/redis-data/">
-        <h2 class="post-title">
-            redis梳理
-        </h2>
-        
-        <h3 class="post-subtitle">
-            redis对应的数据结构底层实现的原理，以及常见的问题
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>redis主要操作的数据有五种，String，List，Map，Set，sort Set 简称为ZSet。这五类的操作的数据的底层
-是如何运行的。
-redis为什么这么快？
-redis的集群的模式
-redis的内存管理模式
-redis的持久化操作等常见的问题。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            redis主要操作的数据有五种，String，List，Map，Set，sort Set 简称为ZSet。这五类的操作的数据的底层
-是如何运行的。
-redis为什么这么快？
-redis的集群的模式
-redis的内存管理模式
-redis的持久化操作等常见的问题。
-
-
-
-首先我们发现问题，然后我们一个一个的回答，深入。
-
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on March 1, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/07/nettyinaction7/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的第八章
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>■ Bootstrapping   <br />
-■ ChannelOptions and attributes  <br />
-<!--more--> <br />
-bootstrapping an application is the process of configuring it to run—though the details of the process may not be as simple as its definition, especially in network applications.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            ■ Bootstrapping     
-■ ChannelOptions and attributes    
-   
-bootstrapping an application is the process of configuring it to run—though the details of the process may not be as simple as its defin...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 7, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/06/nettyinaction6/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的第七章
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>■ Threading model overview  <br />
-■ Event loop concept and implementation  <br />
-■ Task scheduling  <br />
-■ Implementation details  <br />
-<!--more--> <br />
-we must always guard against the possible side effects of concurrent execution, it’s important to understand the implications of the model being applied (there are single-thread models as well). Ignoring these matters and merely hoping for the best is tantamount to gambling—with the odds definitely against you.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            ■ Threading model overview    
-■ Event loop concept and implementation    
-■ Task scheduling    
-■ Implementation details    
-   
-we must always guard against the possible side effects of concurren...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 6, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/05/nettyinaction5/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的第六
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>The ChannelHandler and ChannelPipeline    <br />
-<!--more--> <br />
-The Channel lifecycle   <br />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/faf428c08e7607718839a50f4173ae21.png" alt="Channel的状态" />   <br />
-Channel的状态</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            The ChannelHandler and ChannelPipeline      
-   
-The Channel lifecycle     
-![Channel的状态](http://7xtrwx.com1.z0.glb.clouddn.com/faf428c08e7607718839a50f4173ae21.png)     
-Channel的状态     
-
-The Chann...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 5, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/04/nettyinaction4/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的第四,五章
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>explain the transport implementations that come bundled with Netty and the use cases appropriate to each.     <br />
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteBuffer.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            explain the transport implementations that come bundled with Netty and the use cases appropriate to each.       
-the superior functionality and flexibility of ByteBuf as compared to the JDK’s ByteB...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 4, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/03/nettyinaction2/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的读书笔记+复习英语单词
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>这章主要的是介绍netty的架构，主要的模块。     <br />
-verifying your development tools and environment,   <br />
- building application logic with ChannelHandlers.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的架构，主要的模块。       
-verifying your development tools and environment,     
- building application logic with ChannelHandlers.      
-
-
-
-From a high-level perspective, Netty addresses two c...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 3, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/02/nettyinaction1/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的读书笔记+复习英语单词
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>这章主要的是介绍netty的基本的概念。    <br />
-<!--more-->
-We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            这章主要的是介绍netty的基本的概念。      
-
-We’ll also assume that you’re going to want to tinker（修改） with the example code and soon start writing your own.   
-
-Although we’ve spoken of the client, the figure show...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 2, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/01/TimerTask/">
-        <h2 class="post-title">
-            定时任务的说明
-        </h2>
-        
-        <h3 class="post-subtitle">
-            Java语言中采用定时任务的实现的方法
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。 <br />
-<!--more-->
-~~~java</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            定时任务是一个使用概率不高，但是很大几率会使用到的功能，记录之。   
-
-~~~java    
-
-
-/**
- * 任务的执行，依赖于Timer，可以特定的时间执行或者按照某种规律循环的执行
- * A facility for threads to schedule tasks for future execution in a background thread.
- * Tasks may...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 1, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/01/nettyinaction0/">
-        <h2 class="post-title">
-            netty in action 读书笔记
-        </h2>
-        
-        <h3 class="post-subtitle">
-            netty in action的读书笔记+复习英语单词
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
-<!--more--></p>
-<ol>
-  <li>the system must scale up to 150,000 concurrent users with no loss of performance。</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            netty 异步事件驱动型IO框架，值得学习，netty的总体的细节内容。
-
-1. the system must scale up to 150,000 concurrent users with no loss of performance。      
-
-scale up 负载       
-
-2. If you can say with confidence, “Sure, no p...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 1, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/12/01/springboot%E5%8B%BE%E8%B5%B7tomcat/">
-        <h2 class="post-title">
-            springboot启动的时候，怎么勾起tomcat启动？
-        </h2>
-        
-        <h3 class="post-subtitle">
-            梳理自己遇到的问题，开始进行总结分析
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
-
-
-spring的启动是从一个java类的main函数开始的，这个应该没有异议：     
-
-~~~java  
-public static void main(String[] args) {
-		SpringApplication applicat...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on December 1, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/11/04/netty1/">
-        <h2 class="post-title">
-            问题总结（一）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            梳理自己遇到的问题，开始进行总结分析
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-              自己其实遇到过很多的问题，但是大多数只是搜索答案，然后就完结了，这样就很容易的知其所以然，但是不知其为什么所以然了，一知半解的导致自己的知识体系漏洞百出。
-
-
-1. springboot加载工程，到底是怎么启动的，我知道springboot中加了一个tomcat的源码，可是这个tomcat是怎么启动的呢？
-2. NIO的编程，netty是如果处理的？
-3. 分布式锁的使用场合，除了使用r...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on November 4, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/09/12/javaPerformance/">
-        <h2 class="post-title">
-            JAVA性能优化（一）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            梳理JAVA性能优化方面的内容，包括JVM的性能优化，编码，数据库相关的东西
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>JAVA的优化方面，设计的内容非常的多，有一本数是专门讲这个的，自己只是对JAVA应用程序所关心的几个部分，根据自己遇到的情况，来进行梳理，学习。
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-              JAVA的优化方面，设计的内容非常的多，有一本数是专门讲这个的，自己只是对JAVA应用程序所关心的几个部分，根据自己遇到的情况，来进行梳理，学习。
-
-
-1. 针对Tomcat 的JVM的优化：
-
-~~~java
-
-/opt/jdk/jre/bin/java 
--Djava.util.logging.config.file=/opt/C7910/conf/logging.propertie...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on September 12, 2017
-    </p>
-</div>
-<hr>
-
-
-
-<div class="postlist">
+        <div class="postlist">
     
     <div class="overview">
         <div class="date"> Aug 06, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/06/hashmap/">沉下心来分析HashMap的源码（五）红黑树的删除</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/06/hashmap/" style="padding: 20px;">沉下心来分析HashMap的源码（五）红黑树的删除</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 05, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/05/hashmap/">沉下心来分析HashMap的源码（四）红黑树的插入</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/05/hashmap/" style="padding: 20px;">沉下心来分析HashMap的源码（四）红黑树的插入</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 04, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/04/hashmap0/">沉下心来分析HashMap的源码（三）学习红黑树</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/04/hashmap0/" style="padding: 20px;">沉下心来分析HashMap的源码（三）学习红黑树</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 03, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/03/hashmap/">沉下心来分析HashMap的源码（二）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/03/hashmap/" style="padding: 20px;">沉下心来分析HashMap的源码（二）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 02, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/02/hashmap/">沉下心来分析HashMap的源码</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/02/hashmap/" style="padding: 20px;">沉下心来分析HashMap的源码</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Jul 01, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/07/01/readingbook/">怎么读书</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/07/01/readingbook/" style="padding: 20px;">怎么读书</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Apr 15, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/04/15/remotework/">远程工作language的选择</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/04/15/remotework/" style="padding: 20px;">远程工作language的选择</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Apr 09, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/04/09/whymongoDBSuccess/">为什么RethinkDB失败了？</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/04/09/whymongoDBSuccess/" style="padding: 20px;">为什么RethinkDB失败了？</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Mar 01, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/03/01/redis-data/">redis梳理</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/03/01/redis-data/" style="padding: 20px;">redis梳理</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 07, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/07/nettyinaction7/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/07/nettyinaction7/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 06, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/06/nettyinaction6/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/06/nettyinaction6/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 05, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/05/nettyinaction5/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/05/nettyinaction5/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 04, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/04/nettyinaction4/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/04/nettyinaction4/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 03, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/03/nettyinaction2/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/03/nettyinaction2/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 02, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/02/nettyinaction1/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/02/nettyinaction1/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 01, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/01/TimerTask/">定时任务的说明</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/01/TimerTask/" style="padding: 20px;">定时任务的说明</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 01, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/01/nettyinaction0/">netty in action 读书笔记</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/01/nettyinaction0/" style="padding: 20px;">netty in action 读书笔记</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Dec 01, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/12/01/springboot%E5%8B%BE%E8%B5%B7tomcat/">springboot启动的时候，怎么勾起tomcat启动？</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/12/01/springboot%E5%8B%BE%E8%B5%B7tomcat/" style="padding: 20px;">springboot启动的时候，怎么勾起tomcat启动？</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Nov 04, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/11/04/netty1/">问题总结（一）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/11/04/netty1/" style="padding: 20px;">问题总结（一）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Sep 12, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/09/12/javaPerformance/">JAVA性能优化（一）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/09/12/javaPerformance/" style="padding: 20px;">JAVA性能优化（一）</a>
+            <p/>
         </div>
     </div>
     

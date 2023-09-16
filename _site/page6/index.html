@@ -27,542 +27,117 @@
 
     <div class="main">
         <h1>  飞翔的面包  </h1>
-        
-<div class="post-preview">
-    <a href="/2017/08/28/concurrent2/">
-        <h2 class="post-title">
-            JDK并发框架的描述（二）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            锁的Condition，CyclicBarrier以及实现的说明
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>线程之间的通信，在java中有两种：      <br />
-  一种是synchronized对应的wait，和notify；    <br />
-  另外一种，就是Lock中对应的Condition中的await和signal</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            线程之间的通信，在java中有两种：        
-  一种是synchronized对应的wait，和notify；      
-  另外一种，就是Lock中对应的Condition中的await和signal
-
-
-
-
-待续。。。。。。。。。
-
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 28, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/27/concurrent1/">
-        <h2 class="post-title">
-            JDK并发框架的描述（二）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            读写锁实现的说明
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>读写锁也是在同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）的基础上面实现的，不过就是复杂了点。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-               读写锁也是在同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）的基础上面实现的，不过就是复杂了点。
-
-
-
-  读写锁的主要的要求就是：     
-> 1. 读线程占有线程锁状态的情况下，其余的读线程都能进入临界区，执行代码。但是写线程会被阻塞。
-> 2. 写线程占有线程锁的情况下，其他的读线程，写线程都会被阻塞
-
-待续。...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 27, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/26/concurrent/">
-        <h2 class="post-title">
-            JDK并发框架的描述（一）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            JDK中可重入锁，以及CountDownLatch等锁的实现的基础架构说明（一）
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-               梳理JDK中并发编程的实现的原理，感觉很多东西还是非常的有意思的，例如锁的实现。我们首先说：重入锁，读写锁，还有一些扩展的锁的实现的基础：同步器（java.util.concurrent.locks.AbstractQueuedSynchronizer）
-
-
-java.util.concurrent.locks.AbstractQueuedSynchronizer 为什么称之为实现锁的...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 26, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/18/alg/">
-        <h2 class="post-title">
-            复习算法和数据结构（1）
-        </h2>
-        
-        <h3 class="post-subtitle">
-            整理自己的笔记，回顾自己以前记录的算法和数据结构，争取做到温故而知新。
-        </h3>
-        
-        <div class="post-content-preview">
-            
-
-        </div>
-        <!-- <div class="post-content-preview">
-            
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 18, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/13/activiti8/">
-        <h2 class="post-title">
-            activiti和设计模式(8)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中流程各个节点的行为数据
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>BPMN中不仅规定了每一个图标代表的意义，例如：    <br />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png" alt="exclusivegateway的示意图" />  <br />
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在ActivityBehavior中，不仅封装的有行为，线上的条件的判断。  <br />
-<!--more-->
-首先是ActivityBehavior的构建，采用的是简单工厂的设计模式：</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            BPMN中不仅规定了每一个图标代表的意义，例如：      
-![exclusivegateway的示意图](http://7xtrwx.com1.z0.glb.clouddn.com/4510bc77470bddd1b5c2f7e23d706d29.png)    
-而且还规定了每一个每一图形的行为标准，在Activiti中动作行为封装在了ActivityBehavior中，在Activi...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/13/activiti7/">
-        <h2 class="post-title">
-            activiti和设计模式(7)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中流程定义中节点的跳转
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>一个具体的流程启动以后，具体流程示意图：   <br />
-<img src="http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png" alt="简单会签流程示意图" /></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            一个具体的流程启动以后，具体流程示意图：     
-![简单会签流程示意图](http://7xtrwx.com1.z0.glb.clouddn.com/4e87e67e31be5d65024bf07221129d16.png)     
-
-追踪流程的运转的情况，找到好玩的代码。    
-
-根据状态机的跳转的动作：     
-~~~
-PROCESS_START = new AtomicOpe...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/13/activiti6/">
-        <h2 class="post-title">
-            activiti和设计模式(6)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中状态机模式，不仅仅是状态机模式
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？  
-
-
-state Pattern：
-
-> The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. Wi...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/13/activit5/">
-        <h2 class="post-title">
-            activiti和设计模式(5)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中事件通知
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            此次行文是从一个定义好的流程定义开始梳理，流程启动的过程中涉及到的事件通知模型，即观察者设计模式。这个也是普遍采用的事件通知模型。  
-
-
-
-首先我们还是看代码：      
-
-```
-Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-           ActivitiEventBuil...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/10/activit4/">
-        <h2 class="post-title">
-            activiti和设计模式(4)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中核心业务的组织模型
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            此次行文是从一个定义好的流程定义开始梳理，然后到流程启动，生成一个流程实例，提交第一个任务，任务完成，实例完成，实例完结。学习其中的设计模式，学习框架的设计的理念。  
-
-
-1. 首先是找到流程的定义：     
-
-~~~
-ProcessDefinition def = repositoryService.createProcessDefinitionQuery().processDefin...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 10, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/10/activit3/">
-        <h2 class="post-title">
-            activiti和设计模式(3)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中核心业务的组织，主要是组合和继承关系的使用。
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
-中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
-中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。
-
-
-
-首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？      
-
-~~~
-...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 10, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/10/activit20/">
-        <h2 class="post-title">
-            activiti和设计模式(2.1)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti的每一个Command执行过程中的设计模式
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：<strong>Interpreter pattern</strong>.
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：**Interpreter pattern**.
-
-
-首先是启动的代码：       
-~~~java
-//调用方：
-ProcessInstance ins = runtimeService.startProcessInstanceById(workFlowId, formId,variab...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 10, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/08/activit2/">
-        <h2 class="post-title">
-            activiti和设计模式(2)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            activiti中server的实现包含的设计模式
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            acititi每一个的server的实现的总体的逻辑实现，堪称是一个模板。一个设计模式的典型的案例，非常的值得学习。
-
-
-
- activity服务的实现，很有自己的特色，show code:
-
-~~~java
-public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
-  public Pro...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 8, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/08/02/activit1/">
-        <h2 class="post-title">
-            activiti和设计模式(1)
-        </h2>
-        
-        <h3 class="post-subtitle">
-            通过学习activiti的源码，从设计模式这个角度去分析这个框架，熟悉源码，学习其中的设计思想
-        </h3>
-        
-        <div class="post-content-preview">
-            <ol>
-  <li>activiti的源码的主要的架构</li>
-  <li>activiti前两层包含的设计模式</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            1. activiti的源码的主要的架构
-2. activiti前两层包含的设计模式
-
-从我的工作的经历以及了解到的内容，发送activiti可谓是一个扩展性极好的框架。     
-一个原因是因为工作流本身的业务复杂性本身要求activiti实现的灵活性，复杂的业务会对整个框架的扩展提出了极高的要求，如果扩展性不够好，复杂的业务可以把二次开发的人员直接逼疯！！        
-
-另外的一个原...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 2, 2017
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2017/07/26/begine/">
-        <h2 class="post-title">
-            再次出发
-        </h2>
-        
-        <h3 class="post-subtitle">
-            每一次的出发都是信心满满，就是不知道能坚持多久
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>终于再次的出发，想今后写点东西。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            终于再次的出发，想今后写点东西。   
-
-
-
-
-## 正文     
-
-这个博客的样式的基础，首先要感谢Hux，此样式是在原来的样式中修改的。     
-自己有时间了，在慢慢的修改，变为自己喜欢的。		
- 
-每次的开始总是信心满满，可是中间慢慢的懈怠，慢慢的松懈，然后再次打开自己的博客的时候，发现上一篇的时间已经是半个月，
-一个月，甚至是一年前的了。			
-常立志，不如立长志。文正公曾言：天...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on July 26, 2017
-    </p>
-</div>
-<hr>
-
-
-
-<div class="postlist">
+        <div class="postlist">
     
     <div class="overview">
         <div class="date"> Aug 28, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/28/concurrent2/">JDK并发框架的描述（二）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/28/concurrent2/" style="padding: 20px;">JDK并发框架的描述（二）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 27, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/27/concurrent1/">JDK并发框架的描述（二）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/27/concurrent1/" style="padding: 20px;">JDK并发框架的描述（二）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 26, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/26/concurrent/">JDK并发框架的描述（一）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/26/concurrent/" style="padding: 20px;">JDK并发框架的描述（一）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 18, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/18/alg/">复习算法和数据结构（1）</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/18/alg/" style="padding: 20px;">复习算法和数据结构（1）</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/13/activiti8/">activiti和设计模式(8)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/13/activiti8/" style="padding: 20px;">activiti和设计模式(8)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/13/activiti7/">activiti和设计模式(7)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/13/activiti7/" style="padding: 20px;">activiti和设计模式(7)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/13/activiti6/">activiti和设计模式(6)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/13/activiti6/" style="padding: 20px;">activiti和设计模式(6)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/13/activit5/">activiti和设计模式(5)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/13/activit5/" style="padding: 20px;">activiti和设计模式(5)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 10, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/10/activit4/">activiti和设计模式(4)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/10/activit4/" style="padding: 20px;">activiti和设计模式(4)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 10, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/10/activit3/">activiti和设计模式(3)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/10/activit3/" style="padding: 20px;">activiti和设计模式(3)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 10, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/10/activit20/">activiti和设计模式(2.1)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/10/activit20/" style="padding: 20px;">activiti和设计模式(2.1)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 08, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/08/activit2/">activiti和设计模式(2)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/08/activit2/" style="padding: 20px;">activiti和设计模式(2)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 02, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/08/02/activit1/">activiti和设计模式(1)</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/08/02/activit1/" style="padding: 20px;">activiti和设计模式(1)</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Jul 26, 2017 </div>
-        <div class="detail"><a href="http://localhost:4000/2017/07/26/begine/">再次出发</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2017/07/26/begine/" style="padding: 20px;">再次出发</a>
+            <p/>
         </div>
     </div>
     

@@ -27,831 +27,165 @@
 
     <div class="main">
         <h1>  飞翔的面包  </h1>
-        
-<div class="post-preview">
-    <a href="/2019/08/24/concurrent-7/">
-        <h2 class="post-title">
-            并发知识梳理：5.Atomic 原子类，LockSupport支持类
-        </h2>
-        
-        <h3 class="post-subtitle">
-            并发支持类
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            在并发的场景下，除了常常使用的锁之类外，还有一些并发底层的支持类，例如：Atomic原子类和LockSupport，还有一个就是时常能见到，但是总感觉名字怪怪的：Unsafe等。
-
-
-
-首先我们来看Atomic原子类，自己把它分为三类的：
-1. 基础类型：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference之类的。
-2. 数组类型：At...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 24, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/23/leetcode39/">
-        <h2 class="post-title">
-            Leetcode:39,40,78,90,46,47,131
-        </h2>
-        
-        <h3 class="post-subtitle">
-            backtracking 算法的运用:LeetCode 39. Combination Sum,78. Subsets,90. Subsets II,46. Permutations,47. Permutations II,40. Combination Sum II, 131. Palindrome Partitioning
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 39. Combination Sum</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 39. Combination Sum
-
-回溯算法是通过一步一步（通常是用递归）构建可能”解”，
-并且回溯不可能”解”来求所有或者部分解决方案的通用算法。
-其中“回溯”的具体意思就是将不可能解或者部分解的候选尽早的舍弃掉，
-“解”需要满足一定的限制条件（constraint satisfaction）
-
-
-回溯算法一般的通解：
-~~~
-ALGORITHM try(v1,.....
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 23, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/23/concurrent-6/">
-        <h2 class="post-title">
-            并发知识梳理：4. 阻塞队列
-        </h2>
-        
-        <h3 class="post-subtitle">
-            AQS和ReentrantReadWriteLock
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>阻塞队列的接口为： BlockingQueue<E> 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。</E></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            阻塞队列的接口为： BlockingQueue 这块是已经陌生但是以前比较梳理的内容，写出来在熟悉一下。
-
-
-
-### BlockingQueue 的操作方法
-
-![](https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/queue/q1.jpg)
-
-如图中所示：
-add(e),当队列满了以后，抛出Illegal...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 23, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/22/concurrent-5/">
-        <h2 class="post-title">
-            并发知识梳理：4. 读写锁等其他的类型的锁的支持
-        </h2>
-        
-        <h3 class="post-subtitle">
-            AQS和ReentrantReadWriteLock
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            ReentrantReadWriteLock 是在重入锁的基础上，添加读写的控制。主要关注的是共享锁的实现和理解上。
-
-
-
-首先还是复习一下重入锁的伪代码：
-
-~~~
-
-ReentrantLock
-public NonFairLock nonfairLock = new NonFairLock();
-lock(){
-	nonfairLock.lock()
-}
-
-// 获取锁的过程
-nonfa...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 22, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/20/concurrent-4/">
-        <h2 class="post-title">
-            并发知识梳理：3. 通过具体的应用展示锁的实现机制
-        </h2>
-        
-        <h3 class="post-subtitle">
-            AQS和ReentrantLock
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            上一节关于AQS的锁的架构实现，说的非常的抽象，看的非常的费劲，这次通过代码的注释和说明，来展示具体是如何实现的。
-
-
-
-## ReentrantLock
-
-关于可重入锁带着两个问题，去分析的：
-1. 怎么判断的重入，如何增加锁的次数的。
-2. 重入次数的判断，释放锁的时候，如果消减锁的次数，释放以后，其他的等待的线程是如何响应的
-
-### ReentrantLock lock 方法
-~~~...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 20, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-3/">
-        <h2 class="post-title">
-            并发知识梳理：2. Lock
-        </h2>
-        
-        <h3 class="post-subtitle">
-            锁的实现架构AQS
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            java.util.concurrent.locks.Lock 为一个接口，围绕着这个接口实现了一些列的锁。
-
-
-
-## Lock
-
-Lock接口和Condition接口的均为锁相关的两个接口，具体的说明：
-> Lock implementations provide more extensive locking operations than can be obtained using s...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-2/">
-        <h2 class="post-title">
-            并发知识梳理：1. synchronized，volatile
-        </h2>
-        
-        <h3 class="post-subtitle">
-            JVM支持的关键字
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>synchronized 关键字作为并发理念中，最最基础的部分，需要首先搞明白。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            synchronized 关键字作为并发理念中，最最基础的部分，需要首先搞明白。
-
-Volatile 关键字，又做了哪些工作和Synchronized 有什么不同？
-
-
-
-首先还是实例代码：
-
-~~~
-class Producer extends Thread {
-	static final int MAXQUEUE = 5;
-	private Vector messages = new V...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/17/concurrent-1/">
-        <h2 class="post-title">
-            并发知识梳理：概述
-        </h2>
-        
-        <h3 class="post-subtitle">
-            简述梳理的过程
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            梳理自己所掌握的，关于并发的内容。稳固而知道新的东西，想更加深入的方向，夯实自己薄弱基础。
-
-
-
-并发的东西，涉及的比较的多，自己只能从自己所知的角度来说明，来复习。
-
-从是否设计到一个JVM，还是多个JVM的角度划分：
-
->    1. 单机版本的并发    
-
->    2. 多机版本的并发
-
-我们首先说单机版本的并发支持，这个主要就是JDK支持的并发模型了。JDK的并发的模型：**ja...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 17, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/15/day5/">
-        <h2 class="post-title">
-            JDK7的新特性1 ForkJoinPool
-        </h2>
-        
-        <h3 class="post-subtitle">
-            更新JDK知识-并发编程
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>JDK7的一个新特性：ForkJoinPool 很值得一说。
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            JDK7的一个新特性：ForkJoinPool 很值得一说。
-
-
-ForkJoinPool，首先上代码：
-
-~~~ 
-//计算 π 的值有一个通过多项式方法，即：π = 4 * (1 - 1/3 + 1/5 - 1/7 + 1/9 - ……)，而且多项式的项数越多，计算出的 π 的值越精确
-	static class PiEstimateTask extends RecursiveTask ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 15, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/14/day4/">
-        <h2 class="post-title">
-            LeetCode18, 19，20
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第18，19，20题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第18，19，20题的分析和总结
-
-
-
-LeetCode 18. 4Sum
-
-
-描述：
-
-~~~
-Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target? Find a...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 14, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/13/day4/">
-        <h2 class="post-title">
-            LeetCode16，17
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第16，17题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第16，17题的分析和总结
-
-
-
-LeetCode 16. 3Sum Closest
-
-描述：
-
-~~~
-Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/13/day3/">
-        <h2 class="post-title">
-            LeetCode14,15
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第14,15题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第14,15题的分析和总结
-
-
-
-LeetCode 14. Longest Common Prefix
-
-描述：
-
-~~~
-Write a function to find the longest common prefix string amongst an array of strings.
-
-If there is no common prefix, return a...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/13/day2/">
-        <h2 class="post-title">
-            LeetCode12,13
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第12,13题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第12,13题的分析和总结
-
-
-第12题目描述：
-
-~~~
-Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
-
-Symbol       Value
-I             1
-V             5
-X             10
-L     ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 13, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/12/day2/">
-        <h2 class="post-title">
-            LeetCode10
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第10题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第10题的分析和总结
-
-
-题目描述：
-
-~~~
-Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
-
-'.' Matches any single character.
-'*' Matches zero...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 12, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/12/day2-3/">
-        <h2 class="post-title">
-            LeetCode11
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第11题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第11题的分析和总结
-
-  
-
-题目描述：
-~~~
-Given n non-negative integers a1, a2, ..., an ,
-where each represents a point at coordinate (i, ai).
-n vertical lines are drawn such that the two endpoints of lin...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 12, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/12/day2-2/">
-        <h2 class="post-title">
-            LeetCode09
-        </h2>
-        
-        <h3 class="post-subtitle">
-            算法分析和总结
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>LeetCode 第09题的分析和总结</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            LeetCode 第09题的分析和总结
-
-
-题目描述：
-
-~~~
-Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
-
-Example 1:
-
-Input: 121
-Output: true
-Example 2:...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 12, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/11/day2/">
-        <h2 class="post-title">
-            JDK8的新特性2
-        </h2>
-        
-        <h3 class="post-subtitle">
-            更新JDK知识-Stream
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>JDK8的新特性：Stream</p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            JDK8的新特性：Stream  
-
-
-示例代码：
-~~~
-List myList =
-    Arrays.asList("a1", "a2", "b1", "c2", "c1");
-
-myList
-    .stream()
-    .filter(s -> s.startsWith("c"))
-    .map(String::toUpperCase)
-    .sorted()
-  ...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 11, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/10/jdk-day0/">
-        <h2 class="post-title">
-            JDK8的新特性1
-        </h2>
-        
-        <h3 class="post-subtitle">
-            更新JDK知识-Lamdba
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>JDK8的新特性：
-  1.Default Methods for Interfaces</p>
-<ol>
-  <li>Lambda exxpressions</li>
-  <li>一些常见的Lamdba的使用方式
-<!--more-->
-JDK8的第一个新特性，接口中可以通过default关键字来定义方法的默认行为。</li>
-</ol>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            JDK8的新特性：
-  1.Default Methods for Interfaces
-  2. Lambda exxpressions
-  3. 一些常见的Lamdba的使用方式
-
-JDK8的第一个新特性，接口中可以通过default关键字来定义方法的默认行为。
-
-~~~
-interface Formula {
-    double calculate(int a);
-    def...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 10, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/09/datastruct/">
-        <h2 class="post-title">
-            树形数据结构
-        </h2>
-        
-        <h3 class="post-subtitle">
-            认知问题
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>B+，B树
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            B+，B树
-
-
-The image below helps show the differences between B+ trees and B trees.
-Advantages of B+ trees:
-* Because B+ trees don't have data associated with interior nodes, more keys can fit on a pa...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 9, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/08/07/netty/">
-        <h2 class="post-title">
-            编码编不下去了怎么办？
-        </h2>
-        
-        <h3 class="post-subtitle">
-            认知问题
-        </h3>
-        
-        <div class="post-content-preview">
-            <p>How to program when you don’t feel like it
-  不想干的时候怎么办？
-<!--more--></p>
-
-        </div>
-        <!-- <div class="post-content-preview">
-            How to program when you don’t feel like it
-  不想干的时候怎么办？
-
-
-I recently well and truly “hit the wall” when it came to coding.
-Every time I sat down to code, I felt stuck, like I wasn’t making any prog...
-        </div> -->
-    </a>
-    <p class="post-meta">
-        Posted by zhailzh on August 7, 2019
-    </p>
-</div>
-<hr>
-
-
-
-<div class="postlist">
+        <div class="postlist">
     
     <div class="overview">
         <div class="date"> Aug 24, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/24/concurrent-7/">并发知识梳理：5.Atomic 原子类，LockSupport支持类</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/24/concurrent-7/" style="padding: 20px;">并发知识梳理：5.Atomic 原子类，LockSupport支持类</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 23, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/23/leetcode39/">Leetcode:39,40,78,90,46,47,131</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/23/leetcode39/" style="padding: 20px;">Leetcode:39,40,78,90,46,47,131</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 23, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/23/concurrent-6/">并发知识梳理：4. 阻塞队列</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/23/concurrent-6/" style="padding: 20px;">并发知识梳理：4. 阻塞队列</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 22, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/22/concurrent-5/">并发知识梳理：4. 读写锁等其他的类型的锁的支持</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/22/concurrent-5/" style="padding: 20px;">并发知识梳理：4. 读写锁等其他的类型的锁的支持</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 20, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/20/concurrent-4/">并发知识梳理：3. 通过具体的应用展示锁的实现机制</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/20/concurrent-4/" style="padding: 20px;">并发知识梳理：3. 通过具体的应用展示锁的实现机制</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 17, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/17/concurrent-3/">并发知识梳理：2. Lock</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/17/concurrent-3/" style="padding: 20px;">并发知识梳理：2. Lock</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 17, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/17/concurrent-2/">并发知识梳理：1. synchronized，volatile</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/17/concurrent-2/" style="padding: 20px;">并发知识梳理：1. synchronized，volatile</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 17, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/17/concurrent-1/">并发知识梳理：概述</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/17/concurrent-1/" style="padding: 20px;">并发知识梳理：概述</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 15, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/15/day5/">JDK7的新特性1 ForkJoinPool</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/15/day5/" style="padding: 20px;">JDK7的新特性1 ForkJoinPool</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 14, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/14/day4/">LeetCode18, 19，20</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/14/day4/" style="padding: 20px;">LeetCode18, 19，20</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/13/day4/">LeetCode16，17</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/13/day4/" style="padding: 20px;">LeetCode16，17</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/13/day3/">LeetCode14,15</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/13/day3/" style="padding: 20px;">LeetCode14,15</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 13, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/13/day2/">LeetCode12,13</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/13/day2/" style="padding: 20px;">LeetCode12,13</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 12, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2/">LeetCode10</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/12/day2/" style="padding: 20px;">LeetCode10</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 12, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2-3/">LeetCode11</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/12/day2-3/" style="padding: 20px;">LeetCode11</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 12, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/12/day2-2/">LeetCode09</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/12/day2-2/" style="padding: 20px;">LeetCode09</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 11, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/11/day2/">JDK8的新特性2</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/11/day2/" style="padding: 20px;">JDK8的新特性2</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 10, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/10/jdk-day0/">JDK8的新特性1</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/10/jdk-day0/" style="padding: 20px;">JDK8的新特性1</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 09, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/09/datastruct/">树形数据结构</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/09/datastruct/" style="padding: 20px;">树形数据结构</a>
+            <p/>
         </div>
     </div>
     
     <div class="overview">
         <div class="date"> Aug 07, 2019 </div>
-        <div class="detail"><a href="http://localhost:4000/2019/08/07/netty/">编码编不下去了怎么办？</a>
-
+        <div class="detail">
+            <a href="http://localhost:4000/2019/08/07/netty/" style="padding: 20px;">编码编不下去了怎么办？</a>
+            <p/>
         </div>
     </div>
     

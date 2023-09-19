@@ -217,3 +217,34 @@ td {
 tr:nth-child(2n) {
   background-color: #f8f8f8;
 }
+
+.article-header {
+  border-left: 4px solid #29abe2;
+  margin: 10px 0 25px -4px;
+  padding: 5px 0 5px 10px;
+}
+.light-gray {
+  color: #138b0d;
+}
+
+.h1-light-gray {
+  font-size: 19px;
+}
+
+.article-header {
+  border-left: 4px solid #29abe2;
+  margin: 10px 0 25px -4px;
+  padding: 5px 0 5px 10px;
+}
+.light-gray {
+  color: #0b9417;
+}
+.summary {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+.meta {
+  color: #999;
+  font-size: 12px;
+}

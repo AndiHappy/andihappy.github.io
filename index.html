@@ -4,15 +4,33 @@ description: Andi Happy, andiHappy, 飞翔的面包, FlyBread Blog
 keywords: 技术,programmer,翟,andiHappy,
 ---
 
+
+<!--        <div class="date"> {{ post.date | date: "%b %d, %Y" }} </div>-->
+<!--        <div class="detail">-->
+<!--            <a href="{{ site.url }}{{ post.url }}" style="padding: 20px;">{{ post.title }}</a>-->
+<!--            <p/>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--        {% for tag in post.tags %}-->
+<!--        <a href="/tags/google">{{ tag }}}</a>&nbsp;-->
+<!--        {% endfor %}-->
+
 <div class="postlist">
-    {% for post in paginator.posts %}
-    <div class="overview">
-        <div class="date"> {{ post.date | date: "%b %d, %Y" }} </div>
-        <div class="detail">
-            <a href="{{ site.url }}{{ post.url }}" style="padding: 20px;">{{ post.title }}</a>
-            <p/>
-        </div>
+    <div class="article-header light-gray">
+        <div class="h1-light-gray">Recent Articles</div>
     </div>
+
+<div class="overview">
+    {% for post in paginator.posts %}
+        <div class="summary">
+            <div><a href="{{ site.url }}{{ post.url }} ">{{ post.title }}</a></div>
+            <div class="meta">{{ post.date | date: "%b %d, %Y"  }};
+                        {% for tag in post.categories %}
+                        <a href="/categories/#{{tag}}"> #{{ tag }} </a>&nbsp;
+                        {% endfor %}
+            </div>
+        </div>
     {% endfor %}
 </div>
 

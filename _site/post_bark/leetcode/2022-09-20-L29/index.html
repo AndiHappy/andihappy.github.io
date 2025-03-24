@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 最后一遍-L29-divide two integers  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> 最后一遍-L29-divide two integers </h2>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Given two integers dividend and divisor,
+divide two integers without using multiplication, division, and mod operator.
+The integer division should truncate toward zero, which means losing its fractional part. 
+For example, 8.345 would be truncated to 8, and -2.7335 would be truncated to -2.
+Return the quotient after dividing dividend by divisor.
+Note: 
+Assume we are dealing with an environment that could only store integers within the 32-bit signed integer range: 
+[−231, 231 − 1]. For this problem, if the quotient is strictly greater than 231 - 1, then return 231 - 1, 
+and if the quotient is strictly less than -231, then return -231.
+ 
+Example 1:
+
+Input: dividend = 10, divisor = 3
+Output: 3
+Explanation: 10/3 = 3.33333.. which is truncated to 3.
+
+Example 2:
+Input: dividend = 7, divisor = -3
+Output: -2
+Explanation: 7/-3 = -2.33333.. which is truncated to -2.
+
+
+Constraints:
+
+ -231 &lt;= dividend, divisor &lt;= 231 - 1
+ divisor != 0
+</code></pre></div></div>
+
+<p>按照题目的意思，进行编码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">L29</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">divide</span><span class="o">(-</span><span class="mi">589</span><span class="o">,</span> <span class="o">-</span><span class="mi">3</span><span class="o">);</span>
+    <span class="o">}</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">divide</span><span class="o">(</span><span class="kt">int</span> <span class="n">dividend</span><span class="o">,</span> <span class="kt">int</span> <span class="n">divisor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/***
+         * 首先jdk中定义int占4个字节 =&gt; 32位
+         * 32位就是jvm仅仅给分配32个格子的空间，用以存放数据。
+         * java中int有正负之分。所以32个格子中占用一个格子标识正负。java 使用补码标识数字
+         * 正数的原码，反码，补码全部一样，负数的补码是在原码的基础上，符号位不变，其余各位取反,最后+1
+         * 所以仅仅能用31个格子来标识数值。标识位：0标识正 1来标识负。
+         * */</span>
+<span class="c1">//        System.out.println(-1 &lt;&lt; 31);</span>
+<span class="c1">//        System.out.println((1 &lt;&lt; 31) - 1);</span>
+
+        <span class="cm">/**
+         * A constant holding the maximum value an {@code int} can have, 2&lt;sup&gt;31&lt;/sup&gt;-1.
+         */</span>
+<span class="c1">//        int maxNum = Integer.MAX_VALUE;</span>
+        <span class="cm">/**
+         * A constant holding the minimum value an {@code int} can have, -2&lt;sup&gt;31&lt;/sup&gt;.
+         */</span>
+<span class="c1">//        int minNum = Integer.MIN_VALUE;</span>
+<span class="c1">//        System.out.println(maxNum);</span>
+<span class="c1">//        System.out.println(minNum);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">dividend</span> <span class="o">==</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">MIN_VALUE</span> <span class="o">&amp;&amp;</span> <span class="n">divisor</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span>
+        <span class="c1">// 修改传入的参数必须为负值</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">dividend</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">divisor</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
+            <span class="k">return</span> <span class="nf">divide</span><span class="o">(-</span><span class="n">dividend</span><span class="o">,-</span><span class="n">divisor</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">dividend</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">divide</span><span class="o">(-</span><span class="n">dividend</span><span class="o">,</span><span class="n">divisor</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">divisor</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">divide</span><span class="o">(</span><span class="n">dividend</span><span class="o">,-</span><span class="n">divisor</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+            <span class="cm">/**
+             * 具体的想法是，把589÷-3，变为 (128*3+205)÷3 变为（128*3 + 64*3 + 13）÷3
+             * */</span>
+            <span class="kt">int</span> <span class="n">result</span><span class="o">=</span><span class="mi">0</span><span class="o">,</span><span class="n">currentDivisor</span> <span class="o">=</span> <span class="n">divisor</span><span class="o">;</span>
+            <span class="c1">// 因为两个参数都是负数</span>
+            <span class="k">while</span><span class="o">(</span><span class="n">dividend</span> <span class="o">&lt;=</span> <span class="n">divisor</span><span class="o">){</span>
+                <span class="kt">int</span> <span class="n">tmp</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="c1">// 这是针对一个大数，例如-1000000，除以一个小数，例如-1 的情况</span>
+                <span class="k">while</span><span class="o">(</span><span class="n">dividend</span> <span class="o">&lt;=</span> <span class="o">(</span><span class="n">currentDivisor</span> <span class="o">&lt;&lt;</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">currentDivisor</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">){</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="o">;</span>
+                    <span class="n">currentDivisor</span> <span class="o">=</span> <span class="n">currentDivisor</span> <span class="o">&lt;&lt;</span><span class="mi">1</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">tmp</span><span class="o">;</span>
+                <span class="n">dividend</span> <span class="o">=</span> <span class="n">dividend</span><span class="o">-</span><span class="n">currentDivisor</span><span class="o">;</span>
+                <span class="n">currentDivisor</span> <span class="o">=</span> <span class="n">divisor</span><span class="o">;</span>
+
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+
+        
+        <div class="post_footer">
+          <p>Published on  in categories 
+          
+          <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/leetcode/2022-09-20-L29/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

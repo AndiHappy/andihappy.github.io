@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="天天学习" />
+        <meta name="description" content="解题的开始" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 【leetcode】1163. Last Substring in Lexicographical Order  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> 【leetcode】1163. Last Substring in Lexicographical Order </h2>
+        <p>题目的描述：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string s, return the last substring of s in lexicographical order.
+
+ 
+
+Example 1:
+
+Input: "abab"
+Output: "bab"
+Explanation: The substrings are ["a", "ab", "aba", "abab", "b", "ba", "bab"]. 
+The lexicographically maximum substring is "bab".
+Example 2:
+
+Input: "leetcode"
+Output: "tcode"
+ 
+
+Note:
+
+1 &lt;= s.length &lt;= 10^5
+s contains only lowercase English letters.
+</code></pre></div></div>
+
+<p>理解题目的意思，花了大半天的时间，即使是看了答案，也没有立即清除题目的意思，这个时候，就体现出来英语的重要了。</p>
+
+<p><strong>the last substring of s in lexicographical order</strong></p>
+
+<p>如果一个字符串s,可以给出来这个字符串s包含的所有的子串，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+	<span class="o">}</span>
+
+	<span class="kd">private</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">allSubString</span><span class="o">(</span><span class="nc">String</span> <span class="n">string</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">resultList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;();</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">string</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">string</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">resultList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">string</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">resultList</span><span class="o">;</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<p>例如上面的测试用例中的：eetcode，所有的子串就是：</p>
+
+<blockquote>
+  <p>[e, ee, eet, eetc, eetco, eetcod, eetcode,  <br />
+e, et, etc, etco, etcod, etcode, t, tc, tco,  <br />
+tcod, tcode, c, co, cod, code, o, od, ode, d, de, e]</p>
+
+</blockquote>
+
+<p>这些子串，按照字典排序，那么最后的那个子串就是：tcode</p>
+
+<p>这个问题，就是给出来，一个字符串s,然后给出来这个字符串s，按照字典排序的那个最后的子串。</p>
+
+<p>然后，就是各种的分析，其中首先找到最迟的那个字符，标志着字典序的确认进入了一大步，然后我们就可以直接的从选中的那个字符开始到字符转结束，就是那个”最后的字符串”了。具体的代码为：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">allSubString</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+		
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">lastSubstring</span><span class="o">(</span><span class="s">"eetcode"</span><span class="o">));</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">mx</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+		<span class="kt">char</span> <span class="n">cur</span> <span class="o">=</span> <span class="sc">'a'</span><span class="o">;</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="n">cur</span> <span class="o">&amp;&amp;</span> <span class="n">mx</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// the first letter of substring matters,</span>
+				<span class="n">cur</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+				<span class="n">mx</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="c1">// for example, "tabc" is lexicographically larger than "tab"</span>
+			<span class="o">}</span>
+			<span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+				<span class="n">i</span><span class="o">++;</span> <span class="c1">// get rid of continuous repeating letters</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">mx</span><span class="o">;</span>
+	<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>仔细分析，这个算法，因为有一个一个substring的操作，所以这个时间的复杂度应该为O(n2)，最坏的情况，就是：ababab…….</p>
+
+<p>这道题目的关键在于i的移动，我们每次比较的时候，动用了
+<code class="language-plaintext highlighter-rouge">mx.compareTo(str.substring(i)) &lt;= 0</code>
+而且我们这样的比较导致了一个O(n),能够按照坐标，上一次开始，到这次的比较的点，进行比较，这样就不需要O(n)，分析到这里，就和一个机制很像了：滑动窗口</p>
+
+<p>具体的代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">lastSubstring</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+        <span class="c1">// We have two pointers each pointing at the start of a</span>
+        <span class="c1">// possible candidate substring. The pointer on the left</span>
+        <span class="c1">// is the start of the final answer. Move the pointer with</span>
+        <span class="c1">// smaller ASCII value to the right.</span>
+        <span class="c1">// 两个类似指针的标志位，i和j, i 表示最后字段子串的起始位，j为滑动窗口的位置，curLen为窗口的大小</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">,</span> <span class="n">curLen</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">curLen</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 如果窗口的越过了n则直接的结束</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="o">||</span> <span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">// 窗口的开始大小为0，所以扩展的前提是：i和j的下一个字符是一样的，可以直接则增加窗口</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">)</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">curLen</span><span class="o">++;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="c1">// If two strings have different priority, move the pointer that</span>
+                <span class="c1">// is pointing to the start of the string with lower priority.</span>
+                <span class="c1">// We can directly do i += curLen + 1 instead of i += 1 because</span>
+                <span class="c1">// the substring from i to i + curLen has already been covered</span>
+                <span class="c1">// (it is impossible that any substring in this range will have a </span>
+                <span class="c1">// higher priority than the one that the other pointer is pointing </span>
+                <span class="c1">// to right now). Thus, we can skip them directly</span>
+                <span class="c1">// E.g. d  a  b  d  a  b  x</span>
+                <span class="c1">//      i        j           --&gt; curLen = 3 (dab = dab)</span>
+                <span class="c1">// When curLen = 4, d &lt; x, so we need to move i to the right</span>
+                <span class="c1">// We can move i to index 4 (i.e. the second a) directly. If some </span>
+                <span class="c1">// character between index 1 (the first a) and pointer j has higher</span>
+                <span class="c1">// priority than the character pointed to by j, then i will have left</span>
+                <span class="c1">// i long ago, which is clearly a contradiction.</span>
+                <span class="c1">// 如果位置i的字符的字典序，小于j字符的字典序，i直接的递增curLen + 1</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">curLen</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="n">curLen</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="n">curLen</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">j</span><span class="o">++;</span>
+                <span class="o">}</span>
+                
+                <span class="n">curLen</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">));</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>i和j的移动，就是第一版的优化而来的，并不是特别的依赖某种的算法过来的。</p>
+
+
+        
+        <div class="post_footer">
+          <p>Published on  in categories 
+          
+          <a href="http://localhost:4000/categories/#leetcode" title="leetcode">leetcode</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/leetcode/2020-10-09-L1163/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

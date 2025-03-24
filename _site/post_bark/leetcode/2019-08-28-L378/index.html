@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> L378 有序矩阵中第K小的元素  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> L378 有序矩阵中第K小的元素 </h2>
+        <p>题目描述：</p>
+
+<p>Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.</p>
+
+<p>Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+<!--more--></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example:
+
+matrix = [
+   [ 1,  5,  9],
+   [10, 11, 13],
+   [12, 13, 15]
+],
+k = 8,
+</code></pre></div></div>
+
+<p>return 13.
+Note:
+You may assume k is always valid, 1 ≤ k ≤ n2.</p>
+
+<p>分析思路：</p>
+
+<p>有序的矩阵，查找第K个小的元素，这种问题归类到已有的查找问题，和上一种小白的问题不同，这类我们可以称之为有踪迹或者可以归类的问题，类似于已有问题的扩展。就称之为基础问题吧。</p>
+
+<p>这类我们需要一个对照的模型，这个题目那，就是二分查找。为什么是二分查找尼？因为和二分查找很类似，如果不是矩阵的模式，而是一个数组的样式，那么就二分查找的问题。</p>
+
+<p>然后我们就去分析这道题目为什么不能直接的使用二分查找，二分查找有一个中间值和中间值的索引：</p>
+
+<p><code class="language-plaintext highlighter-rouge">from  to  和 mid = from+ （to-from）/2</code></p>
+
+<p>对应到这个题目就是：
+<code class="language-plaintext highlighter-rouge">[0][0] 和 [n][n]  mid = [0+(n-0)/2][0+(n-0)/2]</code></p>
+
+<p>再然后就是判断第K的跳转，是 from 到 mid 还是 mid 到 from，这个就和第K小的判断有关了，需要判断 mid 在数组中是第几小，然后和K进行比较。</p>
+
+<p>具体的代码实现为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int kthSmallest(int[][] matrix,int k){
+    int n = matrix.length;
+    int from = matrix[0][0];int to = matrix[n-1][n-1];
+
+    while(from &lt; to){
+        int mid = from + (to -from)/2;
+        int count = 0;// 计算mid为第几小的临时变量
+        int j = matrix[0].length-1;
+        // 计算mid为第几小
+        for(int i = 0;i &lt; matrix.length;i++){
+            while(j &gt;0 &amp;&amp; matrix[i][j]&gt;mid) j--;
+            count += (j+1);
+        }
+        if(count &lt;k ){
+             from=mid+1;    
+        }else{
+            to = mid;
+        }
+
+    }
+    return from;
+}
+
+</code></pre></div></div>
+
+<p>再然后就是优化一部分的逻辑，或者说归纳统一的逻辑，例如确定mid是第几小，可以归纳为一个方法里面。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int lo = matrix[0][0], hi = matrix[n-1][n-1];
+        while(lo &lt; hi){
+            int mid = lo + (hi - lo) / 2;
+            int count = countLessOrEquals(mid, matrix);
+            if(count &lt; k)
+                lo = mid+1;
+            else
+                hi = mid;
+        }
+        return lo;
+    }
+    
+    public int countLessOrEquals(int target, int[][] matrix){
+        int i = matrix.length-1, j = 0;
+        int count = 0;
+        while(i &gt;= 0 &amp;&amp; j &lt; matrix[0].length){
+            if(target &lt; matrix[i][j]){
+                i--;
+            }else{
+                count += i+1;
+                j++;
+            }
+        }
+        return count;
+    }
+</code></pre></div></div>
+
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/leetcode/2019-08-28-L378/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

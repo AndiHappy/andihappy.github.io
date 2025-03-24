@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> activiti和设计模式(6)  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> activiti和设计模式(6) </h2>
+        <p>流程实力启动以后，任务的完成是一个比较重要的点，到底怎样才算完成了该节点对应的任务了，可以向下一节点推进了呢？</p>
+
+<!--more-->
+<p>state Pattern：</p>
+
+<blockquote>
+  <p>The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. With the state pattern, a state machine is implemented by implementing each individual state as a derived class of the state pattern interface, and implementing state transitions by invoking methods defined by the pattern’s superclass.</p>
+</blockquote>
+
+<blockquote>
+  <p>The state pattern can be interpreted as a strategy pattern which is able to switch the current strategy through invocations of methods defined in the pattern’s interface.</p>
+</blockquote>
+
+<p>状态模型和策略模型可以相互的转化</p>
+
+<blockquote>
+  <p>This pattern is used in computer programming to encapsulate varying behavior for the same object based on its internal state. This can be a cleaner way for an object to change its behavior at runtime without resorting to large monolithic conditional statements[1]:395 and thus improve maintainability.[2]</p>
+</blockquote>
+
+<p>启动的开始：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>processInstance.start();
+//这里的ProcessInstance的类型是ExecutionEntity，不管是流程定义对应的流程实例，还是活动定义对应的活动实例，都是ExecutionEntity，仔细查看会发现，流程实例的ExecutionEntity和活动实例非常的相似
+
+//流程实例启动
+public void start() {
+    if(startingExecution == null &amp;&amp; isProcessInstanceType()) {
+      startingExecution = new StartingExecution(processDefinition.getInitial());
+    }
+    performOperation(AtomicOperation.PROCESS_START);
+  }
+
+  //活动实例启动
+  performOperation(AtomicOperation.ACTIVITY_START);
+
+  //最终都是
+  public void performOperation(AtomicOperation executionOperation) {
+    if (executionOperation.isAsync(this)) {
+      scheduleAtomicOperationAsync(executionOperation);
+    } else {
+      performOperationSync(executionOperation);
+    }    
+  }
+
+  protected void performOperationSync(AtomicOperation executionOperation) {
+    Context
+      .getCommandContext()
+      .performOperation(executionOperation, this);
+  }
+</code></pre></div></div>
+<p>AtomicOperation相当于定义了流程流转的动作，所有的流程的动作都在这个接口中定义</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface AtomicOperation {
+  AtomicOperation PROCESS_START = new AtomicOperationProcessStart();
+  AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+  AtomicOperation PROCESS_END = new AtomicOperationProcessEnd();
+  AtomicOperation ACTIVITY_START = new AtomicOperationActivityStart();
+  AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();
+  AtomicOperation ACTIVITY_END = new AtomicOperationActivityEnd();
+  AtomicOperation TRANSITION_NOTIFY_LISTENER_END = new AtomicOperationTransitionNotifyListenerEnd();
+  AtomicOperation TRANSITION_DESTROY_SCOPE = new AtomicOperationTransitionDestroyScope();
+  AtomicOperation TRANSITION_NOTIFY_LISTENER_TAKE = new AtomicOperationTransitionNotifyListenerTake();
+  AtomicOperation TRANSITION_CREATE_SCOPE = new AtomicOperationTransitionCreateScope();
+  AtomicOperation TRANSITION_NOTIFY_LISTENER_START = new AtomicOperationTransitionNotifyListenerStart();
+  AtomicOperation DELETE_CASCADE = new AtomicOperationDeleteCascade();
+  AtomicOperation DELETE_CASCADE_FIRE_ACTIVITY_END = new AtomicOperationDeleteCascadeFireActivityEnd();
+  void execute(InterpretableExecution execution);
+  boolean isAsync(InterpretableExecution execution);
+}
+</code></pre></div></div>
+<p>具体动作的跳转见下图：</p>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/f35c3abf0ee213b3aaff97904c008db5.png" alt="流程运转" /></p>
+
+<p>就拿流程实例启动来说：AtomicOperationProcessStart来说，首先是抽象类里面的，
+void execute(InterpretableExecution execution);</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public void execute(InterpretableExecution execution) {
+ //首先是判断监听的逻辑
+    ScopeImpl scope = getScope(execution);
+    List&lt;ExecutionListener&gt; exectionListeners = scope.getExecutionListeners(getEventName());
+    int executionListenerIndex = execution.getExecutionListenerIndex();
+    if (exectionListeners.size()&gt;executionListenerIndex) {
+      execution.setEventName(getEventName());
+      execution.setEventSource(scope);
+      ExecutionListener listener = exectionListeners.get(executionListenerIndex);
+      try {
+        listener.notify(execution);
+      } catch (RuntimeException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new PvmException("couldn't execute event listener : "+e.getMessage(), e);
+      }
+      execution.setExecutionListenerIndex(executionListenerIndex+1);
+      execution.performOperation(this);
+
+    } else {
+      execution.setExecutionListenerIndex(0);
+      execution.setEventName(null);
+      execution.setEventSource(null);
+      eventNotificationsCompleted(execution);
+    }
+  }
+</code></pre></div></div>
+<p>然后就是自己实现的eventNotificationsCompleted(execution);</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> @Override
+  protected void eventNotificationsCompleted(InterpretableExecution execution) {
+  //首先还是事件通知
+  	if (Context.getProcessEngineConfiguration() != null &amp;&amp; Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+  	  Map&lt;String, Object&gt; variablesMap = null;
+  	  try {
+  	    variablesMap = execution.getVariables();
+  	  } catch (Throwable t) {
+  	    // In some rare cases getting the execution variables can fail (JPA entity load failure for example)
+  	    // We ignore the exception here, because it's only meant to include variables in the initialized event.
+  	  }
+    	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+    			ActivitiEventBuilder.createEntityWithVariablesEvent(ActivitiEventType.ENTITY_INITIALIZED,
+    			    execution, variablesMap, false));
+      Context.getProcessEngineConfiguration().getEventDispatcher()
+              .dispatchEvent(ActivitiEventBuilder.createProcessStartedEvent(execution, variablesMap, false));
+    }
+  	//找到开始节点，直接的跳转到PROCESS_START_INITIAL
+    ProcessDefinitionImpl processDefinition = execution.getProcessDefinition();
+    StartingExecution startingExecution = execution.getStartingExecution();
+    List&lt;ActivityImpl&gt; initialActivityStack = processDefinition.getInitialActivityStack(startingExecution.getInitial());  
+    execution.setActivity(initialActivityStack.get(0));
+    execution.performOperation(PROCESS_START_INITIAL);//说明①
+  }
+</code></pre></div></div>
+<p>说明①：流程实例启动后，直接的跳转到：PROCESS_START_INITIAL，即：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AtomicOperation PROCESS_START_INITIAL = new AtomicOperationProcessStartInitial();
+</code></pre></div></div>
+<p>执行的过程是,首先是：      <code class="language-plaintext highlighter-rouge">org.activiti.engine.impl.pvm.runtime.AbstractEventAtomicOperation.execute(InterpretableExecution)</code></p>
+
+<p>然后才是正式的逻辑：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+  protected void eventNotificationsCompleted(InterpretableExecution execution) {
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+
+    ProcessDefinitionImpl processDefinition = execution.getProcessDefinition();
+
+    StartingExecution startingExecution = execution.getStartingExecution();
+    //如果开始节点是起始节点
+    if (activity==startingExecution.getInitial()) {
+      execution.disposeStartingExecution();
+      //转移到ACTIVITY_EXECUTE，执行activity对应的逻辑
+      execution.performOperation(ACTIVITY_EXECUTE);
+
+    } else {
+    //如果不是开始节点，循环的找到开始节点
+      List&lt;ActivityImpl&gt; initialActivityStack = processDefinition.getInitialActivityStack(startingExecution.getInitial());
+      int index = initialActivityStack.indexOf(activity);
+      activity = initialActivityStack.get(index+1);
+
+      InterpretableExecution executionToUse = null;
+      if (activity.isScope()) {
+        executionToUse = (InterpretableExecution) execution.getExecutions().get(0);
+      } else {
+        executionToUse = execution;
+      }
+      executionToUse.setActivity(activity);
+      executionToUse.performOperation(PROCESS_START_INITIAL);
+    }
+  }
+</code></pre></div></div>
+<p>然后就到了activity的执行的逻辑：</p>
+
+<p><code class="language-plaintext highlighter-rouge">AtomicOperation ACTIVITY_EXECUTE = new AtomicOperationActivityExecute();</code></p>
+
+<p>具体的执行的逻辑是：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void execute(InterpretableExecution execution) {
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+
+    ActivityBehavior activityBehavior = activity.getActivityBehavior();
+    if (activityBehavior==null) {
+      throw new PvmException("no behavior specified in "+activity);
+    }
+
+    log.debug("{} executes {}: {}", execution, activity, activityBehavior.getClass().getName());
+
+    try {
+    	if(Context.getProcessEngineConfiguration() != null &amp;&amp; Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+      	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+      			ActivitiEventBuilder.createActivityEvent(ActivitiEventType.ACTIVITY_STARTED,
+      					execution.getActivity().getId(),
+      					(String) execution.getActivity().getProperty("name"),
+      					execution.getId(),
+      					execution.getProcessInstanceId(),
+      					execution.getProcessDefinitionId(),
+      					(String) activity.getProperties().get("type"),
+      					activity.getActivityBehavior().getClass().getCanonicalName()));
+      }
+
+      activityBehavior.execute(execution);
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      LogMDC.putMDCExecution(execution);
+      throw new PvmException("couldn't execute activity &lt;"+activity.getProperty("type")+" id=\""+activity.getId()+"\" ...&gt;: "+e.getMessage(), e);
+    }
+  }
+</code></pre></div></div>
+<p>activity的行为活动就非常的多了：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface ActivityBehavior extends Serializable {
+  void execute(ActivityExecution execution) throws Exception;
+}
+</code></pre></div></div>
+<p>比较熟悉activitybehavior：
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/8045d4e96f4f675834525a7127f6bb58.png" alt="熟悉的activitybehavior" /></p>
+
+        
+        <div class="post_footer">
+          <p>Published on Aug 13, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#activiti-desigen-pattern" title="activiti-desigen-pattern">activiti-desigen-pattern</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/2017/2017-08-14-activiti6/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

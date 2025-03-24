@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> LeetCode16，17  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> LeetCode16，17 </h2>
+        <p>LeetCode 第16，17题的分析和总结</p>
+
+<!--more-->
+
+<p>LeetCode 16. 3Sum Closest</p>
+
+<p>描述：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
+Example:
+
+Given array nums = [-1, 2, 1, -4], and target = 1.
+
+The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3Sum 变形题目，使用绝对值表示离目标值的远和近
+</code></pre></div></div>
+
+<p>代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int threeSumClosest_copy(int[] num,int target) {
+	int result = num[0]+num[1]+num[num.length-1];
+	Arrays.parallelSort(num);
+	int small = num[0]+num[1]+num[2];
+	if(small &gt;= target) return small;
+	int big = num[num.length-3]+num[num.length-2]+num[num.length-1];
+	if(big &lt;= target) return big;
+
+	for (int i = 0; i &lt; num.length - 2; i++) {
+    int start = i + 1, end = num.length - 1;
+    while (start &lt; end) {
+        int sum = num[i] + num[start] + num[end];
+        if (sum &gt; target) {
+            end--;
+        } else {
+            start++;
+        }
+        if (Math.abs(sum - target) &lt; Math.abs(result - target)) {
+            result = sum;
+        }
+    }
+ }
+ return result;
+}
+</code></pre></div></div>
+
+<p>LeetCode 17. Letter Combinations of a Phone Number</p>
+
+<p>题目描述：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a string containing digits from 2-9 inclusive,
+return all possible letter combinations
+that the number could represent.
+
+A mapping of digit to letters
+(just like on the telephone buttons)
+is given below.
+ Note that 1 does not map to any letters.
+
+Example:
+
+Input: "23"
+Output: ["ad", "ae", "af", "bd",
+"be", "bf", "cd", "ce", "cf"].
+Note:
+
+Although the above answer is in lexicographical order, your answer could be in any order you want.
+</code></pre></div></div>
+
+<p>思路：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>集合和排序的变种
+</code></pre></div></div>
+
+<p>代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public List&lt;String&gt; letterCombinations(String digits) {
+	LinkedList&lt;String&gt; ans = new LinkedList&lt;String&gt;();
+	if(digits.isEmpty()) return ans;
+	String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+	ans.add("");
+	for(int i =0; i&lt;digits.length();i++){
+		int x = Character.getNumericValue(digits.charAt(i));
+		while(ans.peek().length()==i){
+			String t = ans.remove();
+			for(char s : mapping[x].toCharArray())
+				ans.add(t+s);
+		}
+	}
+	return ans;
+}
+</code></pre></div></div>
+
+<p>这里使用了迭代的思路，但是用的非常的优雅，首先是遍历给出的digits每一位的数字，
+然后利用队列或者栈的先进先出的原则，循环的遍历已经组合完成的数组，添加上后来的数据，比较的巧妙和优雅。</p>
+
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/2019/post/2019-08-13-day4/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

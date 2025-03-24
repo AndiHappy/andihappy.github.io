@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 沉下心来分析HashMap的源码（三）学习红黑树  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> 沉下心来分析HashMap的源码（三）学习红黑树 </h2>
+        <p>HashMap的源码在JDK 1.8后引入了红黑树，但是看到红黑树的定义：</p>
+
+<ol>
+  <li>每个节点或者是红色，或者是黑色</li>
+  <li>根节点是黑色</li>
+  <li>每一个叶子节点(最后的空节点)是黑色的</li>
+  <li>如果一个节点是红色的，那么它的孩子节点都是黑色的</li>
+  <li>从任意一个节点到叶子节点，经过的黑色节点是一样的</li>
+</ol>
+
+<p>完全的不清楚为什么这么定义，以及这么定义的原因是什么。</p>
+
+<!--more-->
+
+<h3 id="先导">先导</h3>
+
+<p>先说红黑树的由来，是为了查找的平衡，从二叉查找树说起。</p>
+
+<p>二叉查找树：从根节点开始，左节点的值小于根节点，右节点的值大于右节点。并且每一颗子树都满足这个条件，所以便于查找：查找的时候，只需要比对就能够瞬速的找到所在子树，继而找到对应的节点。但是二叉查找树有一个缺点就是：容易偏向一侧，我们向往的二叉查找树是图一，结果却有很多图二的情况。
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t1.jpg" alt="图1" />
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t2.jpg" alt="图2" /></p>
+
+<h3 id="平衡树2-3树">平衡树：2-3树</h3>
+<p>在这种需求下，平衡树的概念就应运而生了。红黑树就是一种平衡树，它可以保证二叉树基本符合我们预料的那种平衡的结构，但是理解红黑树之前，必须先了解另一种树，叫2-3树，红黑树背后的逻辑就是它。</p>
+
+<p>2-3树：2-3树满足二分搜索树的性质。不同的是在2-3树中，存在两种节点。一种是有两个叶子节点的，我们称作“2节点” 如图3；另一种是有三个叶子节点的，我们称作“3节点”，如图4，图5展示的是一个完整的2-3 树，满足从根节点到任意一个叶子节点的高度都是相同的。
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t3.jpg" alt="图3" />
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t4.jpg" alt="图4" />
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t5.jpg" alt="图5" /></p>
+
+<h3 id="2-3树如何保持平衡">2-3树如何保持平衡</h3>
+
+<p>2-3树平衡的保持，主要依赖两个操作：拆分和合并。其中拆分主要发生在3节点插入时候，如下图6，图7完整的展示可一个查分的过程：
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t6.jpg" alt="图6" />
+<img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t7.jpg" alt="图7" /></p>
+
+<p>拆分的过程主要是形成了一个4节点（类似于2节点，3节点的概念），(4 7 9) 这个节点，然后通过4节点的中间状态查分为三个2节点. <br />
+但是在图7的第二步，拆分过后的2-3树已经不满足：从根节点到任意的叶子节点的高度是完全一致的平衡性，所以我们需要合并的操作，如图7中的第三步。</p>
+
+<p>如果合并过程中，出现了四节点，那么我们再次的查分，这两个操作可以混合使用，如图8.</p>
+
+<p><img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t8.jpg" alt="图8" /></p>
+
+<h3 id="2-3树和红黑树的关系">2-3树和红黑树的关系</h3>
+
+<p>对于2-3树中的“2节点”，对应于红黑树中的“黑节点”，即相当于普通二分搜索树中的一个节点。</p>
+
+<p>对于2-3树中的“3节点”，相当于普通二分搜索树中的两个节点融合在一起，我们如何来描述这种融合在一起的两个节点之间的关系呢？</p>
+
+<p>其实很简单，如果我们将连接这两个节点的边涂成红色，就可以表示这两个节点是融合的关系，即2-3树中的一个“3节点”。</p>
+
+<p>对于树这种数据结构，我们在定义的时候通常都是针对节点进行定义，并没有对节点之间的边进行定义，我们如何来表示这条被涂成红色的边呢？</p>
+
+<p>大家都知道，对于树中的任意一个节点，都是只有一个父亲节点，所以与其父节点相连接的边可以用该节点进行表示。那么我们就可以将这两个节点中较小的节点（作为左子树的节点）涂成红色，就可以很好地表示这两个节点融合的关系了。</p>
+
+<p>如下图所示：</p>
+
+<p><img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t9.jpg" alt="图8" /></p>
+
+<p>然后一颗2-3树的就可以转化为一颗红黑树了，如下图所示：</p>
+
+<p><img src="https://raw.githubusercontent.com/AndiHappy/blogimage/master/post/2019/t10.jpg" alt="图8" /></p>
+
+<h3 id="再次的分析红黑树的性质">再次的分析红黑树的性质</h3>
+
+<p>讨论了2-3树与红黑树之间的关系，我们再回过头来看一下红黑树的5条定义和性质，会发现很好理解了。</p>
+
+<p>1.每个节点或者是红色，或者是黑色
+这条定义很好理解，在此不做解释。</p>
+
+<p>2.根节点是黑色</p>
+
+<p>根据之前说过的，红色的节点对应于2-3树中“3节点”中较小的那个节点，拆成两个“2节点”的话则是一个左子树的节点，即<strong>红色的节点总是可以和其父节点进行融合</strong>，所以红色节点一定有父节点，显然根节点不能是红色，所以根节点是黑色。</p>
+
+<p>3.每一个叶子节点(最后的空节点)是黑色的</p>
+
+<p>这条性质和第2条是对应的。对于叶子节点（最后的空节点），一颗空树的根节点也为黑色，所以与其说第三条是一条性质，不如说也是一个定义。</p>
+
+<p>4.如果一个节点是红色的，那么它的孩子节点都是黑色的</p>
+
+<p>根据上面2-3树与红黑树两种节点的对比图，我们很容易看到，红色节点的两个子树，对应2-3树中的话，要么是一个“2节点”，要么是一个“3节点”，而不管是“2节点”还是“3节点”，相连的第一个节点都是黑色的，所以说红色节点的孩子节点都是黑色的。</p>
+
+<p>5.从任意一个节点到叶子节点，经过的黑色节点是一样的</p>
+
+<p>根据2-3树与红黑树的关系对比图，可以发现，红黑树中一个黑色节点对应2-3树中一整个节点（“2节点”或“3节点”），而2-3树是完全平衡的树，从根节点到任意路径的叶子节点，经过的节点个数都是相同的，对应红黑树中，即从任意节点到叶子节点，经过的黑色节点是一样的。</p>
+
+<p>对比2-3树总结起来，其实也就两条。其中一条是关于着色的：每个节点都有颜色，非红即黑。根节点，叶子节点为黑色。红色节点的孩子节点为黑色。另外一条是关于2-3树的平衡性的。即是到每一个叶子节点是平衡的，对应的红黑树，也就是经过的黑色节点是一样的。</p>
+
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/2019/post/2019-08-04-hashmap0/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

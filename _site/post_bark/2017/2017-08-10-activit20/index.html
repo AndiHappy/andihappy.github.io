@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> activiti和设计模式(2.1)  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> activiti和设计模式(2.1) </h2>
+        <p>activiti中Command的执行的过程，也是一个设计模式来进行控制的，就是责任链设计模式，或者：<strong>Interpreter pattern</strong>.
+<!--more--></p>
+
+<p>首先是启动的代码：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//调用方：</span>
+<span class="nc">ProcessInstance</span> <span class="n">ins</span> <span class="o">=</span> <span class="n">runtimeService</span><span class="o">.</span><span class="na">startProcessInstanceById</span><span class="o">(</span><span class="n">workFlowId</span><span class="o">,</span> <span class="n">formId</span><span class="o">,</span><span class="n">variablesObject</span><span class="o">);</span>      
+
+<span class="c1">//调用的入口：</span>
+<span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">startProcessInstanceById</span><span class="o">(</span><span class="nc">String</span> <span class="n">processDefinitionId</span><span class="o">,</span>
+    <span class="nc">String</span> <span class="n">businessKey</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">variables</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">StartProcessInstanceCmd</span><span class="o">&lt;</span><span class="nc">ProcessInstance</span><span class="o">&gt;(</span><span class="kc">null</span><span class="o">,</span>
+        <span class="n">processDefinitionId</span><span class="o">,</span> <span class="n">businessKey</span><span class="o">,</span> <span class="n">variables</span><span class="o">));</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/fab71e2707099d49e0c04456244c7258.png" alt="debug页面" /></p>
+
+<p>从图中可以看出：CommandExecutor 已经包含了执行所需要的全部的内容，我们看一下执行的代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+ public &lt;T&gt; T execute(Command&lt;T&gt; command) {
+   return execute(defaultConfig, command);
+ }
+
+ @Override
+  public &lt;T&gt; T execute(CommandConfig config, Command&lt;T&gt; command) {
+    return first.execute(config, command);
+  }
+  //这里我们可以看到，执行的过程进入了某一个链中。
+</code></pre></div></div>
+
+<p>这个链总共有三个类构成：    <br />
+org.activiti.engine.impl.interceptor.LogInterceptor     <br />
+org.activiti.engine.impl.interceptor.CommandContextInterceptor     <br />
+org.activiti.engine.impl.interceptor.CommandInvoker</p>
+
+<p>这三个类全部实现了接口：CommandInterceptor</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface CommandInterceptor {
+
+  &lt;T&gt; T execute(CommandConfig config, Command&lt;T&gt; command);
+  CommandInterceptor getNext();
+  void setNext(CommandInterceptor next);
+}
+</code></pre></div></div>
+
+<p>通过这个代码的 setNext方法，这三个类构成了一个执行链，在引擎初始化的时候，能够发现这个执行链构造和初始化的代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void initCommandInvoker() {
+  if (commandInvoker==null) {
+    commandInvoker = new CommandInvoker();//③
+  }
+}
+
+protected void initCommandInterceptors() {
+    if (commandInterceptors==null) {
+      commandInterceptors = new ArrayList&lt;CommandInterceptor&gt;();
+      if (customPreCommandInterceptors!=null) {
+        commandInterceptors.addAll(customPreCommandInterceptors);
+      }
+      commandInterceptors.addAll(getDefaultCommandInterceptors());
+      if (customPostCommandInterceptors!=null) {
+        commandInterceptors.addAll(customPostCommandInterceptors);
+      }
+      commandInterceptors.add(commandInvoker);
+    }
+  }
+
+protected Collection&lt; ? extends CommandInterceptor&gt; getDefaultCommandInterceptors() {
+   List&lt;CommandInterceptor&gt; interceptors = new ArrayList&lt;CommandInterceptor&gt;();
+   interceptors.add(new LogInterceptor());//①
+
+   CommandInterceptor transactionInterceptor = createTransactionInterceptor();
+   if (transactionInterceptor != null) {
+     interceptors.add(transactionInterceptor);
+   }
+
+   interceptors.add(new CommandContextInterceptor(commandContextFactory, this));//②
+   return interceptors;
+ }
+
+//初始化这条链
+ protected CommandInterceptor initInterceptorChain(List&lt;CommandInterceptor&gt; chain) {
+    if (chain==null || chain.isEmpty()) {
+      throw new ActivitiException("invalid command interceptor chain configuration: "+chain);
+    }
+    for (int i = 0; i &lt; chain.size()-1; i++) {
+      chain.get(i).setNext( chain.get(i+1) );
+    }
+    return chain.get(0);
+  }
+
+  // commandExecutor 初始化完成
+  protected void initCommandExecutor() {
+     if (commandExecutor==null) {
+       CommandInterceptor first = initInterceptorChain(commandInterceptors);
+       commandExecutor = new CommandExecutorImpl(getDefaultCommandConfig(), first);
+     }
+   }
+
+</code></pre></div></div>
+
+<p>这个三个拦截链都做了什么呢？第一个就是日志记录，虽然个人感觉比较的无聊，但是也可能是一个扩展的示例：LogInterceptor</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="c1">// do nothing here if we cannot log</span>
+      <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"--- starting {} --------------------------------------------------------"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">());</span>
+    <span class="k">try</span> <span class="o">{</span>
+
+      <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"--- {} finished --------------------------------------------------------"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">());</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>第二个链：CommandContextInterceptor 主要是构建命令运行的执行的环境：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+   <span class="nc">CommandContext</span> <span class="n">context</span> <span class="o">=</span> <span class="nc">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">();</span>  
+   <span class="kt">boolean</span> <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="c1">// We need to check the exception, because the transaction can be in a rollback state,</span>
+   <span class="c1">// and some other command is being fired to compensate (eg. decrementing job retries)</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">config</span><span class="o">.</span><span class="na">isContextReusePossible</span><span class="o">()</span> <span class="o">||</span> <span class="n">context</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">context</span><span class="o">.</span><span class="na">getException</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+     <span class="n">context</span> <span class="o">=</span> <span class="n">commandContextFactory</span><span class="o">.</span><span class="na">createCommandContext</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>    	
+   <span class="o">}</span>  
+   <span class="k">else</span> <span class="o">{</span>
+     <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Valid context found. Reusing it for the current command '{}'"</span><span class="o">,</span> <span class="n">command</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getCanonicalName</span><span class="o">());</span>
+     <span class="n">contextReused</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="k">try</span> <span class="o">{</span>
+     <span class="c1">// Push on stack</span>
+     <span class="nc">Context</span><span class="o">.</span><span class="na">setCommandContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+     <span class="nc">Context</span><span class="o">.</span><span class="na">setProcessEngineConfiguration</span><span class="o">(</span><span class="n">processEngineConfiguration</span><span class="o">);</span>
+     <span class="k">return</span> <span class="n">next</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">command</span><span class="o">);</span>
+   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+     <span class="n">context</span><span class="o">.</span><span class="na">exception</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+   <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+     <span class="k">try</span> <span class="o">{</span>
+       <span class="k">if</span> <span class="o">(!</span><span class="n">contextReused</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">context</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+       <span class="o">}</span>
+     <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+       <span class="c1">// Pop from stack</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeCommandContext</span><span class="o">();</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeProcessEngineConfiguration</span><span class="o">();</span>
+       <span class="nc">Context</span><span class="o">.</span><span class="na">removeBpmnOverrideContext</span><span class="o">();</span>
+     <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+ <span class="o">}</span>
+</code></pre></div></div>
+
+<p>从这个环境构造，可以看出来两个问题：</p>
+<ol>
+  <li>context的组织方式，是根据Command进行的，并且Context是通过stack进行组织的。</li>
+  <li>既然context是根据stack组织的，说明有压栈，出栈的操作，也就说明Command之间存在嵌套的可能性。</li>
+</ol>
+
+<p>第三个链：CommandInvoker 命令行的执行：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Command</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">getCommandContext</span><span class="o">());</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看到最终执行的过程，还是到了每一个的command类中，这也是符合预期的。此例中最终进入StartProcessInstanceCmd类中，执行代码:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">ProcessInstance</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">CommandContext</span> <span class="n">commandContext</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">DeploymentManager</span> <span class="n">deploymentManager</span> <span class="o">=</span> <span class="n">commandContext</span>
+      <span class="o">.</span><span class="na">getProcessEngineConfiguration</span><span class="o">()</span>
+      <span class="o">.</span><span class="na">getDeploymentManager</span><span class="o">();</span>
+
+    <span class="c1">// Find the process definition</span>
+    <span class="nc">ProcessDefinitionEntity</span> <span class="n">processDefinition</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">processDefinitionId</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">processDefinition</span> <span class="o">=</span> <span class="n">deploymentManager</span><span class="o">.</span><span class="na">findDeployedProcessDefinitionById</span><span class="o">(</span><span class="n">processDefinitionId</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="err">。。。。。。。。</span>
+    <span class="c1">// Start the process instance</span>
+    <span class="nc">ExecutionEntity</span> <span class="n">processInstance</span> <span class="o">=</span> <span class="n">processDefinition</span><span class="o">.</span><span class="na">createProcessInstance</span><span class="o">(</span><span class="n">businessKey</span><span class="o">);</span>
+		<span class="err">。。。。。。。。</span>
+    <span class="n">processInstance</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+
+    <span class="k">return</span> <span class="n">processInstance</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看出来这个是 Interpreter pattern 和 Command Pattern 联合使用的一种情况，就目的而言，试分析一二：     <br />
+总结来自：</p>
+
+<p>1）一个产品或者一个项目，很少是一个人开发出来的，大多都涉及到协同工作。但是既然是一个框架，那么总体上面的需要有一个规范，利于大家的开发，利于大家的协调。这个就是架构的意义所在。 有了具体的架构的约束，加入一些基础的组件，基本上能够把实现的大体的过程规划出来，这样这个框架的整体的风格也就确定了。就像Activiti做的这样，明确以Command作为基本开发模型，辅之以Event-Listener，这样编程风格的整体性得到了保证。</p>
+
+<p>2）使用命令模式和责任链的好处 职责分离，解耦。有了Command，各个Service从角色上说只是一些协调者或者控制者，不需要知道具体怎么做，他只是把任务交给了各个命令。便于封装每一个的功能</p>
+
+<p>3）解耦之后，随之带来的一个好处，就是扩展或者说灵活性的增加，我们可以把自己扩展的动作按照同样的方式，封装成一个一个的command，更加的便于理解和别人的使用。大大的增加activiti的生态。</p>
+
+        
+        <div class="post_footer">
+          <p>Published on Aug 10, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#activiti-desigen-pattern" title="activiti-desigen-pattern">activiti-desigen-pattern</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/2017/2017-08-10-activit20/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

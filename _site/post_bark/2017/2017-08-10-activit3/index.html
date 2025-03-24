@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> activiti和设计模式(3)  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> activiti和设计模式(3) </h2>
+        <p>提到activiti的核心业务的组织方式，就不得不提到，BPMN规范中各个图形代表的意义，各个参数的设置等等纷杂的问题。
+中间我们关注的是activiti对bpmn规范中各个图形对应的对象组织方式，以及其中的设计模式。更准确的说是继承，扩展和组合的使用定义。</p>
+
+<!--more-->
+
+<p>首先是：流程定义的解析，我们可以知道总体的模型对应的类是：BpmnModel，但是这个模式是怎么得到的？</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BpmnXMLConverter converter = new BpmnXMLConverter();
+
+bpmnModel = converter.convertToBpmnModel(streamSource, validateSchema, enableSafeBpmnXml, encoding);
+//使用fasterxml 来解析xml
+if (ELEMENT_DEFINITIONS.equals(xtr.getLocalName())) {
+    definitionsParser.parse(xtr, model);
+} else if (ELEMENT_RESOURCE.equals(xtr.getLocalName())) {
+resourceParser.parse(xtr, model);
+} else if (ELEMENT_SIGNAL.equals(xtr.getLocalName())) {
+signalParser.parse(xtr, model);
+} else if (ELEMENT_MESSAGE.equals(xtr.getLocalName())) {
+          messageParser.parse(xtr, model);
+}
+
+//具体针对各个BPMN规范的解析
+protected BpmnEdgeParser bpmnEdgeParser = new BpmnEdgeParser();
+protected BpmnShapeParser bpmnShapeParser = new BpmnShapeParser();
+protected DefinitionsParser definitionsParser = new DefinitionsParser();
+protected DocumentationParser documentationParser = new DocumentationParser();
+protected ExtensionElementsParser extensionElementsParser = new ExtensionElementsParser();
+protected ImportParser importParser = new ImportParser();
+protected InterfaceParser interfaceParser = new InterfaceParser();
+protected ItemDefinitionParser itemDefinitionParser = new ItemDefinitionParser();
+protected IOSpecificationParser ioSpecificationParser = new IOSpecificationParser();
+protected DataStoreParser dataStoreParser = new DataStoreParser();
+protected LaneParser laneParser = new LaneParser();
+protected MessageParser messageParser = new MessageParser();
+protected MessageFlowParser messageFlowParser = new MessageFlowParser();
+protected MultiInstanceParser multiInstanceParser = new MultiInstanceParser();
+protected ParticipantParser participantParser = new ParticipantParser();
+protected PotentialStarterParser potentialStarterParser = new PotentialStarterParser();
+protected ProcessParser processParser = new ProcessParser();
+protected ResourceParser resourceParser = new ResourceParser();
+protected SignalParser signalParser = new SignalParser();
+protected SubProcessParser subProcessParser = new SubProcessParser();
+</code></pre></div></div>
+<p>我们最后看一下，BpmnModel的组成：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	protected Map&lt;String, List&lt;ExtensionAttribute&gt;&gt; definitionsAttributes =
+new LinkedHashMap\&lt;String, List&lt;ExtensionAttribute&gt;\&gt;();
+	protected List&lt;Process&gt; processes = new ArrayList&lt;Process&gt;();
+	protected Map&lt;String, GraphicInfo&gt; locationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
+	protected Map&lt;String, GraphicInfo&gt; labelLocationMap = new LinkedHashMap&lt;String, GraphicInfo&gt;();
+	protected Map&lt;String, List&lt;GraphicInfo&gt;&gt; flowLocationMap = new LinkedHashMap&lt;String, List&lt;GraphicInfo&gt;&gt;();
+	protected List&lt;Signal&gt; signals = new ArrayList&lt;Signal&gt;();
+	protected Map&lt;String, MessageFlow&gt; messageFlowMap = new LinkedHashMap&lt;String, MessageFlow&gt;();
+	protected Map&lt;String, Message&gt; messageMap = new LinkedHashMap&lt;String, Message&gt;();
+	protected Map&lt;String, String&gt; errorMap = new LinkedHashMap&lt;String, String&gt;();
+	protected Map&lt;String, ItemDefinition&gt; itemDefinitionMap = new LinkedHashMap&lt;String, ItemDefinition&gt;();
+	protected Map&lt;String, DataStore&gt; dataStoreMap = new LinkedHashMap&lt;String, DataStore&gt;();
+	protected List&lt;Pool&gt; pools = new ArrayList&lt;Pool&gt;();
+	protected List&lt;Import&gt; imports = new ArrayList&lt;Import&gt;();
+	protected List&lt;Interface&gt; interfaces = new ArrayList&lt;Interface&gt;();
+	protected List&lt;Artifact&gt; globalArtifacts = new ArrayList&lt;Artifact&gt;();
+	protected List&lt;Resource&gt; resources = new ArrayList&lt;Resource&gt;();
+	protected Map&lt;String, String&gt; namespaceMap = new LinkedHashMap&lt;String, String&gt;();
+	protected String targetNamespace;
+	protected List&lt;String&gt; userTaskFormTypes;
+	protected List&lt;String&gt; startEventFormTypes;
+	protected int nextFlowIdCounter = 1;
+</code></pre></div></div>
+<p>你会发现，在调试的时候老出现的Activity之类的并没有出现，那么BpmnModel和ProcessDefinitionImpl是怎么关联起来的呢？同样是在BpmnParse中，可以发现：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public BpmnParse execute() {
+  。。。。。。
+// Validation successfull (or no validation)
+createImports();
+createItemDefinitions();
+createMessages();
+createOperations();
+transformProcessDefinitions();
+  。。。。。。
+}
+</code></pre></div></div>
+<p>具体的操作是在：org.activiti.engine.impl.bpmn.parser.BpmnParse.processDI()中，主要的代码是：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // Parse diagram interchange information
+        ProcessDefinitionEntity processDefinition = getProcessDefinition(process.getId());
+        if (processDefinition != null) {
+          processDefinition.setGraphicalNotationDefined(true);
+          for (String shapeId : bpmnModel.getLocationMap().keySet()) {
+            if (processDefinition.findActivity(shapeId) != null) {
+              createBPMNShape(shapeId, bpmnModel.getGraphicInfo(shapeId), processDefinition);
+            }
+          }
+
+          for (String edgeId : bpmnModel.getFlowLocationMap().keySet()) {
+            if (bpmnModel.getFlowElement(edgeId) != null) {
+              createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId));
+            }
+          }
+</code></pre></div></div>
+
+<p>从这里我们可以看出来：BpmnModel只要支持的Bpmn的规范，支持的是xml中定义的各个图形的对象，以及对象的属性。ProcessDefinitionEntity主要的是流程运转的过程中的对象，这点从类的命名上面也可以看出来。</p>
+
+<p>这里想说的是设计模式：组合模式（Composite pattern），以及解析过程中的工程模式（Abstract factory pattern）。</p>
+
+<p>组合模式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>首先是每一个元素都会含有实行，在activiti中属性抽象为一个接口，
+所有的基础元素都会实现该接口：			
+org.activiti.bpmn.model.HasExtensionAttribute     
+
+public abstract class BaseElement implements HasExtensionAttributes
+public abstract class FlowElement extends BaseElement implements HasExecutionListeners
+
+BaseElement 被设计为抽象的类型，这个感觉基础元素，不会出现在xml定义中，也就符合了抽象类：不能被实例化的特性。
+
+BaseElement的继承的体系，如附件所示：
+
+其中我们比较属性的Usertask，Process的集成体系也如附件中体现：
+</code></pre></div></div>
+<p><img src="http://7xtrwx.com1.z0.glb.clouddn.com/51a6be4efb9206b6a0326456e01e1a7f.png" alt="baseElement的集成体系" />
+<img src="http://7xtrwx.com1.z0.glb.clouddn.com/9eed650ff7bdedacf4170f0d064bff0c.png" alt="flowElement继承体系" /></p>
+
+<p>单独的把FlowElement列出来，是因为抽象类FlowElement中有一个比较好玩的，也是比较重要的方法：
+ public abstract FlowElement clone();</p>
+
+<p>可以直接的克隆一个元素出来，在后期的扩展中，这个是比较有用的一个方法，在继承体系，所有的元素都实现了这个方法，也就为了后面的扩展提供了基础。</p>
+
+<p>上面的BpmnModel就是典型的组合模式，但是在继承体系中，也是含有组合的，最容易理解的莫过于子流程的定义了，即：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class SubProcess extends Activity implements FlowElementsContainer {
+  protected List&lt;FlowElement&gt; flowElementList = new ArrayList&lt;FlowElement&gt;();
+  protected List&lt;Artifact&gt; artifactList = new ArrayList&lt;Artifact&gt;();
+  protected List&lt;ValuedDataObject&gt; dataObjects = new ArrayList&lt;ValuedDataObject&gt;();
+</code></pre></div></div>
+
+<p>在BPMN的解析的过程中，使用到了抽象工厂的类：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface BpmnParseFactory {
+  BpmnParse createBpmnParse(BpmnParser bpmnParser);
+}   
+
+</code></pre></div></div>
+
+<p>默认的工程类：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DefaultBpmnParseFactory implements BpmnParseFactory {
+
+  public BpmnParse createBpmnParse(BpmnParser bpmnParser) {
+    return new BpmnParse(bpmnParser);
+  }
+}
+</code></pre></div></div>
+<p>使用的情况：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (bpmnParseFactory == null) {
+      bpmnParseFactory = new DefaultBpmnParseFactory();
+    }
+</code></pre></div></div>
+
+<p>个人感觉有点过度设计的感觉，但是为了扩展，也是无可厚非。</p>
+
+
+        
+        <div class="post_footer">
+          <p>Published on Aug 10, 2017 in categories 
+          
+          <a href="http://localhost:4000/categories/#activiti-desigen-pattern" title="activiti-desigen-pattern">activiti-desigen-pattern</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/2017/2017-08-10-activit3/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> 最后一遍-L36-Valid Sudoku  </title>
+        <link rel="stylesheet" href="http://localhost:4000/css/default.css" type="text/css" />
+        <link rel="stylesheet" href="http://localhost:4000/css/small.css" type="text/css" media="(max-width: 720px)"/>
+        <link rel="stylesheet" href="http://localhost:4000/css/syntax.css" type="text/css" />
+        <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon" />
+    </head>
+    <body>
+
+<div class="container">
+    <div class="nav">
+    <div class="nav_nav">
+        <a class="nav_a1" href="http://localhost:4000/">首页</a>
+        <a class="nav_a1" href="http://localhost:4000/categories/">分类</a>
+        <a class="nav_a1" href="http://localhost:4000/wiki/">周报</a>
+        <a class="nav_a1" href="http://localhost:4000/links/">计划</a> 
+        <a class="nav_a1" href="http://localhost:4000/about/">关于</a>
+    </div>
+<!--    <div class="nav_rss"><a href="http://localhost:4000/sitemap.xml" style="display:none;">SITEMAP</a><a href="http://localhost:4000/feed.xml" target="_blank">订阅</a></div>-->
+</div>
+
+    <div class="main">
+        <h2> 最后一遍-L36-Valid Sudoku </h2>
+        <p>描述：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Determine if a 9 x 9 Sudoku board is valid. 
+Only the filled cells need to be validated according to the following rules:
+
+Each row must contain the digits 1-9 without repetition.
+Each column must contain the digits 1-9 without repetition.
+Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+
+Note:
+A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+Only the filled cells need to be validated according to the mentioned rules.
+ 
+Example 1:
+Input: board = 
+[["5","3",".",".","7",".",".",".","."]
+,["6",".",".","1","9","5",".",".","."]
+,[".","9","8",".",".",".",".","6","."]
+,["8",".",".",".","6",".",".",".","3"]
+,["4",".",".","8",".","3",".",".","1"]
+,["7",".",".",".","2",".",".",".","6"]
+,[".","6",".",".",".",".","2","8","."]
+,[".",".",".","4","1","9",".",".","5"]
+,[".",".",".",".","8",".",".","7","9"]]
+Output: true
+Example 2:
+
+Input: board = 
+[["8","3",".",".","7",".",".",".","."]
+,["6",".",".","1","9","5",".",".","."]
+,[".","9","8",".",".",".",".","6","."]
+,["8",".",".",".","6",".",".",".","3"]
+,["4",".",".","8",".","3",".",".","1"]
+,["7",".",".",".","2",".",".",".","6"]
+,[".","6",".",".",".",".","2","8","."]
+,[".",".",".","4","1","9",".",".","5"]
+,[".",".",".",".","8",".",".","7","9"]]
+
+Output: false
+Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. 
+Since there are two 8's in the top left 3x3 sub-box, it is invalid. 
+
+
+Constraints:
+board.length == 9
+board[i].length == 9
+board[i][j] is a digit 1-9 or '.'.
+
+</code></pre></div></div>
+<p>首先明白具体的要求：</p>
+
+<p>Each row must contain the digits 1-9 without repetition.
+Each column must contain the digits 1-9 without repetition.
+Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.</p>
+
+<p>每一行，每一列，每一个3X3的小格子，都要求只有1到9个数对应具体的格子，不能有重复的元素。</p>
+
+<p>具体的Note：
+A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+Only the filled cells need to be validated according to the mentioned rules.</p>
+
+<p>没有答案的Sodoku也可能是有效的，也就说不要求找到具体Sudoku的答案。
+根据提示的规则，只有需要被填充的格子，才需要校验，也就是说已经填充的格子，也就是有数字的格子需要校验</p>
+
+<p>Input: board 的格式，也就是元素为.就不需要校验一下，并且校验的规则可分为三块：
+一行，一列，每3X3的格子存在重复的元素</p>
+
+<p>具体的代码为：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.HashSet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">L36</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 主要的是一种思维的方式
+     * */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isValidSudoku_simple</span><span class="o">(</span><span class="kt">char</span><span class="o">[][]</span> <span class="n">board</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Set</span> <span class="n">seen</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">9</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">9</span><span class="o">;</span> <span class="o">++</span><span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kt">char</span> <span class="n">number</span> <span class="o">=</span> <span class="n">board</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">number</span> <span class="o">!=</span> <span class="sc">'.'</span><span class="o">)</span>
+                    <span class="k">if</span> <span class="o">(!</span><span class="n">seen</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span> <span class="o">+</span> <span class="s">" in row "</span> <span class="o">+</span> <span class="n">i</span><span class="o">)</span> <span class="o">||</span>
+                            <span class="o">!</span><span class="n">seen</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span> <span class="o">+</span> <span class="s">" in column "</span> <span class="o">+</span> <span class="n">j</span><span class="o">)</span> <span class="o">||</span>
+                            <span class="o">!</span><span class="n">seen</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span> <span class="o">+</span> <span class="s">" in block "</span> <span class="o">+</span> <span class="n">i</span><span class="o">/</span><span class="mi">3</span> <span class="o">+</span> <span class="s">"-"</span> <span class="o">+</span> <span class="n">j</span><span class="o">/</span><span class="mi">3</span><span class="o">))</span>
+                        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isValidSudoku</span><span class="o">(</span><span class="kt">char</span><span class="o">[][]</span> <span class="n">board</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">9</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+            <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;</span> <span class="n">rows</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;();</span>
+            <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;</span> <span class="n">columns</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;();</span>
+            <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;</span> <span class="n">cube</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="o">;</span><span class="n">j</span><span class="o">++){</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]!=</span><span class="sc">'.'</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">rows</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="n">j</span><span class="o">][</span><span class="n">i</span><span class="o">]!=</span><span class="sc">'.'</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">columns</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="n">j</span><span class="o">][</span><span class="n">i</span><span class="o">]))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="kt">int</span> <span class="nc">RowIndex</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*(</span><span class="n">i</span><span class="o">/</span><span class="mi">3</span><span class="o">);</span>
+                <span class="kt">int</span> <span class="nc">ColIndex</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*(</span><span class="n">i</span><span class="o">%</span><span class="mi">3</span><span class="o">);</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="nc">RowIndex</span> <span class="o">+</span> <span class="n">j</span><span class="o">/</span><span class="mi">3</span><span class="o">][</span><span class="nc">ColIndex</span> <span class="o">+</span> <span class="n">j</span><span class="o">%</span><span class="mi">3</span><span class="o">]!=</span><span class="sc">'.'</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">cube</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="nc">RowIndex</span> <span class="o">+</span> <span class="n">j</span><span class="o">/</span><span class="mi">3</span><span class="o">][</span><span class="nc">ColIndex</span> <span class="o">+</span> <span class="n">j</span><span class="o">%</span><span class="mi">3</span><span class="o">]))</span>
+                    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+        
+        <div class="post_footer">
+          <p>Published on  in categories 
+          
+          <a href="http://localhost:4000/categories/#LeetCode" title="LeetCode">LeetCode</a>&nbsp;
+          
+          <p>
+        </div>
+        
+        <ul class="prev_next">
+            
+            
+        </ul>
+        
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+        <script>
+        var gitalk = new Gitalk({
+            id: '/post_bark/leetcode/2022-09-22-L36/',
+            clientID: 'e261fd11c0ff17251934',
+            clientSecret: 'd6d09672a7172a9b422ec63898d542d00d441bd1',
+            repo: 'andihappy.github.io',
+            owner: 'AndiHappy',
+            admin: ['AndiHappy'],
+            labels: ['gitment'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+    </div>
+</div>
+<center><p style="font-size:0.5em;">Powered by <a href="https://andihappy.github.io/">andiHappy</a> and Theme by <a href="https://github.com/AndiHappy/andihappy.github.io">AndiHappy</a></p></center>
+    </body>
+</html>
+
